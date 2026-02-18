@@ -12,4 +12,10 @@ public class StringsController(IStringService stringService) : ControllerBase
     {
         return Ok(stringService.Reverse(input));
     }
+
+    [HttpGet("reverse-words/{input}")]
+    public IActionResult ReverseWords(string input)
+    {
+        return Ok(stringService.ReverseWords(input));
+    }
 }
