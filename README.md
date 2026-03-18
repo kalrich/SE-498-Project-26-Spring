@@ -100,18 +100,8 @@ SE-498-Project-26-Spring/
 │   ├── api-spec.md                 # REST API specification
 │   ├── backend-spec.md             # Website backend (BFF) specification
 │   ├── frontend-spec.md            # Frontend (Razor Views) specification
-│   ├── sprint1-todos.md            # Sprint 1 per-person task breakdown
 │   └── wireframes/
-│       ├── README.md               # Wireframe export guide
-│       ├── all-wireframes.html     # All 6 pages + error states (browser preview)
-│       ├── shelves-wireframe.html  # My Shelves detail wireframe
-│       └── svg/                    # Figma-importable SVGs (1440×1024, greyscale)
-│           ├── 01-Home.svg
-│           ├── 02-Signup.svg
-│           ├── 03-Login.svg
-│           ├── 04-My-Shelves.svg
-│           ├── 05-Item-Detail.svg
-│           └── 06-Recommendations.svg
+│       ├── screenshots of all frames in Figma
 ├── .github/
 │   └── workflows/
 │       └── main.yml                # CI: dotnet test + httpyac integration tests
