@@ -132,9 +132,9 @@ Greyscale, low-fidelity wireframes.
 
 | Document | Description |
 |---|---|
-| [`docs/api-spec.md`](docs/api-spec.md) | REST API — endpoints, auth, DB schema, error format |
-| [`docs/backend-spec.md`](docs/backend-spec.md) | BFF Web Server — session auth, business logic, routing |
-| [`docs/frontend-spec.md`](docs/frontend-spec.md) | Razor Views — pages, layout, navigation, auth behaviour |
+| docs/api-spec.md | REST API — endpoints, auth, DB schema, error format |
+| docs/backend-spec.md | BFF Web Server — session auth, business logic, routing |
+| docs/frontend-spec.md | Razor Views — pages, layout, navigation, auth behaviour |
 
 Each spec follows: Overview → Scope → Functional Requirements → Non-Functional Requirements → Technical Detail.
 
