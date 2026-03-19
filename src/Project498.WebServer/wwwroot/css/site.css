@@ -673,3 +673,97 @@ html, body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ================= RECOMMENDATIONS ================= */
+
+.recommendations-page {
+  padding: 24px;
+}
+
+.recommendations-header {
+  margin-bottom: 28px;
+}
+
+.recommendations-header h1 {
+  margin: 0 0 6px 0;
+  font-size: 32px;
+}
+
+.recommendations-header p {
+  margin: 0;
+  color: #7a7a7a;
+}
+
+.recommendation-section {
+  margin-bottom: 36px;
+}
+
+.section-subtext {
+  margin: 6px 0 0 0;
+  color: #7a7a7a;
+  font-size: 14px;
+}
+
+.recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.recommendation-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.recommendation-card {
+  background: #f8f8f8;
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: 0.2s ease;
+  height: 100%;
+}
+
+.recommendation-card:hover {
+  transform: translateY(-3px);
+}
+
+.recommendation-cover {
+  height: 280px;
+  background: #d9d9d9;
+  overflow: hidden;
+}
+
+.recommendation-body {
+  padding: 14px;
+}
+
+.recommendation-body h3 {
+  margin: 4px 0 8px 0;
+  font-size: 18px;
+}
+
+.recommendation-desc {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #555;
+}
+
+@media (max-width: 1200px) {
+  .recommendation-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 850px) {
+  .recommendation-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .recommendation-grid {
+    grid-template-columns: 1fr;
+  }
+}

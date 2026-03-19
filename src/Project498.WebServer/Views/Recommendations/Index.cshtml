@@ -1,0 +1,138 @@
+@using Project498.WebServer.Models
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var recommended = ViewBag.Recommended as List<Comic> ?? new List<Comic>();
+    var becauseYouRead = ViewBag.BecauseYouRead as List<Comic> ?? new List<Comic>();
+    var hiddenGems = ViewBag.HiddenGems as List<Comic> ?? new List<Comic>();
+}
+
+<section class="recommendations-page">
+    <div class="recommendations-header">
+        <h1>Recommendations</h1>
+        <p>Discover comics curated for your reading journey.</p>
+    </div>
+
+    <section class="recommendation-section">
+        <div class="section-row">
+            <div>
+                <h2>Recommended For You</h2>
+                <p class="section-subtext">Based on popular picks and your current library.</p>
+            </div>
+        </div>
+
+        @if (!recommended.Any())
+        {
+            <div class="empty-state">
+                <h3>No recommendations yet</h3>
+                <p>As you read more, recommendations will appear here.</p>
+            </div>
+        }
+        else
+        {
+            <div class="recommendation-grid">
+                @foreach (var comic in recommended)
+                {
+                    <a href="/Reader/Index?id=@comic.Id" class="recommendation-card-link">
+                        <article class="recommendation-card">
+                            <div class="recommendation-cover">
+                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
+                            </div>
+
+                            <div class="recommendation-body">
+                                <p class="meta">@comic.Author</p>
+                                <h3>@comic.Title</h3>
+                                <p class="recommendation-desc">@comic.Description</p>
+
+                                <div class="pill-row">
+                                    <span class="pill">@comic.Genre</span>
+                                    @if (!string.IsNullOrWhiteSpace(comic.SecondaryGenre))
+                                    {
+                                        <span class="pill">@comic.SecondaryGenre</span>
+                                    }
+                                </div>
+                            </div>
+                        </article>
+                    </a>
+                }
+            </div>
+        }
+    </section>
+
+    <section class="recommendation-section">
+        <div class="section-row">
+            <div>
+                <h2>Because You Read</h2>
+                <p class="section-subtext">Comics similar to what you already have on your shelves.</p>
+            </div>
+        </div>
+
+        @if (!becauseYouRead.Any())
+        {
+            <div class="empty-state">
+                <h3>No suggestions yet</h3>
+                <p>Finish or start a few comics to unlock this section.</p>
+            </div>
+        }
+        else
+        {
+            <div class="recommendation-grid">
+                @foreach (var comic in becauseYouRead)
+                {
+                    <a href="/Reader/Index?id=@comic.Id" class="recommendation-card-link">
+                        <article class="recommendation-card">
+                            <div class="recommendation-cover">
+                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
+                            </div>
+
+                            <div class="recommendation-body">
+                                <p class="meta">@comic.Author</p>
+                                <h3>@comic.Title</h3>
+                                <p class="recommendation-desc">@comic.Description</p>
+                            </div>
+                        </article>
+                    </a>
+                }
+            </div>
+        }
+    </section>
+
+    <section class="recommendation-section">
+        <div class="section-row">
+            <div>
+                <h2>Hidden Gems</h2>
+                <p class="section-subtext">Classic comics worth exploring.</p>
+            </div>
+        </div>
+
+        @if (!hiddenGems.Any())
+        {
+            <div class="empty-state">
+                <h3>No hidden gems yet</h3>
+                <p>We’ll surface under-the-radar favorites here.</p>
+            </div>
+        }
+        else
+        {
+            <div class="recommendation-grid">
+                @foreach (var comic in hiddenGems)
+                {
+                    <a href="/Reader/Index?id=@comic.Id" class="recommendation-card-link">
+                        <article class="recommendation-card">
+                            <div class="recommendation-cover">
+                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
+                            </div>
+
+                            <div class="recommendation-body">
+                                <p class="meta">@comic.Author</p>
+                                <h3>@comic.Title</h3>
+                                <p class="recommendation-desc">@comic.Description</p>
+                            </div>
+                        </article>
+                    </a>
+                }
+            </div>
+        }
+    </section>
+</section>

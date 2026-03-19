@@ -148,4 +148,28 @@ public class MockComicService
             .OrderBy(g => g)
             .ToList();
     }
+    
+    public List<Comic> GetRecommended()
+    {
+        return _comics
+            .Where(c => c.Genre == "Mystery" || c.SecondaryGenre == "Mystery" || c.Shelf == "Trending")
+            .Take(4)
+            .ToList();
+    }
+
+    public List<Comic> GetBecauseYouRead()
+    {
+        return _comics
+            .Where(c => c.Shelf == "Completed" || c.Shelf == "CurrentlyReading")
+            .Take(3)
+            .ToList();
+    }
+
+    public List<Comic> GetHiddenGems()
+    {
+        return _comics
+            .Where(c => c.Genre == "Classic" || c.SecondaryGenre == "Classic")
+            .Take(3)
+            .ToList();
+    }
 }
