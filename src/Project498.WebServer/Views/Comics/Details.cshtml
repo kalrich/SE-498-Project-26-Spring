@@ -50,7 +50,6 @@
                     <div class="progress-fill" style="width: @Model.ProgressPercent%;"></div>
                 </div>
             </div>
-
             <div class="shelf-action-box">
                 <h3 class="shelf-action-title">Add to Shelf</h3>
 
@@ -58,19 +57,28 @@
                     <form method="post" asp-controller="Comics" asp-action="AddToShelf">
                         <input type="hidden" name="id" value="@Model.Id" />
                         <input type="hidden" name="shelf" value="CurrentlyReading" />
-                        <button type="submit" class="btn btn-light shelf-btn">Currently Reading</button>
+                        <button type="submit"
+                                class="btn shelf-btn @(Model.Shelf == "CurrentlyReading" ? "shelf-btn-active" : "btn-light")">
+                            Currently Reading
+                        </button>
                     </form>
 
                     <form method="post" asp-controller="Comics" asp-action="AddToShelf">
                         <input type="hidden" name="id" value="@Model.Id" />
                         <input type="hidden" name="shelf" value="UpNext" />
-                        <button type="submit" class="btn btn-light shelf-btn">Up Next</button>
+                        <button type="submit"
+                                class="btn shelf-btn @(Model.Shelf == "UpNext" ? "shelf-btn-active" : "btn-light")">
+                            Up Next
+                        </button>
                     </form>
 
                     <form method="post" asp-controller="Comics" asp-action="AddToShelf">
                         <input type="hidden" name="id" value="@Model.Id" />
                         <input type="hidden" name="shelf" value="Completed" />
-                        <button type="submit" class="btn btn-light shelf-btn">Completed</button>
+                        <button type="submit"
+                                class="btn shelf-btn @(Model.Shelf == "Completed" ? "shelf-btn-active" : "btn-light")">
+                            Completed
+                        </button>
                     </form>
                 </div>
             </div>
