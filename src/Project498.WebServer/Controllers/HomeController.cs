@@ -8,6 +8,14 @@ public class HomeController : Controller
 {
     public IActionResult Index()
     {
+        var username = HttpContext.Session.GetString("Username");
+
+        if (!string.IsNullOrEmpty(username))
+        {
+            ViewBag.Username = username;
+            return View("Dashboard");
+        }
+
         return View();
     }
 

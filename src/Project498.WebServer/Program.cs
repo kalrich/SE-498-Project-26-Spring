@@ -19,17 +19,17 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Enables files from wwwroot like css, images, PDFs, etc.
+app.UseStaticFiles();
+
 app.UseRouting();
 
 app.UseSession();
 
 app.UseAuthorization();
 
-app.MapStaticAssets();
-
 app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

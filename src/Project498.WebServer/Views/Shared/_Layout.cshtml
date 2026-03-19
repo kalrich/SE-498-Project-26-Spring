@@ -1,41 +1,77 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+
+@{
+    var username = Context.Session.GetString("Username");
+
+    var initials = "";
+    if (!string.IsNullOrWhiteSpace(username))
+    {
+        initials = string.Join("", username
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => x[0]))
+            .ToUpper();
+
+        if (string.IsNullOrWhiteSpace(initials))
+        {
+            initials = "U";
+        }
+    }
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Marvel·ous Reads</title>
+
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
+
 <body>
-@{
-    var username = Context.Session.GetString("Username");
-}
 
 <header class="topbar">
+
+    <!-- LEFT: Logo -->
     <a class="brand" href="/">Marvel·ous Reads</a>
 
+    <!-- CENTER: Search -->
     <div class="search-wrap">
-        <input class="search-bar" type="text" placeholder="Search books, characters, comics..." />
+        <input class="search-bar"
+               type="text"
+               placeholder="Search books, characters, comics..." />
     </div>
 
+    <!-- RIGHT: Navigation -->
     <nav class="top-actions">
-        <a class="explore-link" href="/">Explore</a>
 
         @if (!string.IsNullOrEmpty(username))
         {
-            <span class="welcome-user">Hi, @username</span>
-            <a class="btn btn-light small" href="/Auth/Logout">Logout</a>
+            <!-- Logged-in state -->
+            <a class="nav-text-link" href="/">Explore</a>
+            <a class="nav-text-link" href="#">Recommendations</a>
+            <a class="nav-text-link" href="#">My Shelves</a>
+
+            <a class="logout-link" href="/Auth/Logout">Logout</a>
+
+            <div class="nav-avatar">@initials</div>
         }
         else
         {
+            <!-- Logged-out state -->
+            <a class="explore-link" href="/">Explore</a>
+
             <a class="btn btn-light small" href="/Auth/Login">Login</a>
             <a class="btn btn-dark small" href="/Auth/Signup">Sign Up</a>
         }
+
     </nav>
 </header>
 
+<!-- PAGE CONTENT -->
 <main class="page-shell">
     @RenderBody()
 </main>
+
 </body>
 </html>

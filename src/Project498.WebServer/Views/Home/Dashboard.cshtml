@@ -1,0 +1,171 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var username = ViewBag.Username as string ?? "Peter Parker";
+    var initials = string.Join("", username.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(x => x[0])).ToUpper();
+
+    if (string.IsNullOrWhiteSpace(initials))
+    {
+        initials = "PP";
+    }
+}
+
+<section class="dashboard-shell">
+    <aside class="dashboard-left">
+        <div class="sidebar-block">
+            <h3 class="sidebar-title">Categories</h3>
+
+            <label class="filter-item"><input type="checkbox" /> <span>New Releases</span></label>
+            <label class="filter-item"><input type="checkbox" /> <span>Top Rated</span></label>
+            <label class="filter-item"><input type="checkbox" /> <span>Most Discussed</span></label>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-block">
+            <h3 class="sidebar-title">Genres</h3>
+
+            <label class="filter-item"><input type="checkbox" /> <span>Action</span></label>
+            <label class="filter-item"><input type="checkbox" /> <span>Adventure</span></label>
+            <label class="filter-item"><input type="checkbox" /> <span>Classic</span></label>
+            <label class="filter-item"><input type="checkbox" /> <span>Mystery</span></label>
+            <label class="filter-item"><input type="checkbox" /> <span>Sci-Fi</span></label>
+            <label class="filter-item"><input type="checkbox" /> <span>Fantasy</span></label>
+
+            <a href="#" class="subtle-link">Show all genres</a>
+        </div>
+    </aside>
+
+    <main class="dashboard-center">
+        <section class="content-section">
+            <div class="section-row">
+                <h2>Featured Today</h2>
+                <a href="#" class="subtle-link">See more →</a>
+            </div>
+
+            <div class="featured-row">
+                <div class="comic-cover">Cover</div>
+                <div class="comic-cover">Cover</div>
+                <div class="comic-cover">Cover</div>
+                <div class="comic-cover">Cover</div>
+                <div class="comic-cover">Cover</div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2>Trending This Week</h2>
+
+            <div class="trending-list">
+                <article class="trend-card">
+                    <div class="trend-thumb"></div>
+                    <div class="trend-body">
+                        <p class="meta">Stan Lee</p>
+                        <h3>The Amazing Spider-Man</h3>
+                        <p class="desc">
+                            Peter Parker gains incredible powers after being bitten by a radioactive spider...
+                        </p>
+                        <div class="pill-row">
+                            <span class="pill">Action</span>
+                            <span class="pill">Comics</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="trend-card">
+                    <div class="trend-thumb"></div>
+                    <div class="trend-body">
+                        <p class="meta">Jack Kirby</p>
+                        <h3>Fantastic Four</h3>
+                        <p class="desc">
+                            Four astronauts gain superpowers after exposure to cosmic rays in outer space...
+                        </p>
+                        <div class="pill-row">
+                            <span class="pill">Adventure</span>
+                            <span class="pill">Sci-Fi</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="trend-card">
+                    <div class="trend-thumb"></div>
+                    <div class="trend-body">
+                        <p class="meta">Chris Claremont</p>
+                        <h3>X-Men: Days of Future Past</h3>
+                        <p class="desc">
+                            The X-Men must prevent a dystopian future where mutants are hunted by Sentinels...
+                        </p>
+                        <div class="pill-row">
+                            <span class="pill">Action</span>
+                            <span class="pill">Fantasy</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <aside class="dashboard-right">
+        <div class="profile-chip">@initials</div>
+
+        <section class="shelf-block">
+            <div class="section-row small">
+                <h3>Currently Reading</h3>
+                <a href="#" class="subtle-link">see all</a>
+            </div>
+
+            <div class="shelf-card">
+                <div class="mini-cover"></div>
+                <div class="shelf-body">
+                    <p class="meta">Stan Lee</p>
+                    <h4>Iron Man Vol. 1</h4>
+                    <div class="progress-line">
+                        <div class="progress-fill fill-70"></div>
+                    </div>
+                    <p class="progress-text">70%</p>
+                </div>
+            </div>
+
+            <div class="shelf-card">
+                <div class="mini-cover"></div>
+                <div class="shelf-body">
+                    <p class="meta">Jack Kirby</p>
+                    <h4>Thor: God of Thunder</h4>
+                    <div class="progress-line">
+                        <div class="progress-fill fill-43"></div>
+                    </div>
+                    <p class="progress-text">43%</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="shelf-block">
+            <div class="section-row small">
+                <h3>Up Next</h3>
+                <a href="#" class="subtle-link">see all</a>
+            </div>
+
+            <div class="shelf-card">
+                <div class="mini-cover"></div>
+                <div class="shelf-body">
+                    <p class="meta">Stan Lee</p>
+                    <h4>The Amazing Spider-Man</h4>
+                </div>
+            </div>
+        </section>
+
+        <section class="shelf-block">
+            <div class="section-row small">
+                <h3>Completed</h3>
+                <a href="#" class="subtle-link">see all</a>
+            </div>
+
+            <div class="shelf-card">
+                <div class="mini-cover"></div>
+                <div class="shelf-body">
+                    <p class="meta">Stan Lee</p>
+                    <h4>Captain America</h4>
+                    <p class="finished">✓ Finished</p>
+                </div>
+            </div>
+        </section>
+    </aside>
+</section>
