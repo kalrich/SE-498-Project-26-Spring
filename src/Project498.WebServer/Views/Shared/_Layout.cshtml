@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Marvel·ous Reads</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+@{
+    var username = Context.Session.GetString("Username");
+}
+
+<header class="topbar">
+    <a class="brand" href="/">Marvel·ous Reads</a>
+
+    <div class="search-wrap">
+        <input class="search-bar" type="text" placeholder="Search books, characters, comics..." />
+    </div>
+
+    <nav class="top-actions">
+        <a class="explore-link" href="/">Explore</a>
+
+        @if (!string.IsNullOrEmpty(username))
+        {
+            <span class="welcome-user">Hi, @username</span>
+            <a class="btn btn-light small" href="/Auth/Logout">Logout</a>
+        }
+        else
+        {
+            <a class="btn btn-light small" href="/Auth/Login">Login</a>
+            <a class="btn btn-dark small" href="/Auth/Signup">Sign Up</a>
+        }
+    </nav>
+</header>
+
+<main class="page-shell">
+    @RenderBody()
+</main>
+</body>
+</html>

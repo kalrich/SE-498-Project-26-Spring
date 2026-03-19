@@ -1,0 +1,43 @@
+@model Project498.WebServer.Models.SignupViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="auth-page">
+    <div class="auth-card signup-card">
+        <h2 class="auth-title">Create Account</h2>
+        <p class="auth-subtitle">Join Marvel·ous Reads today!</p>
+
+        <div class="divider"></div>
+
+        @if (ViewBag.Error != null)
+        {
+            <p class="error-text">@ViewBag.Error</p>
+        }
+
+        <form class="auth-form" method="post" asp-controller="Auth" asp-action="Signup">
+            <label asp-for="Username">Username</label>
+            <input asp-for="Username" placeholder="e.g. peter_parker" />
+            <span asp-validation-for="Username" class="error-text"></span>
+
+            <label asp-for="Email">Email</label>
+            <input asp-for="Email" placeholder="e.g. peter@marvel.com" />
+            <span asp-validation-for="Email" class="error-text"></span>
+
+            <label asp-for="Password">Password</label>
+            <input asp-for="Password" type="password" placeholder="Min 8 chars, 1 number" />
+            <span asp-validation-for="Password" class="error-text"></span>
+
+            <label asp-for="ConfirmPassword">Confirm Password</label>
+            <input asp-for="ConfirmPassword" type="password" />
+            <span asp-validation-for="ConfirmPassword" class="error-text"></span>
+
+            <button type="submit" class="btn btn-dark auth-submit">Create Account</button>
+
+            <p class="auth-footer">
+                Already have an account?
+                <a href="/Auth/Login">Log in</a>
+            </p>
+        </form>
+    </div>
+</section>
