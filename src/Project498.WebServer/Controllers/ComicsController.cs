@@ -30,4 +30,11 @@ public class ComicsController : Controller
 
         return View(comic);
     }
+
+    [HttpPost]
+    public IActionResult AddToShelf(int id, string shelf)
+    {
+        _mockComicService.UpdateShelf(id, shelf);
+        return RedirectToAction("Details", new { id });
+    }
 }

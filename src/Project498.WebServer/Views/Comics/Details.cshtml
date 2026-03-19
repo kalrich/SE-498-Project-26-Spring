@@ -37,6 +37,11 @@
 
             <div class="comic-detail-meta-box">
                 <div class="comic-meta-row">
+                    <span class="comic-meta-label">Current Shelf</span>
+                    <span class="comic-meta-value">@Model.Shelf</span>
+                </div>
+
+                <div class="comic-meta-row">
                     <span class="comic-meta-label">Progress</span>
                     <span class="comic-meta-value">@Model.ProgressPercent%</span>
                 </div>
@@ -44,10 +49,29 @@
                 <div class="progress-line detail-progress">
                     <div class="progress-fill" style="width: @Model.ProgressPercent%;"></div>
                 </div>
+            </div>
 
-                <div class="comic-meta-row">
-                    <span class="comic-meta-label">Shelf</span>
-                    <span class="comic-meta-value">@Model.Shelf</span>
+            <div class="shelf-action-box">
+                <h3 class="shelf-action-title">Add to Shelf</h3>
+
+                <div class="shelf-action-buttons">
+                    <form method="post" asp-controller="Comics" asp-action="AddToShelf">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <input type="hidden" name="shelf" value="CurrentlyReading" />
+                        <button type="submit" class="btn btn-light shelf-btn">Currently Reading</button>
+                    </form>
+
+                    <form method="post" asp-controller="Comics" asp-action="AddToShelf">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <input type="hidden" name="shelf" value="UpNext" />
+                        <button type="submit" class="btn btn-light shelf-btn">Up Next</button>
+                    </form>
+
+                    <form method="post" asp-controller="Comics" asp-action="AddToShelf">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <input type="hidden" name="shelf" value="Completed" />
+                        <button type="submit" class="btn btn-light shelf-btn">Completed</button>
+                    </form>
                 </div>
             </div>
         </div>

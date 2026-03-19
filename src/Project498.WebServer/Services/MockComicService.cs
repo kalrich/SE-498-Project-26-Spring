@@ -17,8 +17,7 @@ public class MockComicService
             CoverImagePath = "/images/covers/Marvel_Mystery_Vol1_Iss12_COVER.jpeg",
             PdfPath = "/comics/Marvel_Mystery_Vol1_Iss12.pdf",
             ProgressPercent = 35,
-            Shelf = "CurrentlyReading",
-            IsIReadPick = true
+            Shelf = "CurrentlyReading"
         },
         new Comic
         {
@@ -31,8 +30,7 @@ public class MockComicService
             CoverImagePath = "/images/covers/Marvel_Mystery_Vol1_Iss14_COVER.jpeg",
             PdfPath = "/comics/Marvel_Mystery_Vol1_Iss14.pdf",
             ProgressPercent = 0,
-            Shelf = "UpNext",
-            IsIReadPick = true
+            Shelf = "UpNext"
         },
         new Comic
         {
@@ -45,8 +43,7 @@ public class MockComicService
             CoverImagePath = "/images/covers/Marvel_Mystery_Vol1_Iss15_COVER.jpeg",
             PdfPath = "/comics/Marvel_Mystery_Vol1_Iss15.pdf",
             ProgressPercent = 0,
-            Shelf = "Trending",
-            IsIReadPick = false
+            Shelf = "Trending"
         },
         new Comic
         {
@@ -59,57 +56,10 @@ public class MockComicService
             CoverImagePath = "/images/covers/Mystic_Comics_Vol1_Iss4_COVER.jpeg",
             PdfPath = "/comics/Mystic_Comics_Vol1_Iss4.pdf",
             ProgressPercent = 100,
-            Shelf = "Completed",
-            IsIReadPick = true
+            Shelf = "Completed"
         }
     ];
 
-    public List<Comic> GetFeaturedToday()
-    {
-        return _comics.Take(4).ToList();
-    }
-
-    public List<Comic> GetTrendingThisWeek()
-    {
-        return _comics
-            .Where(c => c.Shelf == "Trending" || c.IsIReadPick)
-            .Take(3)
-            .ToList();
-    }
-
-    public List<Comic> GetCurrentlyReading()
-    {
-        return _comics
-            .Where(c => c.Shelf == "CurrentlyReading")
-            .ToList();
-    }
-
-    public List<Comic> GetUpNext()
-    {
-        return _comics
-            .Where(c => c.Shelf == "UpNext")
-            .ToList();
-    }
-
-    public List<Comic> GetCompleted()
-    {
-        return _comics
-            .Where(c => c.Shelf == "Completed")
-            .ToList();
-    }
-
-    public List<Comic> GetIReadPicks()
-    {
-        return _comics
-            .Where(c => c.IsIReadPick)
-            .ToList();
-    }
-
-    public Comic? GetById(int id)
-    {
-        return _comics.FirstOrDefault(c => c.Id == id);
-    }
-    
     public List<Comic> GetAll()
     {
         return _comics.ToList();
@@ -148,7 +98,35 @@ public class MockComicService
             .OrderBy(g => g)
             .ToList();
     }
-    
+
+    public List<Comic> GetFeaturedToday()
+    {
+        return _comics.ToList();
+    }
+
+    public List<Comic> GetTrendingThisWeek()
+    {
+        return _comics
+            .Where(c => c.Shelf == "Trending" || c.Id <= 3)
+            .Take(3)
+            .ToList();
+    }
+
+    public List<Comic> GetCurrentlyReading()
+    {
+        return _comics.Where(c => c.Shelf == "CurrentlyReading").ToList();
+    }
+
+    public List<Comic> GetUpNext()
+    {
+        return _comics.Where(c => c.Shelf == "UpNext").ToList();
+    }
+
+    public List<Comic> GetCompleted()
+    {
+        return _comics.Where(c => c.Shelf == "Completed").ToList();
+    }
+
     public List<Comic> GetRecommended()
     {
         return _comics
@@ -171,5 +149,31 @@ public class MockComicService
             .Where(c => c.Genre == "Classic" || c.SecondaryGenre == "Classic")
             .Take(3)
             .ToList();
+    }
+
+    public Comic? GetById(int id)
+    {
+        return _comics.FirstOrDefault(c => c.Id == id);
+    }
+
+    public void UpdateShelf(int id, string shelf)
+    {
+        var comic = _comics.FirstOrDefault(c => c.Id == id);
+        if (comic == null) return;
+
+        comic.Shelf = shelf;
+
+        if (shelf == "Completed")
+        {
+            comic.ProgressPercent = 100;
+        }
+        else if (shelf == "UpNext")
+        {
+            comic.ProgressPercent = 0;
+        }
+        else if (shelf == "CurrentlyReading" && comic.ProgressPercent == 0)
+        {
+            comic.ProgressPercent = 10;
+        }
     }
 }

@@ -902,3 +902,34 @@ html, body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ================= ADD TO SHELF ================= */
+
+.shelf-action-box {
+  margin-top: 20px;
+  background: #f8f8f8;
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+  padding: 16px;
+  max-width: 520px;
+}
+
+.shelf-action-title {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+}
+
+.shelf-action-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.shelf-action-buttons form {
+  margin: 0;
+}
+
+.shelf-btn {
+  height: 40px;
+  padding: 0 14px;
+}

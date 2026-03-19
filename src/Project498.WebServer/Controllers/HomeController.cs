@@ -26,7 +26,6 @@ public class HomeController : Controller
             ViewBag.CurrentlyReading = _mockComicService.GetCurrentlyReading();
             ViewBag.UpNext = _mockComicService.GetUpNext();
             ViewBag.Completed = _mockComicService.GetCompleted();
-            ViewBag.IReadPicks = _mockComicService.GetIReadPicks();
 
             return View("Dashboard");
         }
