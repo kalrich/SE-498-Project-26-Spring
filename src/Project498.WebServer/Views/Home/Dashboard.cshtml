@@ -57,7 +57,7 @@
             <div class="featured-row">
                 @foreach (var comic in featured)
                 {
-                    <a class="cover-link" href="/Reader/Index?id=@comic.Id">
+                    <a class="cover-link" href="/Comics/Details?id=@comic.Id">
                         <div class="comic-cover">
                             @if (!string.IsNullOrWhiteSpace(comic.CoverImagePath))
                             {
@@ -82,7 +82,7 @@
                 @foreach (var comic in trending)
                 {
                     <article class="trend-card">
-                        <a class="trend-thumb-link" href="/Reader/Index?id=@comic.Id">
+                        <a class="trend-thumb-link" href="/Comics/Details?id=@comic.Id">
                             <div class="trend-thumb">
                                 @if (!string.IsNullOrWhiteSpace(comic.CoverImagePath))
                                 {
@@ -124,7 +124,7 @@
 
             @foreach (var comic in currentlyReading)
             {
-                <a href="/Reader/Index?id=@comic.Id" class="cover-link">
+                <a href="/Comics/Details?id=@comic.Id" class="cover-link">
                     <div class="shelf-card">
                         <div class="mini-cover">
                             @if (!string.IsNullOrWhiteSpace(comic.CoverImagePath))
@@ -156,7 +156,7 @@
 
             @foreach (var comic in upNext)
             {
-                <a href="/Reader/Index?id=@comic.Id" class="cover-link">
+                <a href="/Comics/Details?id=@comic.Id" class="cover-link">
                     <div class="shelf-card">
                         <div class="mini-cover">
                             @if (!string.IsNullOrWhiteSpace(comic.CoverImagePath))
@@ -182,7 +182,7 @@
 
             @foreach (var comic in completed)
             {
-                <a href="/Reader/Index?id=@comic.Id" class="cover-link">
+                <a href="/Comics/Details?id=@comic.Id" class="cover-link">
                     <div class="shelf-card">
                         <div class="mini-cover">
                             @if (!string.IsNullOrWhiteSpace(comic.CoverImagePath))

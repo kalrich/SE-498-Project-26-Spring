@@ -61,7 +61,7 @@
         <div class="explore-grid">
             @foreach (var comic in comics)
             {
-                <a href="/Reader/Index?id=@comic.Id" class="explore-card-link">
+                <a href="/Comics/Details?id=@comic.Id" class="explore-card-link">
                     <article class="explore-card">
                         <div class="explore-card-cover">
                             <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />

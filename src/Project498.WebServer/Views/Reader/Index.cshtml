@@ -1,13 +1,20 @@
 @model Project498.WebServer.Models.Comic
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <section class="reader-page">
-    <div class="reader-header">
-        <h2>@Model.Title</h2>
-        <p class="meta">@Model.Author</p>
+    <div class="reader-toolbar">
+        <div>
+            <h2 class="reader-title">@Model.Title</h2>
+            <p class="reader-meta">@Model.Author</p>
+        </div>
+
+        <a href="/Comics/Details?id=@Model.Id" class="btn btn-light small">Back</a>
     </div>
 
-    <iframe class="pdf-frame" src="@Model.PdfPath"></iframe>
+    <div class="reader-frame-wrap">
+        <iframe class="pdf-frame" src="@Model.PdfPath"></iframe>
+    </div>
 </section>

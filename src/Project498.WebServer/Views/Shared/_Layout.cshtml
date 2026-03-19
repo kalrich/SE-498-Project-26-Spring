@@ -2,6 +2,7 @@
 
 @{
     var username = Context.Session.GetString("Username");
+    var currentQuery = Context.Request.Query["query"].ToString();
 
     var initials = "";
     if (!string.IsNullOrWhiteSpace(username))
@@ -24,51 +25,40 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Marvel·ous Reads</title>
-
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
-
 <body>
 
 <header class="topbar">
-
-    <!-- LEFT: Logo -->
     <a class="brand" href="/">Marvel·ous Reads</a>
 
-    <!-- CENTER: Search -->
-    <div class="search-wrap">
-        <input class="search-bar"
-               type="text"
-               placeholder="Search books, characters, comics..." />
-    </div>
+    <form class="search-wrap" method="get" action="/Explore">
+        <input
+            class="search-bar"
+            type="text"
+            name="query"
+            value="@currentQuery"
+            placeholder="Search books, characters, comics..." />
+    </form>
 
-    <!-- RIGHT: Navigation -->
     <nav class="top-actions">
-
         @if (!string.IsNullOrEmpty(username))
         {
-            <!-- Logged-in state -->
             <a class="nav-text-link" href="/Explore">Explore</a>
             <a class="nav-text-link" href="/Recommendations">Recommendations</a>
             <a class="nav-text-link" href="/Shelves">My Shelves</a>
-
             <a class="logout-link" href="/Auth/Logout">Logout</a>
-
             <div class="nav-avatar">@initials</div>
         }
         else
         {
-            <!-- Logged-out state -->
             <a class="explore-link" href="/Explore">Explore</a>
-
             <a class="btn btn-light small" href="/Auth/Login">Login</a>
             <a class="btn btn-dark small" href="/Auth/Signup">Sign Up</a>
         }
-
     </nav>
 </header>
 
-<!-- PAGE CONTENT -->
 <main class="page-shell">
     @RenderBody()
 </main>

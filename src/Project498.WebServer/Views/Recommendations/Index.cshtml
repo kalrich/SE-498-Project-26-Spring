@@ -34,7 +34,7 @@
             <div class="recommendation-grid">
                 @foreach (var comic in recommended)
                 {
-                    <a href="/Reader/Index?id=@comic.Id" class="recommendation-card-link">
+                    <a href="/Comics/Details?id=@comic.Id" class="recommendation-card-link">
                         <article class="recommendation-card">
                             <div class="recommendation-cover">
                                 <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
@@ -80,7 +80,7 @@
             <div class="recommendation-grid">
                 @foreach (var comic in becauseYouRead)
                 {
-                    <a href="/Reader/Index?id=@comic.Id" class="recommendation-card-link">
+                    <a href="/Comics/Details?id=@comic.Id" class="recommendation-card-link">
                         <article class="recommendation-card">
                             <div class="recommendation-cover">
                                 <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
@@ -118,7 +118,7 @@
             <div class="recommendation-grid">
                 @foreach (var comic in hiddenGems)
                 {
-                    <a href="/Reader/Index?id=@comic.Id" class="recommendation-card-link">
+                    <a href="/Comics/Details?id=@comic.Id" class="recommendation-card-link">
                         <article class="recommendation-card">
                             <div class="recommendation-cover">
                                 <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />

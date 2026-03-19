@@ -1,0 +1,90 @@
+@model Project498.WebServer.Models.Comic
+@using Project498.WebServer.Models
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var related = ViewBag.RelatedComics as List<Comic> ?? new List<Comic>();
+}
+
+<section class="comic-detail-page">
+    <div class="comic-detail-grid">
+        <div class="comic-detail-cover-panel">
+            <div class="comic-detail-cover">
+                <img src="@Model.CoverImagePath" alt="@Model.Title" class="cover-image" />
+            </div>
+        </div>
+
+        <div class="comic-detail-info">
+            <p class="comic-detail-author">@Model.Author</p>
+            <h1 class="comic-detail-title">@Model.Title</h1>
+
+            <div class="pill-row comic-detail-pills">
+                <span class="pill">@Model.Genre</span>
+                @if (!string.IsNullOrWhiteSpace(Model.SecondaryGenre))
+                {
+                    <span class="pill">@Model.SecondaryGenre</span>
+                }
+            </div>
+
+            <p class="comic-detail-description">
+                @Model.Description
+            </p>
+
+            <div class="comic-detail-actions">
+                <a href="/Reader/Index?id=@Model.Id" class="btn btn-dark detail-btn">Read Now</a>
+                <a href="/Shelves" class="btn btn-light detail-btn">View My Shelves</a>
+            </div>
+
+            <div class="comic-detail-meta-box">
+                <div class="comic-meta-row">
+                    <span class="comic-meta-label">Progress</span>
+                    <span class="comic-meta-value">@Model.ProgressPercent%</span>
+                </div>
+
+                <div class="progress-line detail-progress">
+                    <div class="progress-fill" style="width: @Model.ProgressPercent%;"></div>
+                </div>
+
+                <div class="comic-meta-row">
+                    <span class="comic-meta-label">Shelf</span>
+                    <span class="comic-meta-value">@Model.Shelf</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="related-section">
+        <div class="section-row">
+            <h2>Related Comics</h2>
+        </div>
+
+        @if (!related.Any())
+        {
+            <div class="empty-state">
+                <h3>No related comics yet</h3>
+                <p>More recommendations will appear here as your library grows.</p>
+            </div>
+        }
+        else
+        {
+            <div class="related-grid">
+                @foreach (var comic in related)
+                {
+                    <a href="/Comics/Details?id=@comic.Id" class="recommendation-card-link">
+                        <article class="recommendation-card">
+                            <div class="recommendation-cover">
+                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
+                            </div>
+
+                            <div class="recommendation-body">
+                                <p class="meta">@comic.Author</p>
+                                <h3>@comic.Title</h3>
+                                <p class="recommendation-desc">@comic.Description</p>
+                            </div>
+                        </article>
+                    </a>
+                }
+            </div>
+        }
+    </section>
+</section>

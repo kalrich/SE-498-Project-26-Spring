@@ -32,7 +32,7 @@
             <div class="shelf-grid">
                 @foreach (var comic in currentlyReading)
                 {
-                    <a href="/Reader/Index?id=@comic.Id" class="shelf-page-card-link">
+                    <a href="/Comics/Details?id=@comic.Id" class="shelf-page-card-link">
                         <article class="shelf-page-card">
                             <div class="shelf-page-cover">
                                 <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
@@ -73,7 +73,7 @@
             <div class="shelf-grid">
                 @foreach (var comic in upNext)
                 {
-                    <a href="/Reader/Index?id=@comic.Id" class="shelf-page-card-link">
+                    <a href="/Comics/Details?id=@comic.Id" class="shelf-page-card-link">
                         <article class="shelf-page-card">
                             <div class="shelf-page-cover">
                                 <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
@@ -109,7 +109,7 @@
             <div class="shelf-grid">
                 @foreach (var comic in completed)
                 {
-                    <a href="/Reader/Index?id=@comic.Id" class="shelf-page-card-link">
+                    <a href="/Comics/Details?id=@comic.Id" class="shelf-page-card-link">
                         <article class="shelf-page-card">
                             <div class="shelf-page-cover">
                                 <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
