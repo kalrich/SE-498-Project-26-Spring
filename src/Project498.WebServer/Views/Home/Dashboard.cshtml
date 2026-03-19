@@ -1,12 +1,24 @@
+@using Project498.WebServer.Models
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+
     var username = ViewBag.Username as string ?? "Peter Parker";
-    var initials = string.Join("", username.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(x => x[0])).ToUpper();
+    var initials = string.Join("", username
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Select(x => x[0]))
+        .ToUpper();
 
     if (string.IsNullOrWhiteSpace(initials))
     {
         initials = "PP";
     }
+
+    var featured = ViewBag.FeaturedToday as List<Comic> ?? new List<Comic>();
+    var trending = ViewBag.TrendingThisWeek as List<Comic> ?? new List<Comic>();
+    var currentlyReading = ViewBag.CurrentlyReading as List<Comic> ?? new List<Comic>();
+    var upNext = ViewBag.UpNext as List<Comic> ?? new List<Comic>();
+    var completed = ViewBag.Completed as List<Comic> ?? new List<Comic>();
 }
 
 <section class="dashboard-shell">
@@ -43,62 +55,60 @@
             </div>
 
             <div class="featured-row">
-                <div class="comic-cover">Cover</div>
-                <div class="comic-cover">Cover</div>
-                <div class="comic-cover">Cover</div>
-                <div class="comic-cover">Cover</div>
-                <div class="comic-cover">Cover</div>
+                @foreach (var comic in featured)
+                {
+                    <a class="cover-link" href="/Reader/Index?id=@comic.Id">
+                        <div class="comic-cover">
+                            @if (!string.IsNullOrWhiteSpace(comic.CoverImagePath))
+                            {
+                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
+                            }
+                            else
+                            {
+                                <span>@comic.Title</span>
+                            }
+                        </div>
+                    </a>
+                }
             </div>
         </section>
 
         <section class="content-section">
-            <h2>Trending This Week</h2>
+            <div class="section-row">
+                <h2>Trending This Week</h2>
+            </div>
 
             <div class="trending-list">
-                <article class="trend-card">
-                    <div class="trend-thumb"></div>
-                    <div class="trend-body">
-                        <p class="meta">Stan Lee</p>
-                        <h3>The Amazing Spider-Man</h3>
-                        <p class="desc">
-                            Peter Parker gains incredible powers after being bitten by a radioactive spider...
-                        </p>
-                        <div class="pill-row">
-                            <span class="pill">Action</span>
-                            <span class="pill">Comics</span>
-                        </div>
-                    </div>
-                </article>
+                @foreach (var comic in trending)
+                {
+                    <article class="trend-card">
+                        <a class="trend-thumb-link" href="/Reader/Index?id=@comic.Id">
+                            <div class="trend-thumb">
+                                @if (!string.IsNullOrWhiteSpace(comic.CoverImagePath))
+                                {
+                                    <img src="@comic.CoverImagePath" alt="@comic.Title" class="thumb-image" />
+                                }
+                            </div>
+                        </a>
 
-                <article class="trend-card">
-                    <div class="trend-thumb"></div>
-                    <div class="trend-body">
-                        <p class="meta">Jack Kirby</p>
-                        <h3>Fantastic Four</h3>
-                        <p class="desc">
-                            Four astronauts gain superpowers after exposure to cosmic rays in outer space...
-                        </p>
-                        <div class="pill-row">
-                            <span class="pill">Adventure</span>
-                            <span class="pill">Sci-Fi</span>
-                        </div>
-                    </div>
-                </article>
+                        <div class="trend-body">
+                            <p class="meta">@comic.Author</p>
+                            <h3>@comic.Title</h3>
+                            <p class="desc">@comic.Description</p>
 
-                <article class="trend-card">
-                    <div class="trend-thumb"></div>
-                    <div class="trend-body">
-                        <p class="meta">Chris Claremont</p>
-                        <h3>X-Men: Days of Future Past</h3>
-                        <p class="desc">
-                            The X-Men must prevent a dystopian future where mutants are hunted by Sentinels...
-                        </p>
-                        <div class="pill-row">
-                            <span class="pill">Action</span>
-                            <span class="pill">Fantasy</span>
+                            <div class="pill-row">
+                                @if (!string.IsNullOrWhiteSpace(comic.Genre))
+                                {
+                                    <span class="pill">@comic.Genre</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(comic.SecondaryGenre))
+                                {
+                                    <span class="pill">@comic.SecondaryGenre</span>
+                                }
+                            </div>
                         </div>
-                    </div>
-                </article>
+                    </article>
+                }
             </div>
         </section>
     </main>
@@ -112,29 +122,30 @@
                 <a href="#" class="subtle-link">see all</a>
             </div>
 
-            <div class="shelf-card">
-                <div class="mini-cover"></div>
-                <div class="shelf-body">
-                    <p class="meta">Stan Lee</p>
-                    <h4>Iron Man Vol. 1</h4>
-                    <div class="progress-line">
-                        <div class="progress-fill fill-70"></div>
-                    </div>
-                    <p class="progress-text">70%</p>
-                </div>
-            </div>
+            @foreach (var comic in currentlyReading)
+            {
+                <a href="/Reader/Index?id=@comic.Id" class="cover-link">
+                    <div class="shelf-card">
+                        <div class="mini-cover">
+                            @if (!string.IsNullOrWhiteSpace(comic.CoverImagePath))
+                            {
+                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="mini-cover-image" />
+                            }
+                        </div>
 
-            <div class="shelf-card">
-                <div class="mini-cover"></div>
-                <div class="shelf-body">
-                    <p class="meta">Jack Kirby</p>
-                    <h4>Thor: God of Thunder</h4>
-                    <div class="progress-line">
-                        <div class="progress-fill fill-43"></div>
+                        <div class="shelf-body">
+                            <p class="meta">@comic.Author</p>
+                            <h4>@comic.Title</h4>
+
+                            <div class="progress-line">
+                                <div class="progress-fill" style="width: @comic.ProgressPercent%;"></div>
+                            </div>
+
+                            <p class="progress-text">@comic.ProgressPercent%</p>
+                        </div>
                     </div>
-                    <p class="progress-text">43%</p>
-                </div>
-            </div>
+                </a>
+            }
         </section>
 
         <section class="shelf-block">
@@ -143,13 +154,24 @@
                 <a href="#" class="subtle-link">see all</a>
             </div>
 
-            <div class="shelf-card">
-                <div class="mini-cover"></div>
-                <div class="shelf-body">
-                    <p class="meta">Stan Lee</p>
-                    <h4>The Amazing Spider-Man</h4>
-                </div>
-            </div>
+            @foreach (var comic in upNext)
+            {
+                <a href="/Reader/Index?id=@comic.Id" class="cover-link">
+                    <div class="shelf-card">
+                        <div class="mini-cover">
+                            @if (!string.IsNullOrWhiteSpace(comic.CoverImagePath))
+                            {
+                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="mini-cover-image" />
+                            }
+                        </div>
+
+                        <div class="shelf-body">
+                            <p class="meta">@comic.Author</p>
+                            <h4>@comic.Title</h4>
+                        </div>
+                    </div>
+                </a>
+            }
         </section>
 
         <section class="shelf-block">
@@ -158,14 +180,25 @@
                 <a href="#" class="subtle-link">see all</a>
             </div>
 
-            <div class="shelf-card">
-                <div class="mini-cover"></div>
-                <div class="shelf-body">
-                    <p class="meta">Stan Lee</p>
-                    <h4>Captain America</h4>
-                    <p class="finished">✓ Finished</p>
-                </div>
-            </div>
+            @foreach (var comic in completed)
+            {
+                <a href="/Reader/Index?id=@comic.Id" class="cover-link">
+                    <div class="shelf-card">
+                        <div class="mini-cover">
+                            @if (!string.IsNullOrWhiteSpace(comic.CoverImagePath))
+                            {
+                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="mini-cover-image" />
+                            }
+                        </div>
+
+                        <div class="shelf-body">
+                            <p class="meta">@comic.Author</p>
+                            <h4>@comic.Title</h4>
+                            <p class="finished">✓ Finished</p>
+                        </div>
+                    </div>
+                </a>
+            }
         </section>
     </aside>
 </section>

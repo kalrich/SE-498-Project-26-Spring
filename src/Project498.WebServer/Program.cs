@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<MockAuthService>();
+builder.Services.AddSingleton<MockComicService>();
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
 

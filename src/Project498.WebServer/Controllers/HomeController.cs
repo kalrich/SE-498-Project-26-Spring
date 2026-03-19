@@ -1,11 +1,19 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Project498.WebServer.Models;
+using Project498.WebServer.Services;
 
 namespace Project498.WebServer.Controllers;
 
 public class HomeController : Controller
 {
+    private readonly MockComicService _mockComicService;
+
+    public HomeController(MockComicService mockComicService)
+    {
+        _mockComicService = mockComicService;
+    }
+
     public IActionResult Index()
     {
         var username = HttpContext.Session.GetString("Username");
@@ -13,6 +21,13 @@ public class HomeController : Controller
         if (!string.IsNullOrEmpty(username))
         {
             ViewBag.Username = username;
+            ViewBag.FeaturedToday = _mockComicService.GetFeaturedToday();
+            ViewBag.TrendingThisWeek = _mockComicService.GetTrendingThisWeek();
+            ViewBag.CurrentlyReading = _mockComicService.GetCurrentlyReading();
+            ViewBag.UpNext = _mockComicService.GetUpNext();
+            ViewBag.Completed = _mockComicService.GetCompleted();
+            ViewBag.IReadPicks = _mockComicService.GetIReadPicks();
+
             return View("Dashboard");
         }
 
