@@ -1,0 +1,129 @@
+@using Project498.WebServer.Models
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var currentlyReading = ViewBag.CurrentlyReading as List<Comic> ?? new List<Comic>();
+    var upNext = ViewBag.UpNext as List<Comic> ?? new List<Comic>();
+    var completed = ViewBag.Completed as List<Comic> ?? new List<Comic>();
+}
+
+<section class="shelves-page">
+    <div class="shelves-header">
+        <h1>My Shelves</h1>
+        <p>Track what you're reading, what’s next, and what you’ve finished.</p>
+    </div>
+
+    <section class="shelf-section-page">
+        <div class="section-row">
+            <h2>Currently Reading</h2>
+            <span class="shelf-count">@currentlyReading.Count comic@(currentlyReading.Count == 1 ? "" : "s")</span>
+        </div>
+
+        @if (!currentlyReading.Any())
+        {
+            <div class="empty-state">
+                <h3>No comics here yet</h3>
+                <p>Add a comic to your current reading list.</p>
+            </div>
+        }
+        else
+        {
+            <div class="shelf-grid">
+                @foreach (var comic in currentlyReading)
+                {
+                    <a href="/Reader/Index?id=@comic.Id" class="shelf-page-card-link">
+                        <article class="shelf-page-card">
+                            <div class="shelf-page-cover">
+                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
+                            </div>
+
+                            <div class="shelf-page-body">
+                                <p class="meta">@comic.Author</p>
+                                <h3>@comic.Title</h3>
+
+                                <div class="progress-line">
+                                    <div class="progress-fill" style="width: @comic.ProgressPercent%;"></div>
+                                </div>
+
+                                <p class="progress-text">@comic.ProgressPercent% complete</p>
+                            </div>
+                        </article>
+                    </a>
+                }
+            </div>
+        }
+    </section>
+
+    <section class="shelf-section-page">
+        <div class="section-row">
+            <h2>Up Next</h2>
+            <span class="shelf-count">@upNext.Count comic@(upNext.Count == 1 ? "" : "s")</span>
+        </div>
+
+        @if (!upNext.Any())
+        {
+            <div class="empty-state">
+                <h3>No comics here yet</h3>
+                <p>Add a comic to your Up Next shelf.</p>
+            </div>
+        }
+        else
+        {
+            <div class="shelf-grid">
+                @foreach (var comic in upNext)
+                {
+                    <a href="/Reader/Index?id=@comic.Id" class="shelf-page-card-link">
+                        <article class="shelf-page-card">
+                            <div class="shelf-page-cover">
+                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
+                            </div>
+
+                            <div class="shelf-page-body">
+                                <p class="meta">@comic.Author</p>
+                                <h3>@comic.Title</h3>
+                                <p class="shelf-label">Up Next</p>
+                            </div>
+                        </article>
+                    </a>
+                }
+            </div>
+        }
+    </section>
+
+    <section class="shelf-section-page">
+        <div class="section-row">
+            <h2>Completed</h2>
+            <span class="shelf-count">@completed.Count comic@(completed.Count == 1 ? "" : "s")</span>
+        </div>
+
+        @if (!completed.Any())
+        {
+            <div class="empty-state">
+                <h3>No comics here yet</h3>
+                <p>Finished comics will appear here.</p>
+            </div>
+        }
+        else
+        {
+            <div class="shelf-grid">
+                @foreach (var comic in completed)
+                {
+                    <a href="/Reader/Index?id=@comic.Id" class="shelf-page-card-link">
+                        <article class="shelf-page-card">
+                            <div class="shelf-page-cover">
+                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
+                            </div>
+
+                            <div class="shelf-page-body">
+                                <p class="meta">@comic.Author</p>
+                                <h3>@comic.Title</h3>
+                                <p class="finished">✓ Finished</p>
+                            </div>
+                        </article>
+                    </a>
+                }
+            </div>
+        }
+    </section>
+</section>

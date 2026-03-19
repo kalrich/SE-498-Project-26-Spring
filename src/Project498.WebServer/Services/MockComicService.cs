@@ -109,4 +109,43 @@ public class MockComicService
     {
         return _comics.FirstOrDefault(c => c.Id == id);
     }
+    
+    public List<Comic> GetAll()
+    {
+        return _comics.ToList();
+    }
+
+    public List<Comic> Search(string? query, string? genre)
+    {
+        var comics = _comics.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            var lowered = query.ToLower();
+
+            comics = comics.Where(c =>
+                c.Title.ToLower().Contains(lowered) ||
+                c.Author.ToLower().Contains(lowered) ||
+                c.Description.ToLower().Contains(lowered));
+        }
+
+        if (!string.IsNullOrWhiteSpace(genre))
+        {
+            comics = comics.Where(c =>
+                c.Genre.Equals(genre, StringComparison.OrdinalIgnoreCase) ||
+                c.SecondaryGenre.Equals(genre, StringComparison.OrdinalIgnoreCase));
+        }
+
+        return comics.ToList();
+    }
+
+    public List<string> GetGenres()
+    {
+        return _comics
+            .SelectMany(c => new[] { c.Genre, c.SecondaryGenre })
+            .Where(g => !string.IsNullOrWhiteSpace(g))
+            .Distinct()
+            .OrderBy(g => g)
+            .ToList();
+    }
 }

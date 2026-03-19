@@ -48,9 +48,9 @@
         @if (!string.IsNullOrEmpty(username))
         {
             <!-- Logged-in state -->
-            <a class="nav-text-link" href="/">Explore</a>
+            <a class="nav-text-link" href="/Explore">Explore</a>
             <a class="nav-text-link" href="#">Recommendations</a>
-            <a class="nav-text-link" href="#">My Shelves</a>
+            <a class="nav-text-link" href="/Shelves">My Shelves</a>
 
             <a class="logout-link" href="/Auth/Logout">Logout</a>
 
@@ -59,7 +59,7 @@
         else
         {
             <!-- Logged-out state -->
-            <a class="explore-link" href="/">Explore</a>
+            <a class="explore-link" href="/Explore">Explore</a>
 
             <a class="btn btn-light small" href="/Auth/Login">Login</a>
             <a class="btn btn-dark small" href="/Auth/Signup">Sign Up</a>
