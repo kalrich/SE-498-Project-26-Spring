@@ -369,4 +369,75 @@ html, body {
   .featured-row {
     grid-template-columns: repeat(2, 1fr);
   }
+  
+}
+
+.cover-link,
+.trend-thumb-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.cover-image,
+.thumb-image,
+.mini-cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.comic-cover,
+.trend-thumb,
+.mini-cover {
+  overflow: hidden;
+}
+
+.comic-cover:hover,
+.trend-card:hover,
+.shelf-card:hover {
+  transform: translateY(-2px);
+  transition: 0.2s ease;
+}
+
+.trend-card,
+.shelf-card,
+.comic-cover {
+  transition: 0.2s ease;
+}
+
+.reader-page {
+  padding: 24px;
+}
+
+.reader-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.reader-title {
+  margin: 0 0 4px 0;
+  font-size: 28px;
+}
+
+.reader-meta {
+  margin: 0;
+  color: #888;
+  font-size: 14px;
+}
+
+.reader-frame-wrap {
+  background: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.pdf-frame {
+  width: 100%;
+  height: calc(100vh - 180px);
+  border: none;
+  display: block;
 }
