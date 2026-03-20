@@ -4,12 +4,24 @@
     var username = Context.Session.GetString("Username");
     var currentQuery = Context.Request.Query["query"].ToString();
 
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    var isExploreActive =
+        currentController == "Explore" ||
+        currentController == "Home" ||
+        currentController == "Comics" ||
+        currentController == "Reader";
+
+    var isRecommendationsActive = currentController == "Recommendations";
+    var isShelvesActive = currentController == "Shelves";
+
     var initials = "";
     if (!string.IsNullOrWhiteSpace(username))
     {
         initials = string.Join("", username
-                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                .Select(x => x[0]))
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Select(x => x[0]))
             .ToUpper();
 
         if (string.IsNullOrWhiteSpace(initials))
@@ -44,15 +56,28 @@
     <nav class="top-actions">
         @if (!string.IsNullOrEmpty(username))
         {
-            <a class="nav-text-link" href="/Explore">Explore</a>
-            <a class="nav-text-link" href="/Recommendations">Recommendations</a>
-            <a class="nav-text-link" href="/Shelves">My Shelves</a>
+            <a class="nav-text-link @(isExploreActive ? "active-nav" : "")" href="/Explore">
+                Explore
+            </a>
+
+            <a class="nav-text-link @(isRecommendationsActive ? "active-nav" : "")" href="/Recommendations">
+                Recommendations
+            </a>
+
+            <a class="nav-text-link @(isShelvesActive ? "active-nav" : "")" href="/Shelves">
+                My Shelves
+            </a>
+
             <a class="logout-link" href="/Auth/Logout">Logout</a>
-            <div class="nav-avatar">@initials</div>
+
+            <a class="nav-avatar profile-link" href="/Profile">@initials</a>
         }
         else
         {
-            <a class="explore-link" href="/Explore">Explore</a>
+            <a class="explore-link @(isExploreActive ? "active-nav" : "")" href="/Explore">
+                Explore
+            </a>
+
             <a class="btn btn-light small" href="/Auth/Login">Login</a>
             <a class="btn btn-dark small" href="/Auth/Signup">Sign Up</a>
         }
