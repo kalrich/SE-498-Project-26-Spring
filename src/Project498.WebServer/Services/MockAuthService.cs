@@ -45,6 +45,36 @@ public class MockAuthService
         return user;
     }
 
+    public MockUser? GetByEmail(string email)
+    {
+        return Users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public bool UpdateProfile(string currentEmail, string newUsername, string newEmail, string? newPassword)
+    {
+        var user = GetByEmail(currentEmail);
+        if (user == null) return false;
+
+        var emailTakenByAnotherUser = Users.Any(u =>
+            u.Email.Equals(newEmail, StringComparison.OrdinalIgnoreCase) &&
+            !u.Email.Equals(currentEmail, StringComparison.OrdinalIgnoreCase));
+
+        if (emailTakenByAnotherUser)
+        {
+            return false;
+        }
+
+        user.Username = newUsername;
+        user.Email = newEmail;
+
+        if (!string.IsNullOrWhiteSpace(newPassword))
+        {
+            user.Password = newPassword;
+        }
+
+        return true;
+    }
+
     public List<MockUser> GetAllUsers()
     {
         return Users;

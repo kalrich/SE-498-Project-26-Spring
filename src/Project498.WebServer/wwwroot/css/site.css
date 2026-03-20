@@ -1118,3 +1118,82 @@ html, body {
     align-items: flex-start;
   }
 }
+
+.success-text {
+  color: #1f7a3d;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-form label {
+  margin-top: 12px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.profile-form input {
+  width: 100%;
+  height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fffdfb;
+  padding: 0 14px;
+  font-size: 14px;
+  color: var(--text-main);
+}
+
+.profile-form-actions {
+  margin-top: 18px;
+}
+
+.profile-stat {
+  margin-top: 10px;
+  color: var(--text-muted);
+}
+
+.reader-toolbar-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.pdfjs-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-soft);
+}
+
+.page-indicator {
+  font-size: 14px;
+  color: var(--text-main);
+}
+
+.pdfjs-viewer-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  background: #f2e8dc;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+  overflow: auto;
+}
+
+#pdf-canvas {
+  max-width: 100%;
+  height: auto;
+  background: white;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
