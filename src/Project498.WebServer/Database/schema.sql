@@ -1,0 +1,25 @@
+-- USERS TABLE
+CREATE TABLE IF NOT EXISTS Users (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Username TEXT NOT NULL UNIQUE,
+    Password TEXT NOT NULL
+);
+
+-- COMICS / BOOKS TABLE
+CREATE TABLE IF NOT EXISTS Comics (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Title TEXT NOT NULL,
+    Author TEXT,
+    Description TEXT,
+    ImageUrl TEXT
+);
+
+-- USER SHELVES (To Read / Reading / Finished)
+CREATE TABLE IF NOT EXISTS UserComics (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    UserId INTEGER NOT NULL,
+    ComicId INTEGER NOT NULL,
+    Shelf TEXT CHECK(Shelf IN ('To Read', 'Reading', 'Finished')) NOT NULL,
+    FOREIGN KEY (UserId) REFERENCES Users(Id),
+    FOREIGN KEY (ComicId) REFERENCES Comics(Id)
+);

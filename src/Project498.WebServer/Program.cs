@@ -1,6 +1,12 @@
 using Project498.WebServer.Services;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Comments temporarily until DB is connected
+// Builder for the DB 
+// builder.Services.AddDbContext<AppDbContext>(options =>
+// options.UseSqlite("Data Source=Database/project498.db")
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
