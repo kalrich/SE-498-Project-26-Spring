@@ -1,17 +1,18 @@
 using Project498.WebServer.Services;
-
+using Microsoft.EntityFrameworkCore;
+using Project498.WebServer.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Comments temporarily until DB is connected
+
 // Builder for the DB 
-// builder.Services.AddDbContext<AppDbContext>(options =>
-// options.UseSqlite("Data Source=Database/project498.db")
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=Database/project498.db"));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<MockAuthService>();
-builder.Services.AddSingleton<MockComicService>();
+builder.Services.AddScoped<MockAuthService>();
+builder.Services.AddScoped<MockComicService>();
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
 
