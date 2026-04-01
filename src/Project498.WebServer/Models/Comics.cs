@@ -18,4 +18,6 @@ public class Comic
     public string Shelf { get; set; } = "";
 
     public bool IsIReadPick { get; set; }
+    
+    
 }
