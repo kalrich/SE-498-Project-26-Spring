@@ -2,6 +2,7 @@ using Project498.WebServer.Models;
 
 namespace Project498.WebServer.Services;
 
+// Mock AuthService for testing 
 public class MockAuthService
 {
     private static readonly List<MockUser> Users =
