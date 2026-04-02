@@ -6,12 +6,12 @@ namespace Project498.WebServer.Controllers;
 
 public class ProfileController : Controller
 {
-    private readonly MockAuthService _mockAuthService;
+    private readonly IAuthService _authService;
     private readonly MockComicService _mockComicService;
 
-    public ProfileController(MockAuthService mockAuthService, MockComicService mockComicService)
+    public ProfileController(IAuthService authService, MockComicService mockComicService)
     {
-        _mockAuthService = mockAuthService;
+        _authService = authService;
         _mockComicService = mockComicService;
     }
 
@@ -25,7 +25,7 @@ public class ProfileController : Controller
             return RedirectToAction("Login", "Auth");
         }
 
-        var user = _mockAuthService.GetByEmail(sessionEmail);
+        var user = _authService.GetByEmail(sessionEmail);
         if (user == null)
         {
             return RedirectToAction("Login", "Auth");
@@ -63,7 +63,7 @@ public class ProfileController : Controller
             return View(model);
         }
 
-        var updated = _mockAuthService.UpdateProfile(
+        var updated = _authService.UpdateProfile(
             sessionEmail,
             model.Username,
             model.Email,

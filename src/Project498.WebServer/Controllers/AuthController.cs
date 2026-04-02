@@ -6,11 +6,11 @@ namespace Project498.WebServer.Controllers;
 
 public class AuthController : Controller
 {
-    private readonly MockAuthService _mockAuthService;
+    private readonly IAuthService _authService;
 
-    public AuthController(MockAuthService mockAuthService)
+    public AuthController(IAuthService authService)
     {
-        _mockAuthService = mockAuthService;
+        _authService = authService;
     }
 
     [HttpGet]
@@ -27,7 +27,7 @@ public class AuthController : Controller
             return View(model);
         }
 
-        var user = _mockAuthService.Login(model.Email, model.Password);
+        var user = _authService.Login(model.Email, model.Password);
 
         if (user == null)
         {
@@ -55,13 +55,13 @@ public class AuthController : Controller
             return View(model);
         }
 
-        if (_mockAuthService.EmailExists(model.Email))
+        if (_authService.EmailExists(model.Email))
         {
             ViewBag.Error = "An account with that email already exists.";
             return View(model);
         }
 
-        var user = _mockAuthService.Signup(model.Username, model.Email, model.Password);
+        var user = _authService.Signup(model.Username, model.Email, model.Password);
 
         HttpContext.Session.SetString("Username", user.Username);
         HttpContext.Session.SetString("Email", user.Email);

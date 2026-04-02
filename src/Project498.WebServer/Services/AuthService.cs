@@ -5,7 +5,7 @@ namespace Project498.WebServer.Services;
 
 // Production Auth Service
 
-public class AuthService
+public class AuthService : IAuthService
 {
     private readonly AppDbContext _context;
 

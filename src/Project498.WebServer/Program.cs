@@ -11,7 +11,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<MockAuthService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<MockComicService>();
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();

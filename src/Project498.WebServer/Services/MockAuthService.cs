@@ -3,17 +3,17 @@ using Project498.WebServer.Models;
 namespace Project498.WebServer.Services;
 
 // Mock AuthService for testing 
-public class MockAuthService
+public class MockAuthService : IAuthService
 {
-    private static readonly List<MockUser> Users =
+    private static readonly List<User> Users =
     [
-        new MockUser
+        new User
         {
             Username = "Peter Parker",
             Email = "peter@marvel.com",
             Password = "spiderman123"
         },
-        new MockUser
+        new User
         {
             Username = "Tony Stark",
             Email = "tony@marvel.com",
@@ -21,7 +21,7 @@ public class MockAuthService
         }
     ];
 
-    public MockUser? Login(string email, string password)
+    public User? Login(string email, string password)
     {
         return Users.FirstOrDefault(u =>
             u.Email.Equals(email, StringComparison.OrdinalIgnoreCase) &&
@@ -33,9 +33,9 @@ public class MockAuthService
         return Users.Any(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
     }
 
-    public MockUser Signup(string username, string email, string password)
+    public User Signup(string username, string email, string password)
     {
-        var user = new MockUser
+        var user = new User
         {
             Username = username,
             Email = email,
@@ -46,7 +46,7 @@ public class MockAuthService
         return user;
     }
 
-    public MockUser? GetByEmail(string email)
+    public User? GetByEmail(string email)
     {
         return Users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
     }
@@ -76,7 +76,7 @@ public class MockAuthService
         return true;
     }
 
-    public List<MockUser> GetAllUsers()
+    public List<User> GetAllUsers()
     {
         return Users;
     }
