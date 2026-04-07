@@ -1,0 +1,88 @@
+@using Project498.WebServer.Models
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var comics = ViewBag.Comics as List<Comic> ?? new List<Comic>();
+    var genres = ViewBag.Genres as List<string> ?? new List<string>();
+    var query = ViewBag.Query as string ?? "";
+    var selectedGenre = ViewBag.SelectedGenre as string ?? "";
+}
+
+<section class="explore-page">
+    <div class="explore-header">
+        <div>
+            <h1>Explore Comics</h1>
+            <p>Browse, search, and discover your Marvel reads.</p>
+        </div>
+    </div>
+
+    <form method="get" asp-controller="Explore" asp-action="Index" class="explore-filters">
+        <div class="explore-search-wrap">
+            <input
+                type="text"
+                name="query"
+                value="@query"
+                placeholder="Search by title, author, or description..."
+                class="explore-search-input" />
+        </div>
+
+        <div class="explore-genre-wrap">
+            <select name="genre" class="explore-select">
+                <option value="">All Genres</option>
+                @foreach (var genre in genres)
+                {
+                    if (genre == selectedGenre)
+                    {
+                        <option value="@genre" selected>@genre</option>
+                    }
+                    else
+                    {
+                        <option value="@genre">@genre</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-dark explore-btn">Search</button>
+
+        <a href="/Explore" class="btn btn-light explore-btn">Clear</a>
+    </form>
+
+    @if (!comics.Any())
+    {
+        <div class="empty-state">
+            <h3>No comics found</h3>
+            <p>Try a different search term or genre filter.</p>
+        </div>
+    }
+    else
+    {
+        <div class="explore-grid">
+            @foreach (var comic in comics)
+            {
+                <a href="/Comics/Details?id=@comic.Id" class="explore-card-link">
+                    <article class="explore-card">
+                        <div class="explore-card-cover">
+                            <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
+                        </div>
+
+                        <div class="explore-card-body">
+                            <p class="meta">@comic.Author</p>
+                            <h3>@comic.Title</h3>
+                            <p class="explore-card-desc">@comic.Description</p>
+
+                            <div class="pill-row">
+                                <span class="pill">@comic.Genre</span>
+                                @if (!string.IsNullOrWhiteSpace(comic.SecondaryGenre))
+                                {
+                                    <span class="pill">@comic.SecondaryGenre</span>
+                                }
+                            </div>
+                        </div>
+                    </article>
+                </a>
+            }
+        </div>
+    }
+</section>

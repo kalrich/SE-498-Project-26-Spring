@@ -1,0 +1,204 @@
+@using Project498.WebServer.Models
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var username = ViewBag.Username as string ?? "Peter Parker";
+    var initials = string.Join("", username
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Select(x => x[0]))
+        .ToUpper();
+
+    if (string.IsNullOrWhiteSpace(initials))
+    {
+        initials = "PP";
+    }
+
+    var featured = ViewBag.FeaturedToday as List<Comic> ?? new List<Comic>();
+    var trending = ViewBag.TrendingThisWeek as List<Comic> ?? new List<Comic>();
+    var currentlyReading = ViewBag.CurrentlyReading as List<Comic> ?? new List<Comic>();
+    var upNext = ViewBag.UpNext as List<Comic> ?? new List<Comic>();
+    var completed = ViewBag.Completed as List<Comic> ?? new List<Comic>();
+}
+
+<section class="dashboard-shell">
+    <aside class="dashboard-left">
+        <div class="sidebar-block">
+            <h3 class="sidebar-title">Categories</h3>
+
+            <label class="filter-item"><input type="checkbox" /> <span>New Releases</span></label>
+            <label class="filter-item"><input type="checkbox" /> <span>Top Rated</span></label>
+            <label class="filter-item"><input type="checkbox" /> <span>Most Discussed</span></label>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-block">
+            <h3 class="sidebar-title">Genres</h3>
+
+            <label class="filter-item"><input type="checkbox" /> <span>Action</span></label>
+            <label class="filter-item"><input type="checkbox" /> <span>Adventure</span></label>
+            <label class="filter-item"><input type="checkbox" /> <span>Classic</span></label>
+            <label class="filter-item"><input type="checkbox" /> <span>Mystery</span></label>
+            <label class="filter-item"><input type="checkbox" /> <span>Sci-Fi</span></label>
+            <label class="filter-item"><input type="checkbox" /> <span>Fantasy</span></label>
+
+            <a href="#" class="subtle-link">Show all genres</a>
+        </div>
+    </aside>
+
+    <main class="dashboard-center">
+        <section class="content-section">
+            <div class="section-row">
+                <h2>Featured Today</h2>
+                <a href="#" class="subtle-link">See more →</a>
+            </div>
+
+            <div class="featured-row">
+                @foreach (var comic in featured)
+                {
+                    <a class="cover-link" href="/Comics/Details?id=@comic.Id">
+                        <div class="comic-cover">
+                            @if (!string.IsNullOrWhiteSpace(comic.CoverImagePath))
+                            {
+                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
+                            }
+                            else
+                            {
+                                <span>@comic.Title</span>
+                            }
+                        </div>
+                    </a>
+                }
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="section-row">
+                <h2>Trending This Week</h2>
+            </div>
+
+            <div class="trending-list">
+                @foreach (var comic in trending)
+                {
+                    <article class="trend-card">
+                        <a class="trend-thumb-link" href="/Comics/Details?id=@comic.Id">
+                            <div class="trend-thumb">
+                                @if (!string.IsNullOrWhiteSpace(comic.CoverImagePath))
+                                {
+                                    <img src="@comic.CoverImagePath" alt="@comic.Title" class="thumb-image" />
+                                }
+                            </div>
+                        </a>
+
+                        <div class="trend-body">
+                            <p class="meta">@comic.Author</p>
+                            <h3>@comic.Title</h3>
+                            <p class="desc">@comic.Description</p>
+
+                            <div class="pill-row">
+                                @if (!string.IsNullOrWhiteSpace(comic.Genre))
+                                {
+                                    <span class="pill">@comic.Genre</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(comic.SecondaryGenre))
+                                {
+                                    <span class="pill">@comic.SecondaryGenre</span>
+                                }
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+        </section>
+    </main>
+
+    <aside class="dashboard-right">
+        <div class="profile-chip">@initials</div>
+
+        <section class="shelf-block">
+            <div class="section-row small">
+                <h3>Currently Reading</h3>
+                <a href="#" class="subtle-link">see all</a>
+            </div>
+
+            @foreach (var comic in currentlyReading)
+            {
+                <a href="/Comics/Details?id=@comic.Id" class="cover-link">
+                    <div class="shelf-card">
+                        <div class="mini-cover">
+                            @if (!string.IsNullOrWhiteSpace(comic.CoverImagePath))
+                            {
+                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="mini-cover-image" />
+                            }
+                        </div>
+
+                        <div class="shelf-body">
+                            <p class="meta">@comic.Author</p>
+                            <h4>@comic.Title</h4>
+
+                            <div class="progress-line">
+                                <div class="progress-fill" style="width: @comic.ProgressPercent%;"></div>
+                            </div>
+
+                            <p class="progress-text">@comic.ProgressPercent%</p>
+                        </div>
+                    </div>
+                </a>
+            }
+        </section>
+
+        <section class="shelf-block">
+            <div class="section-row small">
+                <h3>Up Next</h3>
+                <a href="#" class="subtle-link">see all</a>
+            </div>
+
+            @foreach (var comic in upNext)
+            {
+                <a href="/Comics/Details?id=@comic.Id" class="cover-link">
+                    <div class="shelf-card">
+                        <div class="mini-cover">
+                            @if (!string.IsNullOrWhiteSpace(comic.CoverImagePath))
+                            {
+                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="mini-cover-image" />
+                            }
+                        </div>
+
+                        <div class="shelf-body">
+                            <p class="meta">@comic.Author</p>
+                            <h4>@comic.Title</h4>
+                        </div>
+                    </div>
+                </a>
+            }
+        </section>
+
+        <section class="shelf-block">
+            <div class="section-row small">
+                <h3>Completed</h3>
+                <a href="#" class="subtle-link">see all</a>
+            </div>
+
+            @foreach (var comic in completed)
+            {
+                <a href="/Comics/Details?id=@comic.Id" class="cover-link">
+                    <div class="shelf-card">
+                        <div class="mini-cover">
+                            @if (!string.IsNullOrWhiteSpace(comic.CoverImagePath))
+                            {
+                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="mini-cover-image" />
+                            }
+                        </div>
+
+                        <div class="shelf-body">
+                            <p class="meta">@comic.Author</p>
+                            <h4>@comic.Title</h4>
+                            <p class="finished">✓ Finished</p>
+                        </div>
+                    </div>
+                </a>
+            }
+        </section>
+    </aside>
+</section>

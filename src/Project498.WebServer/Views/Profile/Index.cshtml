@@ -1,0 +1,85 @@
+@model Project498.WebServer.Models.ProfileViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var initials = string.Join("", Model.Username
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Select(x => x[0]))
+        .ToUpper();
+
+    if (string.IsNullOrWhiteSpace(initials))
+    {
+        initials = "U";
+    }
+}
+
+<section class="profile-page">
+    <div class="profile-header">
+        <h1>My Profile</h1>
+        <p>View and update your account information.</p>
+    </div>
+
+    <div class="profile-grid">
+        <div class="profile-card main-profile-card">
+            <div class="profile-avatar-large">@initials</div>
+
+            <div class="profile-info-block">
+                <h2>@Model.Username</h2>
+                <p class="profile-email">@Model.Email</p>
+                <p class="profile-stat">Total Books Read: <strong>@Model.TotalBooksRead</strong></p>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <h3>Edit Account</h3>
+
+            @if (ViewBag.Success != null)
+            {
+                <p class="success-text">@ViewBag.Success</p>
+            }
+
+            @if (ViewBag.Error != null)
+            {
+                <p class="error-text">@ViewBag.Error</p>
+            }
+
+            <form method="post" asp-controller="Profile" asp-action="Index" class="profile-form">
+                <label asp-for="Username">Username</label>
+                <input asp-for="Username" />
+                <span asp-validation-for="Username" class="error-text"></span>
+
+                <label asp-for="Email">Email</label>
+                <input asp-for="Email" />
+                <span asp-validation-for="Email" class="error-text"></span>
+
+                <label asp-for="Password">New Password</label>
+                <input asp-for="Password" type="password" placeholder="Leave blank to keep current password" />
+                <span asp-validation-for="Password" class="error-text"></span>
+
+                <div class="profile-form-actions">
+                    <button type="submit" class="btn btn-dark detail-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="profile-card">
+            <h3>Reading Activity</h3>
+
+            <div class="profile-detail-row">
+                <span class="profile-label">Total Books Read</span>
+                <span class="profile-value">@Model.TotalBooksRead</span>
+            </div>
+
+            <div class="profile-detail-row">
+                <span class="profile-label">Account Type</span>
+                <span class="profile-value">Marvel·ous Reads User</span>
+            </div>
+
+            <div class="profile-detail-row">
+                <span class="profile-label">Reader Progress</span>
+                <span class="profile-value">Mock Mode</span>
+            </div>
+        </div>
+    </div>
+</section>
