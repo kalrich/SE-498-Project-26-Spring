@@ -12,7 +12,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<MockComicService>();
+builder.Services.AddScoped<IComicService, ComicService>();
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
 

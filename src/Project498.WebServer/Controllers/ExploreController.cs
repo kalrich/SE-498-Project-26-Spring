@@ -5,19 +5,19 @@ namespace Project498.WebServer.Controllers;
 
 public class ExploreController : Controller
 {
-    private readonly MockComicService _mockComicService;
+    private readonly IComicService _comicService;
 
-    public ExploreController(MockComicService mockComicService)
+    public ExploreController(IComicService comicService)
     {
-        _mockComicService = mockComicService;
+        _comicService = comicService;
     }
 
     public IActionResult Index(string? query, string? genre)
     {
         ViewBag.Query = query ?? "";
         ViewBag.SelectedGenre = genre ?? "";
-        ViewBag.Genres = _mockComicService.GetGenres();
-        ViewBag.Comics = _mockComicService.Search(query, genre);
+        ViewBag.Genres = _comicService.GetGenres();
+        ViewBag.Comics = _comicService.Search(query, genre);
 
         return View();
     }

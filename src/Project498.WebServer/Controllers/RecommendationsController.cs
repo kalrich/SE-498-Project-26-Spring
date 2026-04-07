@@ -5,18 +5,18 @@ namespace Project498.WebServer.Controllers;
 
 public class RecommendationsController : Controller
 {
-    private readonly MockComicService _mockComicService;
+    private readonly IComicService _comicService;
 
-    public RecommendationsController(MockComicService mockComicService)
+    public RecommendationsController(IComicService comicService)
     {
-        _mockComicService = mockComicService;
+        _comicService = comicService;
     }
 
     public IActionResult Index()
     {
-        ViewBag.Recommended = _mockComicService.GetRecommended();
-        ViewBag.BecauseYouRead = _mockComicService.GetBecauseYouRead();
-        ViewBag.HiddenGems = _mockComicService.GetHiddenGems();
+        ViewBag.Recommended = _comicService.GetRecommended();
+        ViewBag.BecauseYouRead = _comicService.GetBecauseYouRead();
+        ViewBag.HiddenGems = _comicService.GetHiddenGems();
 
         return View();
     }

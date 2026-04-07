@@ -7,12 +7,12 @@ namespace Project498.WebServer.Controllers;
 public class ProfileController : Controller
 {
     private readonly IAuthService _authService;
-    private readonly MockComicService _mockComicService;
+    private readonly IComicService _comicService;
 
-    public ProfileController(IAuthService authService, MockComicService mockComicService)
+    public ProfileController(IAuthService authService, IComicService comicService)
     {
         _authService = authService;
-        _mockComicService = mockComicService;
+        _comicService = comicService;
     }
 
     [HttpGet]
@@ -36,7 +36,7 @@ public class ProfileController : Controller
             Username = user.Username,
             Email = user.Email,
             Password = "",
-            TotalBooksRead = _mockComicService.GetCompleted().Count
+            TotalBooksRead = _comicService.GetCompleted().Count
         };
 
         ViewBag.Success = TempData["Success"];
@@ -55,7 +55,7 @@ public class ProfileController : Controller
             return RedirectToAction("Login", "Auth");
         }
 
-        model.TotalBooksRead = _mockComicService.GetCompleted().Count;
+        model.TotalBooksRead = _comicService.GetCompleted().Count;
 
         if (!ModelState.IsValid)
         {
