@@ -75,6 +75,15 @@ The website backend acts as a BFF (Backend for Frontend) — it handles browser 
 git clone git@github.com:kalrich/SE-498-Project-26-Spring.git
 cd SE-498-Project-26-Spring/src
 
+# Set up DB Locally
+## Database Setup
+From src/Project498.WebServer:
+
+rm -f Database/project498.db
+sqlite3 Database/project498.db
+.read Database/schema.sql
+.read Database/seed.sql
+
 # Start Postgres + API
 docker compose up --build
 
