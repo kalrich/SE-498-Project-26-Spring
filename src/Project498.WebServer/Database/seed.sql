@@ -4,7 +4,8 @@ DELETE FROM Comics;
 
 INSERT INTO Users (Username, Email, Password) VALUES
 ('Peter Parker', 'peter@marvel.com', 'spiderman123'),
-('Tony Stark', 'tony@marvel.com', 'ironman123');
+('Tony Stark', 'tony@marvel.com', 'ironman123'),
+('Josh', 'Josh@gmail.com', 'password');
 
 INSERT INTO Comics
 (Id, Title, Author, Genre, SecondaryGenre, Description, CoverImagePath, PdfPath, IsIReadPick)

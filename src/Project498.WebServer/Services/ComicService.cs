@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Project498.WebServer.Data;
 using Project498.WebServer.Models;
 
@@ -6,18 +7,17 @@ namespace Project498.WebServer.Services;
 public class ComicService : IComicService
 {
     private readonly AppDbContext _context;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    // TEMP: we’ll replace this with session later
-    private int CurrentUserId = 1;
-
-    public ComicService(AppDbContext context)
+    public ComicService(AppDbContext context, IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public List<Comic> GetAll()
     {
-        return _context.Comics.ToList();
+        return ApplyUserShelfData(_context.Comics.ToList());
     }
 
     public List<Comic> Search(string? query, string? genre)
@@ -38,13 +38,13 @@ public class ComicService : IComicService
                 c.Genre == genre || c.SecondaryGenre == genre);
         }
 
-        return comics.ToList();
+        return ApplyUserShelfData(comics.ToList());
     }
 
     public List<string> GetGenres()
     {
         return _context.Comics
-            .AsEnumerable() 
+            .AsEnumerable()
             .SelectMany(c => new[] { c.Genre, c.SecondaryGenre })
             .Where(g => !string.IsNullOrEmpty(g))
             .Distinct()
@@ -101,7 +101,7 @@ public class ComicService : IComicService
     public List<Comic> GetHiddenGems()
     {
         return ApplyUserShelfData(_context.Comics
-            .OrderBy(c => Guid.NewGuid())
+            .OrderBy(c => c.Id)
             .Take(6)
             .ToList());
     }
@@ -117,14 +117,16 @@ public class ComicService : IComicService
 
     public void UpdateShelf(int id, string shelf)
     {
+        var currentUserId = GetCurrentUserId();
+
         var userComic = _context.UserComics
-            .FirstOrDefault(uc => uc.UserId == CurrentUserId && uc.ComicId == id);
+            .FirstOrDefault(uc => uc.UserId == currentUserId && uc.ComicId == id);
 
         if (userComic == null)
         {
             userComic = new UserComic
             {
-                UserId = CurrentUserId,
+                UserId = currentUserId,
                 ComicId = id,
                 Shelf = shelf,
                 ProgressPercent = shelf == "Finished" ? 100 :
@@ -138,23 +140,31 @@ public class ComicService : IComicService
             userComic.Shelf = shelf;
 
             if (shelf == "Finished")
+            {
                 userComic.ProgressPercent = 100;
+            }
             else if (shelf == "To Read")
+            {
                 userComic.ProgressPercent = 0;
+            }
+            else if (shelf == "Reading" && userComic.ProgressPercent == 0)
+            {
+                userComic.ProgressPercent = 10;
+            }
         }
 
         _context.SaveChanges();
     }
 
-    // -----------------------------
-    // HELPERS
-    // -----------------------------
-
     private List<Comic> GetByShelf(string shelf)
     {
+        var currentUserId = GetCurrentUserId();
+
         var comics = _context.UserComics
-            .Where(uc => uc.UserId == CurrentUserId && uc.Shelf == shelf)
+            .Where(uc => uc.UserId == currentUserId && uc.Shelf == shelf)
             .Select(uc => uc.Comic)
+            .Where(c => c != null)
+            .Select(c => c!)
             .ToList();
 
         return ApplyUserShelfData(comics);
@@ -162,8 +172,10 @@ public class ComicService : IComicService
 
     private List<Comic> ApplyUserShelfData(List<Comic> comics)
     {
+        var currentUserId = GetCurrentUserId();
+
         var userData = _context.UserComics
-            .Where(uc => uc.UserId == CurrentUserId)
+            .Where(uc => uc.UserId == currentUserId)
             .ToList();
 
         foreach (var comic in comics)
@@ -182,5 +194,19 @@ public class ComicService : IComicService
         }
 
         return comics;
+    }
+
+    private int GetCurrentUserId()
+    {
+        var email = _httpContextAccessor.HttpContext?.Session.GetString("Email");
+
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return 1;
+        }
+
+        var user = _context.Users.FirstOrDefault(u => u.Email == email);
+
+        return user?.Id ?? 1;
     }
 }
