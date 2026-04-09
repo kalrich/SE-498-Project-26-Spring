@@ -9,12 +9,12 @@ public class ReaderController : Controller
 
     public ReaderController(IComicService comicService)
     {
-       _comicService = comicService;
+        _comicService = comicService;
     }
 
-    public IActionResult Index(int id)
+    public async Task<IActionResult> Index(int id)
     {
-        var comic = _comicService.GetById(id);
+        var comic = await _comicService.GetByIdAsync(id);
 
         if (comic == null)
         {

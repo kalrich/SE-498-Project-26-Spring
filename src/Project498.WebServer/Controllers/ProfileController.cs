@@ -16,27 +16,30 @@ public class ProfileController : Controller
     }
 
     [HttpGet]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
+        var userId = HttpContext.Session.GetInt32("UserId");
         var sessionEmail = HttpContext.Session.GetString("Email");
 
-        if (string.IsNullOrWhiteSpace(sessionEmail))
+        if (userId == null || string.IsNullOrWhiteSpace(sessionEmail))
         {
             return RedirectToAction("Login", "Auth");
         }
 
-        var user = _authService.GetByEmail(sessionEmail);
+        var user = await _authService.GetByEmailAsync(sessionEmail);
         if (user == null)
         {
             return RedirectToAction("Login", "Auth");
         }
+
+        var completed = await _comicService.GetShelfAsync(userId.Value, "Completed");
 
         var model = new ProfileViewModel
         {
             Username = user.Username,
             Email = user.Email,
             Password = "",
-            TotalBooksRead = _comicService.GetCompleted().Count
+            TotalBooksRead = completed.Count
         };
 
         ViewBag.Success = TempData["Success"];
@@ -46,16 +49,18 @@ public class ProfileController : Controller
     }
 
     [HttpPost]
-    public IActionResult Index(ProfileViewModel model)
+    public async Task<IActionResult> Index(ProfileViewModel model)
     {
+        var userId = HttpContext.Session.GetInt32("UserId");
         var sessionEmail = HttpContext.Session.GetString("Email");
 
-        if (string.IsNullOrWhiteSpace(sessionEmail))
+        if (userId == null || string.IsNullOrWhiteSpace(sessionEmail))
         {
             return RedirectToAction("Login", "Auth");
         }
 
-        model.TotalBooksRead = _comicService.GetCompleted().Count;
+        var completed = await _comicService.GetShelfAsync(userId.Value, "Completed");
+        model.TotalBooksRead = completed.Count;
 
         if (!ModelState.IsValid)
         {
@@ -63,8 +68,8 @@ public class ProfileController : Controller
             return View(model);
         }
 
-        var updated = _authService.UpdateProfile(
-            sessionEmail,
+        var updated = await _authService.UpdateProfileAsync(
+            userId.Value,
             model.Username,
             model.Email,
             model.Password

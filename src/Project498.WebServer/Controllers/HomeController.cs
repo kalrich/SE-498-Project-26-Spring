@@ -14,18 +14,19 @@ public class HomeController : Controller
         _comicService = comicService;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
         var username = HttpContext.Session.GetString("Username");
+        var userId = HttpContext.Session.GetInt32("UserId");
 
-        if (!string.IsNullOrEmpty(username))
+        if (!string.IsNullOrEmpty(username) && userId.HasValue)
         {
             ViewBag.Username = username;
-            ViewBag.FeaturedToday = _comicService.GetFeaturedToday();
-            ViewBag.TrendingThisWeek = _comicService.GetTrendingThisWeek();
-            ViewBag.CurrentlyReading = _comicService.GetCurrentlyReading();
-            ViewBag.UpNext = _comicService.GetUpNext();
-            ViewBag.Completed = _comicService.GetCompleted();
+            ViewBag.FeaturedToday = await _comicService.GetFeaturedTodayAsync();
+            ViewBag.TrendingThisWeek = await _comicService.GetTrendingThisWeekAsync();
+            ViewBag.CurrentlyReading = await _comicService.GetShelfAsync(userId.Value, "CurrentlyReading");
+            ViewBag.UpNext = await _comicService.GetShelfAsync(userId.Value, "UpNext");
+            ViewBag.Completed = await _comicService.GetShelfAsync(userId.Value, "Completed");
 
             return View("Dashboard");
         }

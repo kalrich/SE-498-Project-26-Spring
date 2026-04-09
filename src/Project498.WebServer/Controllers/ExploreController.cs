@@ -12,12 +12,12 @@ public class ExploreController : Controller
         _comicService = comicService;
     }
 
-    public IActionResult Index(string? query, string? genre)
+    public async Task<IActionResult> Index(string? query, string? genre)
     {
         ViewBag.Query = query ?? "";
         ViewBag.SelectedGenre = genre ?? "";
-        ViewBag.Genres = _comicService.GetGenres();
-        ViewBag.Comics = _comicService.Search(query, genre);
+        ViewBag.Genres = await _comicService.GetGenresAsync();
+        ViewBag.Comics = await _comicService.SearchAsync(query, genre);
 
         return View();
     }

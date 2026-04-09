@@ -20,14 +20,14 @@ public class AuthController : Controller
     }
 
     [HttpPost]
-    public IActionResult Login(LoginViewModel model)
+    public async Task<IActionResult> Login(LoginViewModel model)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        var user = _authService.Login(model.Email, model.Password);
+        var user = await _authService.LoginAsync(model.Email, model.Password);
 
         if (user == null)
         {
@@ -35,6 +35,7 @@ public class AuthController : Controller
             return View(model);
         }
 
+        HttpContext.Session.SetInt32("UserId", user.Id);
         HttpContext.Session.SetString("Username", user.Username);
         HttpContext.Session.SetString("Email", user.Email);
 
@@ -48,21 +49,30 @@ public class AuthController : Controller
     }
 
     [HttpPost]
-    public IActionResult Signup(SignupViewModel model)
+    public async Task<IActionResult> Signup(SignupViewModel model)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        if (_authService.EmailExists(model.Email))
+        var success = await _authService.SignupAsync(model.Username, model.Email, model.Password);
+
+        if (!success)
         {
-            ViewBag.Error = "An account with that email already exists.";
+            ViewBag.Error = "An account with that email may already exist.";
             return View(model);
         }
 
-        var user = _authService.Signup(model.Username, model.Email, model.Password);
+        var user = await _authService.LoginAsync(model.Email, model.Password);
 
+        if (user == null)
+        {
+            TempData["Success"] = "Account created successfully. Please log in.";
+            return RedirectToAction("Login");
+        }
+
+        HttpContext.Session.SetInt32("UserId", user.Id);
         HttpContext.Session.SetString("Username", user.Username);
         HttpContext.Session.SetString("Email", user.Email);
 
