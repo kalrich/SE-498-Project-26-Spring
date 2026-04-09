@@ -84,6 +84,7 @@ sqlite3 Database/project498.db
 .read Database/schema.sql
 .read Database/seed.sql
 
+
 # Start Postgres + API
 docker compose up --build
 

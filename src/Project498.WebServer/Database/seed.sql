@@ -40,22 +40,17 @@ VALUES
  '/images/covers/Marvel_Mystery_Vol1_Iss12_COVER.jpeg',
  '/comics/Marvel_Mystery_Vol1_Iss12.pdf', 0),
 
-(7, 'Marvel Mystery Vol. 1 Issue 13', 'Marvel Comics', 'Mystery', 'Adventure',
- 'An early Marvel Mystery issue with classic Golden Age storytelling and cover art.',
- '/images/covers/Marvel_Mystery_Vol1_Iss13_COVER.jpeg',
- '/comics/Marvel_Mystery_Vol1_Iss13.pdf', 0),
-
-(8, 'Marvel Mystery Vol. 1 Issue 14', 'Marvel Comics', 'Mystery', 'Adventure',
+(7, 'Marvel Mystery Vol. 1 Issue 14', 'Marvel Comics', 'Mystery', 'Adventure',
  'Another early Marvel Mystery issue with classic pulp-era storytelling and action.',
  '/images/covers/Marvel_Mystery_Vol1_Iss14_COVER.jpeg',
  '/comics/Marvel_Mystery_Vol1_Iss14.pdf', 0),
 
-(9, 'Marvel Mystery Vol. 1 Issue 15', 'Marvel Comics', 'Mystery', 'Action',
+(8, 'Marvel Mystery Vol. 1 Issue 15', 'Marvel Comics', 'Mystery', 'Action',
  'A Golden Age Marvel issue featuring suspense, action, and vintage comic art.',
  '/images/covers/Marvel_Mystery_Vol1_Iss15_COVER.jpeg',
  '/comics/Marvel_Mystery_Vol1_Iss15.pdf', 0),
 
-(10, 'Mystic Comics Vol. 1 Issue 4', 'Marvel Comics', 'Fantasy', 'Mystery',
+(9, 'Mystic Comics Vol. 1 Issue 4', 'Marvel Comics', 'Fantasy', 'Mystery',
  'A classic Mystic Comics issue featuring supernatural themes and early Marvel storytelling.',
  '/images/covers/Mystic_Comics_Vol1_Iss4_COVER.jpeg',
  '/comics/Mystic_Comics_Vol1_Iss4.pdf', 1);
