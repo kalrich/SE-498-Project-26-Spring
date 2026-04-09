@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project498.WebApi.Data;
+using Project498.WebApi.Dtos;
 using Project498.WebApi.Models;
 
 namespace Project498.WebApi.Controllers;
@@ -16,62 +17,47 @@ public class UsersController : ControllerBase
         _context = context;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+    [HttpGet("by-email")]
+    public async Task<ActionResult<User>> GetByEmail([FromQuery] string email)
     {
-        return await _context.Users.ToListAsync();
-    }
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetUser(int id)
-    {
-        var user = await _context.Users.FindAsync(id);
+        var user = await _context.Users.FirstOrDefaultAsync(u =>
+            u.Email.ToLower() == email.ToLower());
 
         if (user == null)
         {
             return NotFound();
         }
 
-        return user;
+        return Ok(user);
     }
 
-    [HttpPost]
-    public async Task<ActionResult<User>> AddUser(User user)
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateProfile(int id, [FromBody] UpdateProfileRequest request)
     {
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
-    }
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> EditUser(int id, User user)
-    {
-        if (id != user.Id) return BadRequest();
-
-        _context.Entry(user).State = EntityState.Modified;
-
-        try
+        if (user == null)
         {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!_context.Users.Any(u => u.Id == id)) return NotFound();
-            throw;
+            return NotFound();
         }
 
-        return NoContent();
-    }
+        var emailTaken = await _context.Users.AnyAsync(u =>
+            u.Id != id && u.Email.ToLower() == request.Email.ToLower());
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(int id)
-    {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null) return NotFound();
+        if (emailTaken)
+        {
+            return Conflict("Email already in use.");
+        }
 
-        _context.Users.Remove(user);
+        user.Username = request.Username;
+        user.Email = request.Email;
+
+        if (!string.IsNullOrWhiteSpace(request.Password))
+        {
+            user.Password = request.Password;
+        }
+
         await _context.SaveChangesAsync();
-
         return NoContent();
     }
 }

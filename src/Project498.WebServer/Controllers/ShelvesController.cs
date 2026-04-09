@@ -12,11 +12,18 @@ public class ShelvesController : Controller
         _comicService = comicService;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        ViewBag.CurrentlyReading = _comicService.GetCurrentlyReading();
-        ViewBag.UpNext = _comicService.GetUpNext();
-        ViewBag.Completed = _comicService.GetCompleted();
+        var userId = HttpContext.Session.GetInt32("UserId");
+
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Auth");
+        }
+
+        ViewBag.CurrentlyReading = await _comicService.GetShelfAsync(userId.Value, "CurrentlyReading");
+        ViewBag.UpNext = await _comicService.GetShelfAsync(userId.Value, "UpNext");
+        ViewBag.Completed = await _comicService.GetShelfAsync(userId.Value, "Completed");
 
         return View();
     }
