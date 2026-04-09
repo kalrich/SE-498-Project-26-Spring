@@ -86,19 +86,6 @@ public class MockComicService
     },
     new Comic
     {
-        Id = 7,
-        Title = "Marvel Mystery Vol. 1 Issue 13",
-        Author = "Marvel Comics",
-        Genre = "Mystery",
-        SecondaryGenre = "Adventure",
-        Description = "An early Marvel Mystery issue with classic Golden Age storytelling and cover art.",
-        CoverImagePath = "/images/covers/Marvel_Mystery_Vol1_Iss13_COVER.jpeg",
-        PdfPath = "/comics/Marvel_Mystery_Vol1_Iss13.pdf",
-        ProgressPercent = 0,
-        Shelf = "UpNext"
-    },
-    new Comic
-    {
         Id = 8,
         Title = "Marvel Mystery Vol. 1 Issue 14",
         Author = "Marvel Comics",
