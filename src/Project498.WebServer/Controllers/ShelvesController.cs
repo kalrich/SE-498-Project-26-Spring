@@ -5,18 +5,18 @@ namespace Project498.WebServer.Controllers;
 
 public class ShelvesController : Controller
 {
-    private readonly MockComicService _mockComicService;
+    private readonly IComicService _comicService;
 
-    public ShelvesController(MockComicService mockComicService)
+    public ShelvesController(IComicService comicService)
     {
-        _mockComicService = mockComicService;
+        _comicService = comicService;
     }
 
     public IActionResult Index()
     {
-        ViewBag.CurrentlyReading = _mockComicService.GetCurrentlyReading();
-        ViewBag.UpNext = _mockComicService.GetUpNext();
-        ViewBag.Completed = _mockComicService.GetCompleted();
+        ViewBag.CurrentlyReading = _comicService.GetCurrentlyReading();
+        ViewBag.UpNext = _comicService.GetUpNext();
+        ViewBag.Completed = _comicService.GetCompleted();
 
         return View();
     }

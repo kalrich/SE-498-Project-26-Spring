@@ -7,11 +7,11 @@ namespace Project498.WebServer.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly MockComicService _mockComicService;
+    private readonly IComicService _comicService;
 
-    public HomeController(MockComicService mockComicService)
+    public HomeController(IComicService comicService)
     {
-        _mockComicService = mockComicService;
+        _comicService = comicService;
     }
 
     public IActionResult Index()
@@ -21,11 +21,11 @@ public class HomeController : Controller
         if (!string.IsNullOrEmpty(username))
         {
             ViewBag.Username = username;
-            ViewBag.FeaturedToday = _mockComicService.GetFeaturedToday();
-            ViewBag.TrendingThisWeek = _mockComicService.GetTrendingThisWeek();
-            ViewBag.CurrentlyReading = _mockComicService.GetCurrentlyReading();
-            ViewBag.UpNext = _mockComicService.GetUpNext();
-            ViewBag.Completed = _mockComicService.GetCompleted();
+            ViewBag.FeaturedToday = _comicService.GetFeaturedToday();
+            ViewBag.TrendingThisWeek = _comicService.GetTrendingThisWeek();
+            ViewBag.CurrentlyReading = _comicService.GetCurrentlyReading();
+            ViewBag.UpNext = _comicService.GetUpNext();
+            ViewBag.Completed = _comicService.GetCompleted();
 
             return View("Dashboard");
         }

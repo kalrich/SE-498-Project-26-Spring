@@ -6,13 +6,13 @@ namespace Project498.WebServer.Controllers;
 
 public class ProfileController : Controller
 {
-    private readonly MockAuthService _mockAuthService;
-    private readonly MockComicService _mockComicService;
+    private readonly IAuthService _authService;
+    private readonly IComicService _comicService;
 
-    public ProfileController(MockAuthService mockAuthService, MockComicService mockComicService)
+    public ProfileController(IAuthService authService, IComicService comicService)
     {
-        _mockAuthService = mockAuthService;
-        _mockComicService = mockComicService;
+        _authService = authService;
+        _comicService = comicService;
     }
 
     [HttpGet]
@@ -25,7 +25,7 @@ public class ProfileController : Controller
             return RedirectToAction("Login", "Auth");
         }
 
-        var user = _mockAuthService.GetByEmail(sessionEmail);
+        var user = _authService.GetByEmail(sessionEmail);
         if (user == null)
         {
             return RedirectToAction("Login", "Auth");
@@ -36,7 +36,7 @@ public class ProfileController : Controller
             Username = user.Username,
             Email = user.Email,
             Password = "",
-            TotalBooksRead = _mockComicService.GetCompleted().Count
+            TotalBooksRead = _comicService.GetCompleted().Count
         };
 
         ViewBag.Success = TempData["Success"];
@@ -55,7 +55,7 @@ public class ProfileController : Controller
             return RedirectToAction("Login", "Auth");
         }
 
-        model.TotalBooksRead = _mockComicService.GetCompleted().Count;
+        model.TotalBooksRead = _comicService.GetCompleted().Count;
 
         if (!ModelState.IsValid)
         {
@@ -63,7 +63,7 @@ public class ProfileController : Controller
             return View(model);
         }
 
-        var updated = _mockAuthService.UpdateProfile(
+        var updated = _authService.UpdateProfile(
             sessionEmail,
             model.Username,
             model.Email,

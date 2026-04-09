@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Project498.WebServer.Models;
 
 public class Comic
@@ -12,10 +14,16 @@ public class Comic
 
     public string CoverImagePath { get; set; } = "";
     public string PdfPath { get; set; } = "";
-
+    
+    // temporary while setting up database to link with frontend
+    [NotMapped]
     public int ProgressPercent { get; set; }
-
+    
+    // temporary while setting up database to link with frontend
+    [NotMapped]
     public string Shelf { get; set; } = "";
 
     public bool IsIReadPick { get; set; }
+    
+    
 }

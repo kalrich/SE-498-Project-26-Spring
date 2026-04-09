@@ -1,36 +1,29 @@
+using Project498.WebServer.Data;
 using Project498.WebServer.Models;
 
 namespace Project498.WebServer.Services;
 
-// Mock AuthService for testing 
-public class MockAuthService : IAuthService
+// Production Auth Service
+
+public class AuthService : IAuthService
 {
-    private static readonly List<User> Users =
-    [
-        new User
-        {
-            Username = "Peter Parker",
-            Email = "peter@marvel.com",
-            Password = "spiderman123"
-        },
-        new User
-        {
-            Username = "Tony Stark",
-            Email = "tony@marvel.com",
-            Password = "ironman123"
-        }
-    ];
+    private readonly AppDbContext _context;
+
+    public AuthService(AppDbContext context)
+    {
+        _context = context;
+    }
 
     public User? Login(string email, string password)
     {
-        return Users.FirstOrDefault(u =>
-            u.Email.Equals(email, StringComparison.OrdinalIgnoreCase) &&
-            u.Password == password);
+        return _context.Users
+            .FirstOrDefault(u => u.Email.ToLower() == email.ToLower() && u.Password == password);
     }
 
     public bool EmailExists(string email)
     {
-        return Users.Any(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+        return _context.Users
+            .Any(u => u.Email.ToLower() == email.ToLower());
     }
 
     public User Signup(string username, string email, string password)
@@ -42,13 +35,16 @@ public class MockAuthService : IAuthService
             Password = password
         };
 
-        Users.Add(user);
+        _context.Users.Add(user);
+        _context.SaveChanges();
+
         return user;
     }
 
     public User? GetByEmail(string email)
     {
-        return Users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+        return _context.Users
+            .FirstOrDefault(u => u.Email.ToLower() == email.ToLower());
     }
 
     public bool UpdateProfile(string currentEmail, string newUsername, string newEmail, string? newPassword)
@@ -56,9 +52,9 @@ public class MockAuthService : IAuthService
         var user = GetByEmail(currentEmail);
         if (user == null) return false;
 
-        var emailTakenByAnotherUser = Users.Any(u =>
-            u.Email.Equals(newEmail, StringComparison.OrdinalIgnoreCase) &&
-            !u.Email.Equals(currentEmail, StringComparison.OrdinalIgnoreCase));
+        var emailTakenByAnotherUser = _context.Users.Any(u =>
+            u.Email.ToLower() == newEmail.ToLower() &&
+            u.Email.ToLower() != currentEmail.ToLower());
 
         if (emailTakenByAnotherUser)
         {
@@ -73,11 +69,12 @@ public class MockAuthService : IAuthService
             user.Password = newPassword;
         }
 
+        _context.SaveChanges();
         return true;
     }
 
     public List<User> GetAllUsers()
     {
-        return Users;
+        return _context.Users.ToList();
     }
 }
