@@ -162,9 +162,10 @@ public class ComicService : IComicService
 
         var comics = _context.UserComics
             .Where(uc => uc.UserId == currentUserId && uc.Shelf == shelf)
-            .Select(uc => uc.Comic)
-            .Where(c => c != null)
-            .Select(c => c!)
+            .Join(_context.Comics,
+                uc => uc.ComicId,
+                c => c.Id,
+                (uc, c) => c)
             .ToList();
 
         return ApplyUserShelfData(comics);
