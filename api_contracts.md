@@ -57,25 +57,7 @@ All non-2xx responses return:
   "id": 1,
   "username": "alex",
   "email": "alex@example.com",
-  "createdAt": "2026-03-16T00:00:00Z"
-}
-```
-
-### Book
-```json
-{
-  "id": 1,
-  "title": "Dune",
-  "description": "Epic sci-fi novel",
-  "authorCreator": "Frank Herbert",
-  "publishedDate": "1965-08-01",
-  "coverImageUrl": "https://example.com/dune.jpg",
-  "averageRating": 4.7,
-  "isbn": "9780441172719",
-  "pageCount": 412,
-  "publisher": "Chilton Books",
-  "format": "paperback",
-  "tags": ["space opera", "politics"]
+  "password": "1234"
 }
 ```
 
@@ -85,26 +67,16 @@ All non-2xx responses return:
   "id": 10,
   "title": "Amazing Spider-Man #1",
   "description": "First issue in the run",
-  "authorCreator": "Stan Lee",
-  "publishedDate": "1963-03-01",
-  "coverImageUrl": "https://example.com/spiderman1.jpg",
-  "averageRating": 4.6,
-  "marvelCharacter": "Spider-Man",
-  "storyArc": "The Coming of the Chameleon",
+  "author": "Stan Lee",
+  "coverImagePath": "https://example.com/spiderman1.jpg",
   "issueNumber": 1,
+  "volumeNumber": 1,
   "seriesName": "Amazing Spider-Man",
-  "universe": "Earth-616",
-  "publisher": "Marvel",
-  "tags": ["superhero", "origin"]
-}
-```
-
-### Tag
-```json
-{
-  "id": 2,
-  "name": "mythology",
-  "description": "Stories inspired by mythological themes"
+  "genre": "Mystery",
+  "secondaryGenre": "Adventure",
+  "isIReadPick": "TRUE",
+  "shelf": "TRUE",
+  "progressPercent": 25
 }
 ```
 
@@ -115,6 +87,50 @@ All non-2xx responses return:
   "name": "To Read",
   "shelfType": "to_read",
   "itemCount": 5
+}
+```
+
+### Add To Shelf
+```json
+{
+  "userId": ,
+  "comicId": ,
+  "shelf":
+}
+```
+
+### Login Request
+```json
+{
+  "email": ,
+  "password":
+}
+```
+
+### Signup Request
+```json
+{
+  "username": ,
+  "email": ,
+  "password":
+}
+```
+
+### Update Profile Request
+```json
+{
+  "username": ,
+  "email": ,
+  "password":
+}
+```
+
+### Update Progress Request
+```json
+{
+  "userid": ,
+  "comicid": ,
+  "progressPercent":
 }
 ```
 
@@ -134,18 +150,6 @@ All non-2xx responses return:
 }
 ```
 
-### Recommendation
-```json
-{
-  "item": {
-    "id": 8,
-    "title": "Ender's Game",
-    "itemType": "book"
-  },
-  "matchedTags": ["space opera", "found family"],
-  "score": 0.85
-}
-```
 
 ## 4. Endpoint Contracts
 
