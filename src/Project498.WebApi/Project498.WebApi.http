@@ -1,6 +1,6 @@
 @Project498.WebApi_HostAddress = http://localhost:5272
 
-GET {{Project498.WebApi_HostAddress}}/weatherforecast/
+### Get all books
+GET {{Project498.WebApi_HostAddress}}/api/books
 Accept: application/json
-
 ###
