@@ -1,6 +1,6 @@
 @Project498.WebApi_HostAddress = http://localhost:5272
 
-### Get all books
-GET {{Project498.WebApi_HostAddress}}/api/books
+### Get all comics
+GET {{Project498.WebApi_HostAddress}}/api/comics
 Accept: application/json
 ###
