@@ -15,6 +15,12 @@ public class Comic
     public string CoverImagePath { get; set; } = "";
     public string PdfPath { get; set; } = "";
     
+    public string SeriesName { get; set; } = "";
+    
+    public int VolumeNumber { get; set; }
+    
+    public int IssueNumber { get; set; }
+    
     // temporary while setting up database to link with frontend
     [NotMapped]
     public int ProgressPercent { get; set; }

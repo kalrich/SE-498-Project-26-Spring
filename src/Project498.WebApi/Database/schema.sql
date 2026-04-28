@@ -11,6 +11,9 @@ CREATE TABLE Users (
 
 CREATE TABLE Comics (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    SeriesName TEXT NOT NULL,
+    VolumeNumber INTEGER NOT NULL DEFAULT 1,
+    IssueNumber INTEGER NOT NULL,
     Title TEXT NOT NULL,
     Author TEXT NOT NULL,
     Genre TEXT NOT NULL,
@@ -27,6 +30,9 @@ CREATE TABLE UserComics (
     ComicId INTEGER NOT NULL,
     Shelf TEXT NOT NULL,
     ProgressPercent INTEGER NOT NULL DEFAULT 0,
-    FOREIGN KEY (UserId) REFERENCES Users(Id),
-    FOREIGN KEY (ComicId) REFERENCES Comics(Id)
+
+    FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE,
+    FOREIGN KEY (ComicId) REFERENCES Comics(Id) ON DELETE CASCADE,
+
+    UNIQUE(UserId, ComicId)
 );

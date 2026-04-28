@@ -11,6 +11,12 @@ public class Comic
     public string CoverImagePath { get; set; } = "";
     public string PdfPath { get; set; } = "";
     public bool IsIReadPick { get; set; }
+    
+    public string SeriesName { get; set; } = "";
+    
+    public int VolumeNumber { get; set; }
+    
+    public int IssueNumber { get; set; }
 
     [System.ComponentModel.DataAnnotations.Schema.NotMapped]
     public string Shelf { get; set; } = "";
