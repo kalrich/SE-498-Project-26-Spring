@@ -1,4 +1,4 @@
-@Project498.WebApi_HostAddress = http://localhost:5272
+@Project498.WebApi_HostAddress = http://localhost:8080
 
 ### Get all comics
 GET {{Project498.WebApi_HostAddress}}/api/comics?genre=Action
