@@ -4,9 +4,8 @@ namespace Project498.WebServer.Services;
 
 public interface IAuthService
 {
-    User? Login(string email, string password);
-    bool EmailExists(string email);
-    User Signup(string username, string email, string password);
-    User? GetByEmail(string email);
-    bool UpdateProfile(string currentEmail, string newUsername, string newEmail, string? newPassword);
+    Task<User?> LoginAsync(string email, string password);
+    Task<bool> SignupAsync(string username, string email, string password);
+    Task<User?> GetByEmailAsync(string email);
+    Task<bool> UpdateProfileAsync(int userId, string username, string email, string? password);
 }

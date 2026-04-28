@@ -12,17 +12,18 @@ public class ComicsController : Controller
         _comicService = comicService;
     }
 
-    public IActionResult Details(int id)
+    public async Task<IActionResult> Details(int id)
     {
-        var comic = _comicService.GetById(id);
+        var comic = await _comicService.GetByIdAsync(id);
 
         if (comic == null)
         {
             return RedirectToAction("Index", "Explore");
         }
 
-        ViewBag.RelatedComics = _comicService
-            .GetAll()
+        var allComics = await _comicService.GetAllAsync();
+
+        ViewBag.RelatedComics = allComics
             .Where(c => c.Id != comic.Id &&
                         (c.Genre == comic.Genre || c.SecondaryGenre == comic.SecondaryGenre))
             .Take(3)
@@ -32,9 +33,17 @@ public class ComicsController : Controller
     }
 
     [HttpPost]
-    public IActionResult AddToShelf(int id, string shelf)
+    public async Task<IActionResult> AddToShelf(int id, string shelf)
     {
-        _comicService.UpdateShelf(id, shelf);
+        var userId = HttpContext.Session.GetInt32("UserId");
+
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Auth");
+        }
+
+        await _comicService.AddToShelfAsync(userId.Value, id, shelf);
+
         return RedirectToAction("Details", new { id });
     }
 }

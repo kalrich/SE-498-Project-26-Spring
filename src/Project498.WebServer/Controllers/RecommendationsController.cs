@@ -12,11 +12,11 @@ public class RecommendationsController : Controller
         _comicService = comicService;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        ViewBag.Recommended = _comicService.GetRecommended();
-        ViewBag.BecauseYouRead = _comicService.GetBecauseYouRead();
-        ViewBag.HiddenGems = _comicService.GetHiddenGems();
+        ViewBag.Recommended = await _comicService.GetRecommendedAsync();
+        ViewBag.BecauseYouRead = await _comicService.GetBecauseYouReadAsync();
+        ViewBag.HiddenGems = await _comicService.GetHiddenGemsAsync();
 
         return View();
     }

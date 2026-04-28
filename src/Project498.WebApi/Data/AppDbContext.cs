@@ -10,18 +10,23 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<User> Users => Set<User>();
-    
+    public DbSet<Comic> Comics => Set<Comic>();
+    public DbSet<UserComic> UserComics => Set<UserComic>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<User>().ToTable("Users");
+        modelBuilder.Entity<Comic>().ToTable("Comics");
+        modelBuilder.Entity<UserComic>().ToTable("UserComics");
 
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.ToTable("Users");
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Name).IsRequired().HasMaxLength(100).HasColumnName("name");
-            entity.Property(e => e.Age).IsRequired().HasColumnName("age");
-        });
+        modelBuilder.Entity<UserComic>()
+            .HasOne(uc => uc.User)
+            .WithMany()
+            .HasForeignKey(uc => uc.UserId);
+
+        modelBuilder.Entity<UserComic>()
+            .HasOne(uc => uc.Comic)
+            .WithMany()
+            .HasForeignKey(uc => uc.ComicId);
     }
 }
