@@ -100,4 +100,11 @@ public class ComicApiService : IComicService
         return await _http.GetFromJsonAsync<List<Comic>>("api/comics/hidden-gems")
                ?? new List<Comic>();
     }
+    
+    public async Task<List<Comic>> GetSeriesAsync(string seriesName)
+    {
+        return await _http.GetFromJsonAsync<List<Comic>>(
+                   $"api/comics/series/{Uri.EscapeDataString(seriesName)}")
+               ?? new List<Comic>();
+    }
 }

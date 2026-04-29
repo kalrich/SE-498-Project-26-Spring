@@ -16,4 +16,5 @@ public interface IComicService
     Task<List<Comic>> GetRecommendedAsync();
     Task<List<Comic>> GetBecauseYouReadAsync();
     Task<List<Comic>> GetHiddenGemsAsync();
+    Task<List<Comic>> GetSeriesAsync(string seriesName);
 }
