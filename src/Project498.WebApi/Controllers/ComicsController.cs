@@ -95,4 +95,17 @@ public class ComicsController : ControllerBase
     {
         return Ok(await _context.Comics.OrderBy(c => c.Id).Take(6).ToListAsync());
     }
+    
+    [HttpGet("series/{seriesName}")]
+    public async Task<ActionResult<List<Comic>>> GetBySeries(string seriesName)
+    {
+        var comics = await _context.Comics
+            .Where(c => c.SeriesName.ToLower() == seriesName.ToLower())
+            .OrderBy(c => c.VolumeNumber)
+            .ThenBy(c => c.IssueNumber)
+            .ToListAsync();
+
+        return Ok(comics);
+    }
+    
 }
