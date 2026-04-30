@@ -18,21 +18,22 @@ public class ProfileController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var userId = HttpContext.Session.GetInt32("UserId");
+        var username = HttpContext.Session.GetString("Username");
         var sessionEmail = HttpContext.Session.GetString("Email");
 
-        if (userId == null || string.IsNullOrWhiteSpace(sessionEmail))
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(sessionEmail))
         {
             return RedirectToAction("Login", "Auth");
         }
 
         var user = await _authService.GetByEmailAsync(sessionEmail);
+
         if (user == null)
         {
             return RedirectToAction("Login", "Auth");
         }
 
-        var completed = await _comicService.GetShelfAsync(userId.Value, "Completed");
+        var completed = await _comicService.GetShelfAsync(username, "Completed");
 
         var model = new ProfileViewModel
         {
@@ -51,15 +52,15 @@ public class ProfileController : Controller
     [HttpPost]
     public async Task<IActionResult> Index(ProfileViewModel model)
     {
-        var userId = HttpContext.Session.GetInt32("UserId");
+        var username = HttpContext.Session.GetString("Username");
         var sessionEmail = HttpContext.Session.GetString("Email");
 
-        if (userId == null || string.IsNullOrWhiteSpace(sessionEmail))
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(sessionEmail))
         {
             return RedirectToAction("Login", "Auth");
         }
 
-        var completed = await _comicService.GetShelfAsync(userId.Value, "Completed");
+        var completed = await _comicService.GetShelfAsync(username, "Completed");
         model.TotalBooksRead = completed.Count;
 
         if (!ModelState.IsValid)
@@ -69,7 +70,7 @@ public class ProfileController : Controller
         }
 
         var updated = await _authService.UpdateProfileAsync(
-            userId.Value,
+            username,
             model.Username,
             model.Email,
             model.Password

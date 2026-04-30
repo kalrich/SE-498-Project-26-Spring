@@ -17,16 +17,15 @@ public class HomeController : Controller
     public async Task<IActionResult> Index()
     {
         var username = HttpContext.Session.GetString("Username");
-        var userId = HttpContext.Session.GetInt32("UserId");
 
-        if (!string.IsNullOrEmpty(username) && userId.HasValue)
+        if (!string.IsNullOrEmpty(username))
         {
             ViewBag.Username = username;
             ViewBag.FeaturedToday = await _comicService.GetFeaturedTodayAsync();
             ViewBag.TrendingThisWeek = await _comicService.GetTrendingThisWeekAsync();
-            ViewBag.CurrentlyReading = await _comicService.GetShelfAsync(userId.Value, "CurrentlyReading");
-            ViewBag.UpNext = await _comicService.GetShelfAsync(userId.Value, "UpNext");
-            ViewBag.Completed = await _comicService.GetShelfAsync(userId.Value, "Completed");
+            ViewBag.CurrentlyReading = await _comicService.GetShelfAsync(username, "CurrentlyReading");
+            ViewBag.UpNext = await _comicService.GetShelfAsync(username, "UpNext");
+            ViewBag.Completed = await _comicService.GetShelfAsync(username, "Completed");
 
             return View("Dashboard");
         }
