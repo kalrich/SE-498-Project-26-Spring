@@ -7,5 +7,5 @@ public interface IAuthService
     Task<User?> LoginAsync(string email, string password);
     Task<bool> SignupAsync(string username, string email, string password);
     Task<User?> GetByEmailAsync(string email);
-    Task<bool> UpdateProfileAsync(int userId, string username, string email, string? password);
+    Task<bool> UpdateProfileAsync(string currentUsername, string newUsername, string email, string? password);
 }

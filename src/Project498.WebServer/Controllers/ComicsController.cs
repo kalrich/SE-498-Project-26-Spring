@@ -35,14 +35,14 @@ public class ComicsController : Controller
     [HttpPost]
     public async Task<IActionResult> AddToShelf(int id, string shelf)
     {
-        var userId = HttpContext.Session.GetInt32("UserId");
+        var username = HttpContext.Session.GetString("Username");
 
-        if (userId == null)
+        if (string.IsNullOrEmpty(username))
         {
             return RedirectToAction("Login", "Auth");
         }
 
-        await _comicService.AddToShelfAsync(userId.Value, id, shelf);
+        await _comicService.AddToShelfAsync(username, id, shelf);
 
         return RedirectToAction("Details", new { id });
     }

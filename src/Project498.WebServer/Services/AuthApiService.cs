@@ -44,14 +44,16 @@ public class AuthApiService : IAuthService
             $"api/users/by-email?email={Uri.EscapeDataString(email)}");
     }
 
-    public async Task<bool> UpdateProfileAsync(int userId, string username, string email, string? password)
+    public async Task<bool> UpdateProfileAsync(string currentUsername, string newUsername, string email, string? password)
     {
-        var response = await _http.PutAsJsonAsync($"api/users/{userId}", new
+        var body = new
         {
-            Username = username,
+            Username = currentUsername,
+            NewUsername = newUsername,
             Email = email,
-            Password = password ?? ""
-        });
+            Password = password
+        };
+        var response = await _http.PutAsJsonAsync($"api/auth/update-profile", body);
 
         return response.IsSuccessStatusCode;
     }

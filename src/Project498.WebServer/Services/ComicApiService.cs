@@ -12,15 +12,22 @@ public class ComicApiService : IComicService
         _http = http;
     }
 
-    public async Task<List<Comic>> GetAllAsync()
+    public async Task<List<Comic>> GetShelfAsync(string username, string shelf)
     {
-        return await _http.GetFromJsonAsync<List<Comic>>("api/comics")
+        return await _http.GetFromJsonAsync<List<Comic>>(
+                   $"api/shelves/{Uri.EscapeDataString(username)}/{shelf}")
                ?? new List<Comic>();
     }
 
     public async Task<Comic?> GetByIdAsync(int id)
     {
         return await _http.GetFromJsonAsync<Comic>($"api/comics/{id}");
+    }
+    
+    public async Task<List<Comic>> GetAllAsync()
+    {
+        return await _http.GetFromJsonAsync<List<Comic>>("api/comics")
+               ?? new List<Comic>();
     }
 
     public async Task<List<Comic>> SearchAsync(string? query, string? genre)
@@ -42,11 +49,11 @@ public class ComicApiService : IComicService
                ?? new List<Comic>();
     }
 
-    public async Task AddToShelfAsync(int userId, int comicId, string shelf)
+    public async Task AddToShelfAsync(string username, int comicId, string shelf)
     {
         var body = new
         {
-            UserId = userId,
+            Username = username,
             ComicId = comicId,
             Shelf = shelf
         };
@@ -54,11 +61,12 @@ public class ComicApiService : IComicService
         await _http.PostAsJsonAsync("api/shelves/add", body);
     }
 
-    public async Task UpdateProgressAsync(int userId, int comicId, int progress)
+
+    public async Task UpdateProgressAsync(string username, int comicId, int progress)
     {
         var body = new
         {
-            UserId = userId,
+            Username = username,
             ComicId = comicId,
             ProgressPercent = progress
         };
