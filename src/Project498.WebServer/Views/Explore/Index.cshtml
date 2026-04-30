@@ -27,23 +27,6 @@
                 class="explore-search-input" />
         </div>
 
-        <div class="explore-genre-wrap">
-            <select name="genre" class="explore-select">
-                <option value="">All Genres</option>
-                @foreach (var genre in genres)
-                {
-                    if (genre == selectedGenre)
-                    {
-                        <option value="@genre" selected>@genre</option>
-                    }
-                    else
-                    {
-                        <option value="@genre">@genre</option>
-                    }
-                }
-            </select>
-        </div>
-
         <button type="submit" class="btn btn-dark explore-btn">Search</button>
 
         <a href="/Explore" class="btn btn-light explore-btn">Clear</a>

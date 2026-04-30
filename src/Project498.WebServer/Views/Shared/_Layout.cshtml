@@ -42,7 +42,7 @@
 <body>
 
 <header class="topbar">
-    <a class="brand" href="/">Marvel·ous Reads</a>
+    <a class="brand" href="@(string.IsNullOrEmpty(username) ? "/" : "/Explore")">Marvel·ous Reads</a>
 
     <form class="search-wrap" method="get" action="/Explore">
         <input

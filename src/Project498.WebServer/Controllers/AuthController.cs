@@ -39,7 +39,8 @@ public class AuthController : Controller
         HttpContext.Session.SetString("Username", user.Username);
         HttpContext.Session.SetString("Email", user.Email);
 
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", "Explore");
+
     }
 
     [HttpGet]
@@ -76,12 +77,14 @@ public class AuthController : Controller
         HttpContext.Session.SetString("Username", user.Username);
         HttpContext.Session.SetString("Email", user.Email);
 
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", "Explore");
+
     }
 
     public IActionResult Logout()
     {
         HttpContext.Session.Clear();
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", "Explore");
+
     }
 }
