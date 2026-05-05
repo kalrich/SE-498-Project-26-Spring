@@ -17,12 +17,13 @@ public class ShelvesController : ControllerBase
         _context = context;
     }
 
-    [HttpGet("{userId:int}/{shelf}")]
-    public async Task<ActionResult<List<Comic>>> GetShelf(int userId, string shelf)
+    [HttpGet("{username}/{shelf}")]
+    public async Task<ActionResult<List<Comic>>> GetShelf(string username, string shelf)
     {
         var comics = await _context.UserComics
             .Include(uc => uc.Comic)
-            .Where(uc => uc.UserId == userId && uc.Shelf == shelf)
+            .Include(uc => uc.User)
+            .Where(uc => uc.User!.Username == username && uc.Shelf == shelf)
             .Select(uc => new Comic
             {
                 Id = uc.Comic!.Id,
@@ -45,18 +46,24 @@ public class ShelvesController : ControllerBase
     [HttpPost("add")]
     public async Task<IActionResult> AddToShelf([FromBody] AddToShelfRequest request)
     {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Username == request.Username);
+
+        if (user == null)
+            return NotFound("User not found");
+
         var existing = await _context.UserComics
-            .FirstOrDefaultAsync(uc => uc.UserId == request.UserId && uc.ComicId == request.ComicId);
+            .FirstOrDefaultAsync(uc => uc.UserId == user.Id && uc.ComicId == request.ComicId);
 
         if (existing == null)
         {
             _context.UserComics.Add(new UserComic
             {
-                UserId = request.UserId,
+                UserId = user.Id,
                 ComicId = request.ComicId,
                 Shelf = request.Shelf,
                 ProgressPercent = request.Shelf == "Completed" ? 100 :
-                                  request.Shelf == "CurrentlyReading" ? 10 : 0
+                    request.Shelf == "CurrentlyReading" ? 10 : 0
             });
         }
         else
@@ -78,13 +85,17 @@ public class ShelvesController : ControllerBase
     [HttpPatch("update-progress")]
     public async Task<IActionResult> UpdateProgress([FromBody] UpdateProgressRequest request)
     {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Username == request.Username);
+
+        if (user == null)
+            return NotFound("User not found");
+
         var userComic = await _context.UserComics
-            .FirstOrDefaultAsync(uc => uc.UserId == request.UserId && uc.ComicId == request.ComicId);
+            .FirstOrDefaultAsync(uc => uc.UserId == user.Id && uc.ComicId == request.ComicId);
 
         if (userComic == null)
-        {
             return NotFound();
-        }
 
         userComic.ProgressPercent = request.ProgressPercent;
         await _context.SaveChangesAsync();

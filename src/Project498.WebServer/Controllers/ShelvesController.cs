@@ -14,16 +14,16 @@ public class ShelvesController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var userId = HttpContext.Session.GetInt32("UserId");
+        var username = HttpContext.Session.GetString("Username");
 
-        if (userId == null)
+        if (string.IsNullOrEmpty(username))
         {
             return RedirectToAction("Login", "Auth");
         }
 
-        ViewBag.CurrentlyReading = await _comicService.GetShelfAsync(userId.Value, "CurrentlyReading");
-        ViewBag.UpNext = await _comicService.GetShelfAsync(userId.Value, "UpNext");
-        ViewBag.Completed = await _comicService.GetShelfAsync(userId.Value, "Completed");
+        ViewBag.CurrentlyReading = await _comicService.GetShelfAsync(username, "CurrentlyReading");
+        ViewBag.UpNext = await _comicService.GetShelfAsync(username, "UpNext");
+        ViewBag.Completed = await _comicService.GetShelfAsync(username, "Completed");
 
         return View();
     }

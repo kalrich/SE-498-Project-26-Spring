@@ -10,10 +10,11 @@ public interface IComicService
     Task<List<string>> GetGenresAsync();
     Task<List<Comic>> GetFeaturedTodayAsync();
     Task<List<Comic>> GetTrendingThisWeekAsync();
-    Task<List<Comic>> GetShelfAsync(int userId, string shelf);
-    Task AddToShelfAsync(int userId, int comicId, string shelf);
-    Task UpdateProgressAsync(int userId, int comicId, int progress);
+    Task<List<Comic>> GetShelfAsync(string username, string shelf);
+    Task AddToShelfAsync(string username, int comicId, string shelf);
+    Task UpdateProgressAsync(string username, int comicId, int progress);
     Task<List<Comic>> GetRecommendedAsync();
     Task<List<Comic>> GetBecauseYouReadAsync();
     Task<List<Comic>> GetHiddenGemsAsync();
+    Task<List<Comic>> GetSeriesAsync(string seriesName);
 }
