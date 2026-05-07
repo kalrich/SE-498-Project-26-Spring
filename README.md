@@ -187,7 +187,7 @@ INSERT 0 9
 Swagger UI:
 
 ```txt
-http://localhost:8080/swagger
+http://localhost:8082/swagger
 ```
 
 ---
