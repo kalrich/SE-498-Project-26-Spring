@@ -8,17 +8,18 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
 
+var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5272/";
+
 // Register API-backed services
 builder.Services.AddHttpClient<IAuthService, AuthApiService>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5272/");
+    client.BaseAddress = new Uri(apiBaseUrl);
 });
 
 builder.Services.AddHttpClient<IComicService, ComicApiService>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5272/");
+    client.BaseAddress = new Uri(apiBaseUrl);
 });
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -2,150 +2,309 @@
 
 > A Marvel + Books themed web application — SE-498 Software Engineering Capstone, Spring 2026
 
-Marvel•ous Reads is a full-stack book tracking and discovery platform themed around Marvel Comics and characters. Users can browse books and comics, manage personal reading shelves, and receive personalised recommendations based on their reading history.
+Marvel•ous Reads is a full-stack comic and book tracking platform themed around Marvel Comics and characters. Users can browse comics, organize reading shelves, track progress, and receive recommendations.
 
 ---
 
-## Team
+# Team
 
 | Name | Email |
 |---|---|
-| Kalin Richardson  | kalrichardson@chapman.edu |
+| Kalin Richardson | kalrichardson@chapman.edu |
 | Joshua Fisher | joshfisher@chapman.edu |
 | Alexandra Fomina | fomina@chapman.edu |
 
 ---
 
-## Project Links
+# Project Links
 
 | Resource | Link |
 |---|---|
-| **GitHub Repository** | https://github.com/kalrich/SE-498-Project-26-Spring |
-| **Jira Board** | https://marvel-books.atlassian.net/jira/software/projects/SCRUM/boards/1/backlog?atlOrigin=eyJpIjoiNDExOTYzMzg2NWRlNDU0YzhjNmUwNTJiOTc4MDRjYzkiLCJwIjoiaiJ9 |
-| **Figma Wireframes** | https://www.figma.com/design/VsPh5szOQsMp7U9XpHzCJE/Marvel-Books?node-id=0-1&t=QNceDbpoARzMJDQ5-1 |
+| GitHub Repository | https://github.com/kalrich/SE-498-Project-26-Spring |
+| Jira Board | https://marvel-books.atlassian.net/jira/software/projects/SCRUM/boards/1/backlog |
+| Figma Wireframes | https://www.figma.com/design/VsPh5szOQsMp7U9XpHzCJE/Marvel-Books |
 
 ---
 
-## Tech Stack
+# Tech Stack
 
 | Layer | Technology |
 |---|---|
 | Language | C# (.NET 10) |
-| Web Framework | ASP.NET Core MVC (Razor Views) |
+| Web Framework | ASP.NET Core MVC |
 | REST API | ASP.NET Core Web API |
 | ORM | Entity Framework Core + Npgsql |
-| Database | PostgreSQL 16 (Docker) |
-| Authentication | JWT Bearer (API) · ASP.NET Core Cookie Auth (Web) |
-| Password Hashing | BCrypt |
-| Frontend Styling | Bootstrap 5 (CDN) |
+| Database | PostgreSQL 16 |
+| Authentication | Cookie Auth + JWT |
+| Styling | Bootstrap 5 |
 | Testing | xUnit |
-| HTTP Integration Tests | httpyac |
-| API Docs | Swagger / OpenAPI |
-| Containerisation | Docker + Docker Compose |
-| CI/CD | GitHub Actions |
+| API Docs | Swagger/OpenAPI |
+| Containerization | Docker + Docker Compose |
 | IDE | JetBrains Rider |
 
 ---
 
-## Architecture
+# Architecture
 
-```
+```txt
 Browser
-  └── Project498.WebServer  (ASP.NET Core MVC · Razor Views · Cookie Auth)
-        └── Project498.WebApi  (REST API · JWT Bearer)
-              └── PostgreSQL (Docker)
+  └── Project498.WebServer
+        └── Project498.WebApi
+              └── PostgreSQL (Docker Container)
 ```
 
-The website backend acts as a BFF (Backend for Frontend) — it handles browser sessions, applies business logic (recommendation scoring, shelf constraints), and proxies authenticated requests to the API.
+The WebServer acts as a Backend-for-Frontend (BFF) and communicates with the REST API for comic and user data.
 
 ---
 
-## Getting Started
+# Comic Organization System
 
-### Prerequisites
+Comics are organized using:
 
-- .NET 10 SDK
-- Docker + Docker Compose
-- JetBrains Rider (or VS Code with C# extension)
+- `SeriesName`
+- `VolumeNumber`
+- `IssueNumber`
 
-### Run Locally
+Example:
+
+```txt
+Human Torch
+Volume 1
+Issue 2
+```
+
+Each comic has a unique database ID.
+
+User-specific comic data is stored in the `UserComics` table, allowing:
+
+- unique reading progress per user
+- personalized shelves
+- independent user libraries
+
+---
+
+# Prerequisites
+
+Install the following before running the project:
+
+- [.NET 10 SDK](https://dotnet.microsoft.com/)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- Git
+
+---
+
+# Running the Project
+
+## 1. Clone Repository
 
 ```bash
-# Clone the repo
 git clone git@github.com:kalrich/SE-498-Project-26-Spring.git
+```
+
+---
+
+## 2. Navigate Into Source Folder
+
+```bash
 cd SE-498-Project-26-Spring/src
+```
 
-# Set up DB Locally
-## Database Setup
-From src/Project498.WebServer:
+---
 
-rm -f Database/project498.db
-sqlite3 Database/project498.db
-.read Database/schema.sql
-.read Database/seed.sql
+# Start Docker Containers
 
+This starts:
 
-# Start Postgres + API
+- PostgreSQL container
+- Web API container
+
+```bash
 docker compose up --build
+```
 
-# Run tests
+---
+
+# Load Database Schema + Seed Data
+
+Open a new terminal window while Docker is still running.
+
+Run:
+
+```bash
+docker exec -it src-db-1 psql -U postgres -d project498
+```
+
+You should now see:
+
+```txt
+project498=#
+```
+
+---
+
+# Load schema.sql
+
+Paste the contents of:
+
+```txt
+Project498.WebApi/Database/schema.sql
+```
+
+into the PostgreSQL shell.
+
+You should see:
+
+```txt
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+```
+
+---
+
+# Load seed.sql
+
+Paste the contents of:
+
+```txt
+Project498.WebApi/Database/seed.sql
+```
+
+into the PostgreSQL shell.
+
+You should see:
+
+```txt
+INSERT 0 3
+INSERT 0 9
+INSERT 0 9
+```
+
+---
+
+# Access Swagger API
+
+Swagger UI:
+
+```txt
+http://localhost:8082/swagger
+```
+
+---
+
+# Available API Endpoints
+
+| Endpoint | Description |
+|---|---|
+| `GET /api/comics` | Retrieve all comics |
+| `GET /api/comics/{id}` | Retrieve comic by ID |
+| `GET /api/comics/series/{seriesName}` | Retrieve comics by series |
+| `GET /api/comics/genres` | Retrieve genres |
+| `GET /api/comics/featured` | Retrieve featured comics |
+
+---
+
+# Running the WebServer
+
+Open another terminal:
+
+```bash
+cd SE-498-Project-26-Spring/src/Project498.WebServer
+```
+
+Run:
+
+```bash
+dotnet run
+```
+
+The website will typically run at:
+
+```txt
+http://localhost:5150
+```
+
+---
+
+# Running Tests
+
+From the `/src` directory:
+
+```bash
 dotnet test
 ```
 
-Swagger UI available at: `http://localhost:8080/swagger`
+---
+
+# Database Design
+
+## Comics Table
+
+Stores:
+
+- comic metadata
+- series organization
+- issue numbers
+- comic file references
 
 ---
 
-## Repository Structure
+## UserComics Table
 
+Stores:
+
+- shelf placement
+- reading progress
+- user-specific comic relationships
+
+Example:
+
+```txt
+User 1 → Comic 3 → 35% complete
 ```
+
+This prevents one user's reading activity from affecting another user's library.
+
+---
+
+# Repository Structure
+
+```txt
 SE-498-Project-26-Spring/
 ├── src/
-│   ├── Project498.WebApi/          # REST API (JWT auth, EF Core, Swagger)
-│   ├── Project498.WebApi.Tests/    # xUnit unit tests for API
-│   ├── Project498.WebServer/       # Website BFF (Razor Views, Cookie auth)
-│   ├── Project498.WebServer.Tests/ # xUnit unit tests for web server
-│   └── compose.yaml                # Docker Compose (API + WebServer + Postgres DBs)
+│   ├── Project498.WebApi/
+│   ├── Project498.WebApi.Tests/
+│   ├── Project498.WebServer/
+│   ├── Project498.WebServer.Tests/
+│   └── compose.yaml
 ├── docs/
-│   ├── api-spec.md                 # REST API specification
-│   ├── backend-spec.md             # Website backend (BFF) specification
-│   ├── frontend-spec.md            # Frontend (Razor Views) specification
+│   ├── api-spec.md
+│   ├── backend-spec.md
+│   ├── frontend-spec.md
 │   └── wireframes/
-│       ├── screenshots of all frames in Figma
 ├── .github/
 │   └── workflows/
-│       └── main.yml                # CI: dotnet test + httpyac integration tests
 └── README.md
 ```
 
 ---
 
-## Branches
+# Branches
 
 | Branch | Purpose |
 |---|---|
-| `main` | Stable, deployable code — merges via PR only |
-| `name` | One branch per Team Member |
-| `docs` | For all documentation and screenshots |
+| `main` | Stable deployable branch |
+| `name` | Team member development branches |
+| `docs` | Documentation and wireframes |
 
 ---
 
-## Wireframes
+# Future Improvements
 
-Greyscale, low-fidelity wireframes.
-
-**Figma file:** https://www.figma.com/design/jDMxAmvSgfj2xzEWyogByz/Marvel-Books---Test
-
----
-
-## Specifications
-
-| Document | Description |
-|---|---|
-| docs/api-spec.md | REST API — endpoints, auth, DB schema, error format |
-| docs/backend-spec.md | BFF Web Server — session auth, business logic, routing |
-| docs/frontend-spec.md | Razor Views — pages, layout, navigation, auth behaviour |
-
-Each spec follows: Overview → Scope → Functional Requirements → Non-Functional Requirements → Technical Detail.
-
----
+- Automatic DB migrations
+- Cloud deployment
+- Comic recommendation engine
+- Ratings and favorites
+- Admin upload dashboard
+- Full-text search
+- OAuth authentication
