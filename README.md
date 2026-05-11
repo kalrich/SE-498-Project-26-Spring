@@ -50,7 +50,7 @@ Marvel•ous Reads is a full-stack comic and book tracking platform themed aroun
 Browser
   └── Project498.WebServer
         └── Project498.WebApi
-              └── PostgreSQL (Docker Container)
+              └── PostgreSQL 16 (Docker Container)
 ```
 
 The WebServer acts as a Backend-for-Frontend (BFF) and communicates with the REST API for comic and user data.
@@ -80,6 +80,14 @@ User-specific comic data is stored in the `UserComics` table, allowing:
 - unique reading progress per user
 - personalized shelves
 - independent user libraries
+
+---
+
+# Containerization
+
+The REST API and PostgreSQL database run inside Docker containers using Docker Compose.
+
+The project uses PostgreSQL 16 for compatibility and stable local development.
 
 ---
 
@@ -187,7 +195,7 @@ INSERT 0 9
 Swagger UI:
 
 ```txt
-http://localhost:8082/swagger
+http://localhost:8080/swagger
 ```
 
 ---
@@ -212,7 +220,13 @@ Open another terminal:
 cd SE-498-Project-26-Spring/src/Project498.WebServer
 ```
 
-Run:
+If using the Dockerized API:
+
+```bash
+ApiBaseUrl=http://localhost:8080/ dotnet run
+```
+
+If using a locally running API:
 
 ```bash
 dotnet run
@@ -223,6 +237,17 @@ The website will typically run at:
 ```txt
 http://localhost:5150
 ```
+
+---
+
+# Verify Setup
+
+After startup:
+
+- Swagger should load at `http://localhost:8080/swagger`
+- `GET /api/comics` should return seeded comic JSON
+- WebServer login should function correctly
+- Series endpoints should return ordered comic issues
 
 ---
 
