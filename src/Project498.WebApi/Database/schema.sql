@@ -30,9 +30,7 @@ CREATE TABLE "UserComics" (
     "ComicId" INTEGER NOT NULL,
     "Shelf" TEXT NOT NULL,
     "ProgressPercent" INTEGER NOT NULL DEFAULT 0,
-
     FOREIGN KEY ("UserId") REFERENCES "Users"("Id") ON DELETE CASCADE,
     FOREIGN KEY ("ComicId") REFERENCES "Comics"("Id") ON DELETE CASCADE,
-
     UNIQUE("UserId", "ComicId")
 );
