@@ -195,7 +195,7 @@ INSERT 0 9
 Swagger UI:
 
 ```txt
-http://localhost:8080/swagger
+http://localhost:8082/swagger
 ```
 
 ---
@@ -223,7 +223,7 @@ cd SE-498-Project-26-Spring/src/Project498.WebServer
 If using the Dockerized API:
 
 ```bash
-ApiBaseUrl=http://localhost:8080/ dotnet run
+ApiBaseUrl=http://localhost:8082/ dotnet run
 ```
 
 If using a locally running API:
@@ -244,7 +244,7 @@ http://localhost:5150
 
 After startup:
 
-- Swagger should load at `http://localhost:8080/swagger`
+- Swagger should load at `http://localhost:8082/swagger`
 - `GET /api/comics` should return seeded comic JSON
 - WebServer login should function correctly
 - Series endpoints should return ordered comic issues
