@@ -80,7 +80,12 @@ html, body {
   gap: 18px;
 }
 
-.nav-text-link,
+.nav-text-link {
+  white-space: nowrap;
+  padding: 0 10px;
+  font-size: 15px;
+}
+
 .logout-link,
 .explore-link {
   text-decoration: none;
@@ -88,7 +93,27 @@ html, body {
   font-size: 16px;
 }
 
-.nav-avatar,
+.nav-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-red) 0%, var(--accent-rose) 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none;
+  box-shadow: var(--shadow-soft);
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
 .profile-chip {
   width: 42px;
   height: 42px;
@@ -864,14 +889,14 @@ html, body {
 
 .comic-detail-actions {
   display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 16px;
+  margin-bottom: 32px;
   flex-wrap: wrap;
 }
 
 .detail-btn {
   height: 44px;
-  padding: 0 18px;
+  padding: 0 20px;
 }
 
 .comic-detail-meta-box {
@@ -880,6 +905,7 @@ html, body {
   border-radius: 10px;
   padding: 16px;
   max-width: 420px;
+  margin: 16px;
 }
 
 .comic-meta-row {
@@ -956,8 +982,9 @@ html, body {
 
 .shelf-action-buttons {
   display: flex;
-  gap: 10px;
+  gap: 14px;
   flex-wrap: wrap;
+  margin-top: 16px;
 }
 
 .shelf-action-buttons form {
@@ -990,10 +1017,20 @@ html, body {
 /* ================= ACTIVE NAV ================= */
 
 .nav-text-link,
-.explore-link,
+.explore-link {
+  text-decoration: none;
+  color: #000;         
+  font-size: 16px;
+  font-weight: 700;
+}
+
 .logout-link {
   position: relative;
   transition: 0.2s ease;
+  text-decoration: none;
+  color: #000;    
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .active-nav {

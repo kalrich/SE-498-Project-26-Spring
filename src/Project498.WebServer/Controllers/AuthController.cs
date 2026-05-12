@@ -38,9 +38,13 @@ public class AuthController : Controller
         HttpContext.Session.SetInt32("UserId", user.Id);
         HttpContext.Session.SetString("Username", user.Username);
         HttpContext.Session.SetString("Email", user.Email);
+    
+        // Phase 1: Temporary test values for DC Comics API
+        // TODO: Replace with real DC authentication in Phase 2
+        HttpContext.Session.SetString("DcUserId", "1");
+        HttpContext.Session.SetString("DcJwt", "test-token");
 
         return RedirectToAction("Index", "Explore");
-
     }
 
     [HttpGet]

@@ -1,0 +1,48 @@
+@model Project498.WebServer.Models.Comic
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="comic-detail-page">
+    <div class="comic-detail-grid">
+        <div class="comic-detail-cover-panel">
+            <div class="comic-detail-cover">
+                <img src="@Model.CoverImagePath" alt="@Model.Title" class="cover-image" />
+            </div>
+        </div>
+
+        <div class="comic-detail-info">
+            <h1 class="comic-detail-title">Checkout: @Model.Title</h1>
+            <p class="comic-detail-author">@Model.Author</p>
+
+            <div class="pill-row comic-detail-pills">
+                <span class="pill">@Model.Genre</span>
+                @if (!string.IsNullOrWhiteSpace(Model.SecondaryGenre))
+                {
+                    <span class="pill">@Model.SecondaryGenre</span>
+                }
+            </div>
+
+            <p class="comic-detail-description">
+                @Model.Description
+            </p>
+
+            <div class="comic-detail-meta-box">
+                <div class="comic-meta-row">
+                    <span class="comic-meta-label">Checkout Period</span>
+                    <span class="comic-meta-value">14 Days</span>
+                </div>
+            </div>
+
+            <div class="comic-detail-actions">
+                <form method="post" action="/Checkout/Process">
+                    <input type="hidden" name="comicId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-dark detail-btn">Proceed with Checkout</button>
+                </form>
+
+                <a href="/Comics/Details?id=@Model.Id" class="btn btn-light detail-btn">Cancel</a>
+            </div>
+        </div>
+    </div>
+</section>
