@@ -1,0 +1,122 @@
+@model Project498.WebServer.Services.CheckoutDto
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="checkout-confirmed-page">
+    <div class="confirmed-container">
+        <div class="confirmed-header">
+            <h1>✓ Checkout Successful</h1>
+            <p>Your comic has been checked out</p>
+        </div>
+
+        <div class="confirmed-box">
+            <div class="confirmed-details">
+                <div class="detail-row">
+                    <span class="detail-label">Checkout ID</span>
+                    <span class="detail-value">@Model.CheckoutId</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Comic ID</span>
+                    <span class="detail-value">@Model.ComicId</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Checkout Date</span>
+                    <span class="detail-value">@Model.CheckoutDate.ToString("MMM dd, yyyy")</span>
+                </div>
+
+                <div class="detail-row highlight">
+                    <span class="detail-label">Due Date</span>
+                    <span class="detail-value">@Model.DueDate.ToString("MMM dd, yyyy")</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Status</span>
+                    <span class="detail-value">@Model.Status</span>
+                </div>
+            </div>
+
+            <div class="confirmed-actions">
+                <a href="/Checkout/Active" class="btn btn-dark detail-btn">View My Checkouts</a>
+                <a href="/Explore" class="btn btn-light detail-btn">Continue Browsing</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.checkout-confirmed-page {
+    padding: 2rem;
+}
+
+.confirmed-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.confirmed-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.confirmed-header h1 {
+    color: #C0392B;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.confirmed-header p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.confirmed-box {
+    background: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 6px;
+}
+
+.confirmed-details {
+    margin-bottom: 2rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-row.highlight {
+    background: #fffbea;
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-weight: bold;
+    color: #C0392B;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #333;
+}
+
+.detail-value {
+    color: #666;
+}
+
+.confirmed-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.confirmed-actions .btn {
+    flex: 1;
+}
+</style>

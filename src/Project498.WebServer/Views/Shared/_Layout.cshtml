@@ -14,8 +14,9 @@
         currentController == "Reader";
 
     var isRecommendationsActive = currentController == "Recommendations";
-    var isShelvesActive = currentController == "Shelves";
-
+    var currentPath = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var isCheckoutActive = currentPath == "Checkout";
+    
     var initials = "";
     if (!string.IsNullOrWhiteSpace(username))
     {
@@ -64,8 +65,8 @@
                 Recommendations
             </a>
 
-            <a class="nav-text-link @(isShelvesActive ? "active-nav" : "")" href="/Shelves">
-                My Shelves
+            <a class="nav-text-link @(isCheckoutActive ? "active-nav" : "")" href="/Checkout/Active">
+                My Checkouts
             </a>
 
             <a class="logout-link" href="/Auth/Logout">Logout</a>

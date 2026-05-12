@@ -31,53 +31,25 @@
             </p>
 
             <div class="comic-detail-actions">
-                <a href="/Reader/Index?id=@Model.Id" class="btn btn-dark detail-btn">Read Now</a>
-                <a href="/Shelves" class="btn btn-light detail-btn">View My Shelves</a>
+                @if (ViewBag.IsCheckedOut == true)
+                {
+                    <a href="/Reader/Index?id=@Model.Id" class="btn btn-dark detail-btn">Read Now</a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Initiate", "Checkout", new { comicId = Model.Id })"
+                       class="btn btn-dark detail-btn">Checkout Comic</a>
+                }
+                <a href="/Checkout/Active" class="btn btn-light detail-btn">My Checkouts</a>
             </div>
 
             <div class="comic-detail-meta-box">
                 <div class="comic-meta-row">
-                    <span class="comic-meta-label">Current Shelf</span>
-                    <span class="comic-meta-value">@Model.Shelf</span>
-                </div>
-
-                <div class="comic-meta-row">
-                    <span class="comic-meta-label">Progress</span>
-                    <span class="comic-meta-value">@Model.ProgressPercent%</span>
-                </div>
-
-                <div class="progress-line detail-progress">
-                    <div class="progress-fill" style="width: @Model.ProgressPercent%;"></div>
+                    <span class="comic-meta-label">Status</span>
+                    <span class="comic-meta-value">Available to Checkout</span>
                 </div>
             </div>
-            <div class="shelf-action-buttons">
-                <form method="post" asp-controller="Comics" asp-action="AddToShelf">
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <input type="hidden" name="shelf" value="Reading" />
-                    <button type="submit"
-                            class="btn shelf-btn @(Model.Shelf == "Reading" ? "shelf-btn-active" : "btn-light")">
-                        Currently Reading
-                    </button>
-                </form>
-
-                <form method="post" asp-controller="Comics" asp-action="AddToShelf">
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <input type="hidden" name="shelf" value="To Read" />
-                    <button type="submit"
-                            class="btn shelf-btn @(Model.Shelf == "To Read" ? "shelf-btn-active" : "btn-light")">
-                        Up Next
-                    </button>
-                </form>
-
-                <form method="post" asp-controller="Comics" asp-action="AddToShelf">
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <input type="hidden" name="shelf" value="Finished" />
-                    <button type="submit"
-                            class="btn shelf-btn @(Model.Shelf == "Finished" ? "shelf-btn-active" : "btn-light")">
-                        Completed
-                    </button>
-                </form>
-            </div>
+            
         </div>
     </div>
 

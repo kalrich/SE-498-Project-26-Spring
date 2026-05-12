@@ -1,0 +1,257 @@
+@model List<Project498.WebServer.Services.CheckoutDto>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="my-checkouts-page">
+    <div class="checkouts-header">
+        <h1>My Checkouts</h1>
+        <p>Comics you currently have checked out</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <h3>No Active Checkouts</h3>
+            <p>You haven't checked out any comics yet.</p>
+            <a href="/Explore" class="btn btn-dark">Browse Comics</a>
+        </div>
+    }
+    else
+    {
+        <div class="checkouts-container">
+            @foreach (var checkout in Model)
+            {
+                <div class="checkout-card">
+                    <div class="checkout-info">
+                        <div class="checkout-meta">
+                            <span class="checkout-id">Checkout #@checkout.CheckoutId</span>
+                            <span class="checkout-status @(checkout.Status.ToLower())">@checkout.Status</span>
+                        </div>
+
+                        <div class="checkout-dates">
+                            <div class="date-row">
+                                <span class="date-label">Checked Out</span>
+                                <span class="date-value">@checkout.CheckoutDate.ToString("MMM dd, yyyy")</span>
+                            </div>
+
+                            <div class="date-row due-date">
+                                <span class="date-label">Due Date</span>
+                                <span class="date-value">@checkout.DueDate.ToString("MMM dd, yyyy")</span>
+                            </div>
+
+                            @if (checkout.ReturnDate.HasValue)
+                            {
+                                <div class="date-row">
+                                    <span class="date-label">Returned</span>
+                                    <span class="date-value">@checkout.ReturnDate.Value.ToString("MMM dd, yyyy")</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="checkout-comic">
+                            <span class="comic-label">Comic ID:</span>
+                            <span class="comic-value">@checkout.ComicId</span>
+                        </div>
+                    </div>
+
+                    @if (!checkout.ReturnDate.HasValue)
+                    {
+                        <div class="checkout-actions">
+                            <a href="/Reader/Index?id=@checkout.ComicId" class="btn btn-dark">Read Now</a>
+                            <form method="post" action="/Checkout/Return" style="display: inline;">
+                                <input type="hidden" name="checkoutId" value="@checkout.CheckoutId" />
+                                <button type="submit" class="btn btn-light">Return Comic</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="checkouts-footer">
+            <a href="/Explore" class="btn btn-dark">Checkout More Comics</a>
+        </div>
+    }
+</section>
+
+<style>
+.my-checkouts-page {
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.checkouts-header {
+    margin-bottom: 2rem;
+}
+
+.checkouts-header h1 {
+    color: #C0392B;
+    margin-bottom: 0.5rem;
+}
+
+.checkouts-header p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.empty-state h3 {
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.checkouts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.checkout-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.checkout-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.checkout-id {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.checkout-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.checkout-status.checked_out {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.checkout-status.returned {
+    background: #d4edda;
+    color: #155724;
+}
+
+.checkout-dates {
+    margin-bottom: 1rem;
+}
+
+.date-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+.date-row.due-date {
+    background: #fffbea;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-weight: bold;
+    color: #C0392B;
+}
+
+.date-label {
+    font-weight: 600;
+    color: #666;
+}
+
+.date-value {
+    color: #333;
+}
+
+.checkout-comic {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.comic-label {
+    font-weight: 600;
+}
+
+.comic-value {
+    color: #333;
+}
+
+.checkout-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.checkout-actions .btn {
+    white-space: nowrap;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+}
+
+.checkout-actions .btn-dark {
+    background: #C0392B;
+    color: white;
+}
+
+.checkout-actions .btn-dark:hover {
+    background: #A03225;
+}
+
+.checkout-actions .btn-light {
+    background: #f0f0f0;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.checkout-actions .btn-light:hover {
+    background: #e0e0e0;
+}
+
+.checkouts-footer {
+    text-align: center;
+}
+
+@@media (max-width: 768px) {
+    .checkout-card {
+        flex-direction: column;
+    }
+
+    .checkout-actions {
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .checkout-actions .btn {
+        width: 100%;
+    }
+}
+</style>
