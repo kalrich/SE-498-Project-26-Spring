@@ -6,9 +6,8 @@
 # dotenv files
 .env
 
-# Local comic archives and generated covers can be very large.
+# Local comic archives can be very large.
 Project498.WebServer/wwwroot/comic-archives/
-Project498.WebServer/wwwroot/images/covers/dc/
 
 # User-specific files
 *.rsuser
