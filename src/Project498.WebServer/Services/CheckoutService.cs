@@ -17,7 +17,7 @@ public class CheckoutService : ICheckoutService
     {
         try
         {
-            using var request = new HttpRequestMessage(HttpMethod.Post, "/api/checkouts");
+            using var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:8080/api/checkouts");
             request.Headers.Authorization = new("Bearer", dcJwt);
             request.Content = JsonContent.Create(new { comicId });
 
@@ -63,7 +63,7 @@ public class CheckoutService : ICheckoutService
     {
         try
         {
-            using var request = new HttpRequestMessage(HttpMethod.Get, $"/api/checkouts/{checkoutId}");
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"http://localhost:8080/api/checkouts/{checkoutId}");
             request.Headers.Authorization = new("Bearer", dcJwt);
 
             var response = await _httpClient.SendAsync(request);
@@ -84,7 +84,7 @@ public class CheckoutService : ICheckoutService
     {
         try
         {
-            using var request = new HttpRequestMessage(HttpMethod.Get, $"/api/checkouts/user/{dcUserId}");
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"http://localhost:8080/api/checkouts/user/{dcUserId}");
             request.Headers.Authorization = new("Bearer", dcJwt);
 
             var response = await _httpClient.SendAsync(request);
@@ -106,7 +106,7 @@ public class CheckoutService : ICheckoutService
     {
         try
         {
-            using var request = new HttpRequestMessage(HttpMethod.Put, $"/api/checkouts/{checkoutId}/return");
+            using var request = new HttpRequestMessage(HttpMethod.Put, $"http://localhost:8080/api/checkouts/{checkoutId}/return");
             request.Headers.Authorization = new("Bearer", dcJwt);
 
             var response = await _httpClient.SendAsync(request);

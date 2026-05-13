@@ -1,5 +1,7 @@
 @model List<Project498.WebServer.Services.CheckoutDto>
 
+@inject Project498.WebServer.Services.IComicService ComicService
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -51,8 +53,7 @@
                         </div>
 
                         <div class="checkout-comic">
-                            <span class="comic-label">Comic ID:</span>
-                            <span class="comic-value">@checkout.ComicId</span>
+                            <span class="comic-label">Comic Confirmed</span>
                         </div>
                     </div>
 

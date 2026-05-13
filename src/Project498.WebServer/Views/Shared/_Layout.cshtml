@@ -5,7 +5,6 @@
     var currentQuery = Context.Request.Query["query"].ToString();
 
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
-    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
 
     var isExploreActive =
         currentController == "Explore" ||
@@ -14,8 +13,8 @@
         currentController == "Reader";
 
     var isRecommendationsActive = currentController == "Recommendations";
-    var currentPath = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
-    var isCheckoutActive = currentPath == "Checkout";
+    var isCheckoutActive = currentController == "Checkout";
+    var isCharactersActive = currentController == "Characters";
     
     var initials = "";
     if (!string.IsNullOrWhiteSpace(username))
@@ -63,6 +62,10 @@
 
             <a class="nav-text-link @(isRecommendationsActive ? "active-nav" : "")" href="/Recommendations">
                 Recommendations
+            </a>
+
+            <a class="nav-text-link @(isCharactersActive ? "active-nav" : "")" href="/Characters">
+                DC Characters
             </a>
 
             <a class="nav-text-link @(isCheckoutActive ? "active-nav" : "")" href="/Checkout/Active">

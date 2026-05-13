@@ -1,0 +1,48 @@
+@model Project498.WebServer.Services.DcCharacterDto
+
+@{
+    ViewData["Title"] = Model.Alias;
+
+    var key = Model.Alias.ToLower().Replace(" ", "");
+
+    var image = key switch
+    {
+        "aquaman" => "/images/dc-characters/aquaman.jpeg",
+        "batman" => "/images/dc-characters/batman.jpeg",
+        "catwoman" => "/images/dc-characters/catwoman.jpeg",
+        "constantine" => "/images/dc-characters/constantine.jpeg",
+        "cyborg" => "/images/dc-characters/cyborg.jpg",
+        "flash" => "/images/dc-characters/flash.jpeg",
+        "theflash" => "/images/dc-characters/flash.jpeg",
+        "flashwallywest" => "/images/dc-characters/flashwallywest.jpeg",
+        "greenarrow" => "/images/dc-characters/greenarrow.jpeg",
+        "greenlantern" => "/images/dc-characters/greenlantern.jpg",
+        "harleyquinn" => "/images/dc-characters/harleyquinn.jpeg",
+        "joker" => "/images/dc-characters/joker.jpeg",
+        "nightwing" => "/images/dc-characters/nightwing.jpeg",
+        "poisonivy" => "/images/dc-characters/poisonivy.jpeg",
+        "shazam" => "/images/dc-characters/shazam.jpeg",
+        "superman" => "/images/dc-characters/superman.jpeg",
+        "wonderwoman" => "/images/dc-characters/wonderwoman.jpg",
+        "zatanna" => "/images/dc-characters/zatanna.jpeg",
+        _ => "/images/dc-characters/batman.jpeg"
+    };
+}
+
+<a asp-controller="Characters" asp-action="Index" class="back-link">
+    ← Back to DC Characters
+</a>
+
+<section class="dc-detail">
+    <img src="@image" alt="@Model.Alias" class="dc-detail-img" />
+
+    <div class="dc-detail-content">
+        <h1>@Model.Alias</h1>
+        <h2>@Model.Name</h2>
+        <p>
+            @(string.IsNullOrWhiteSpace(Model.Description)
+                ? "No description available."
+                : Model.Description)
+        </p>
+    </div>
+</section>
