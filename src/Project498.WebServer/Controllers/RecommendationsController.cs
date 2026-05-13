@@ -12,11 +12,37 @@ public class RecommendationsController : Controller
         _comicService = comicService;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string query = "")
     {
-        ViewBag.Recommended = await _comicService.GetRecommendedAsync();
-        ViewBag.BecauseYouRead = await _comicService.GetBecauseYouReadAsync();
-        ViewBag.HiddenGems = await _comicService.GetHiddenGemsAsync();
+        var recommended = await _comicService.GetRecommendedAsync();
+        var becauseYouRead = await _comicService.GetBecauseYouReadAsync();
+        var hiddenGems = await _comicService.GetHiddenGemsAsync();
+
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            recommended = recommended
+                .Where(c => c.Title.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                            c.Author.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                            c.Description.Contains(query, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            becauseYouRead = becauseYouRead
+                .Where(c => c.Title.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                            c.Author.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                            c.Description.Contains(query, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            hiddenGems = hiddenGems
+                .Where(c => c.Title.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                            c.Author.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                            c.Description.Contains(query, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        ViewBag.Query = query;
+        ViewBag.Recommended = recommended;
+        ViewBag.BecauseYouRead = becauseYouRead;
+        ViewBag.HiddenGems = hiddenGems;
 
         return View();
     }

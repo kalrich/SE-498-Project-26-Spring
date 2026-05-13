@@ -4,23 +4,25 @@
     ViewData["Title"] = Model.Alias;
 }
 
-<a asp-controller="Characters" asp-action="Index" class="back-link">
-    ← Back to DC Characters
-</a>
+<section class="explore-page">
+    <a asp-controller="Characters" asp-action="Index" class="back-link">
+        ← Back to DC Characters
+    </a>
 
-<section class="dc-detail">
-    @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
-    {
-        <img src="@Model.ImagePath" alt="@Model.Alias" class="dc-detail-img" />
-    }
+    <section class="dc-detail">
+        @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
+        {
+            <img src="@Model.ImagePath" alt="@Model.Alias" class="dc-detail-img" />
+        }
 
-    <div class="dc-detail-content">
-        <h1>@Model.Alias</h1>
-        <h2>@Model.Name</h2>
-        <p>
-            @(string.IsNullOrWhiteSpace(Model.Description)
-                ? "No description available."
-                : Model.Description)
-        </p>
-    </div>
+        <div class="dc-detail-content">
+            <h1>@Model.Alias</h1>
+            <h2>@Model.Name</h2>
+            <p>
+                @(string.IsNullOrWhiteSpace(Model.Description)
+                    ? "No description available."
+                    : Model.Description)
+            </p>
+        </div>
+    </section>
 </section>

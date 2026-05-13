@@ -6,6 +6,8 @@
     var recommended = ViewBag.Recommended as List<Comic> ?? new List<Comic>();
     var becauseYouRead = ViewBag.BecauseYouRead as List<Comic> ?? new List<Comic>();
     var hiddenGems = ViewBag.HiddenGems as List<Comic> ?? new List<Comic>();
+    var comics = ViewBag.Comics as List<Comic> ?? new List<Comic>();
+    var query = ViewBag.Query as string ?? "";
 }
 
 <section class="recommendations-page">
@@ -13,6 +15,21 @@
         <h1>Recommendations</h1>
         <p>Discover comics curated for your reading journey.</p>
     </div>
+
+    <form method="get" asp-controller="Recommendations" asp-action="Index" class="explore-filters">
+        <div class="explore-search-wrap">
+            <input
+                type="text"
+                name="query"
+                value="@query"
+                placeholder="Search recommendations..."
+                class="explore-search-input" />
+        </div>
+
+        <button type="submit" class="btn btn-dark explore-btn">Search</button>
+
+        <a href="/Recommendations" class="btn btn-light explore-btn">Clear</a>
+    </form>
 
     <section class="recommendation-section">
         <div class="section-row">
