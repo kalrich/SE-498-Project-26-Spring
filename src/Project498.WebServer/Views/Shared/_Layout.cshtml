@@ -16,6 +16,7 @@
     var isCheckoutActive = currentController == "Checkout";
     var isCharactersActive = currentController == "Characters";
     var isMarvelCharactersActive = currentController == "MarvelCharacters";
+    var currentQuery = Context.Request.Query["query"].ToString();
     
     var initials = "";
     if (!string.IsNullOrWhiteSpace(username))
@@ -45,8 +46,6 @@
 <header class="topbar">
     <a class="brand" href="@(string.IsNullOrEmpty(username) ? "/" : "/Explore")">Marvel·ous Reads</a>
 
-<<<<<<< HEAD
-=======
     @if (currentController != "Explore")
     {
         <form class="search-wrap" method="get" action="/Search">
@@ -59,7 +58,6 @@
         </form>
     }
 
->>>>>>> 92f419d (Updated to include DC comics)
     <nav class="top-actions">
         @if (!string.IsNullOrEmpty(username))
         {
