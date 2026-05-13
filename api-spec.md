@@ -1,525 +1,466 @@
-# Marvel-ous Reads — REST API Specification
+# Marvel•ous Reads — REST API Specification
 
-**Project:** SE-498 Capstone · Spring
-**Stack:** ASP.NET Core (.NET 10) · PostgreSQL · Docker · Swagger/OpenAPI
-**Last Updated:** 2026-03-16
+**Project:** SE-498 Capstone · Spring  
+**System:** `Project498.WebApi`  
+**Stack:** ASP.NET Core · Entity Framework Core · PostgreSQL · Docker · Swagger/OpenAPI  
+**Last Updated:** 2026-05-13
 
 ---
 
 ## 1. Overview
 
-The `Project498.WebApi` project is the central data layer for Marvel-ous Reads. It exposes a RESTful HTTP API that is consumed by the Website Backend. All access is protected by a JWT bearer token, and the full API surface is documented via a Swagger UI.
+`Project498.WebApi` is the REST API and primary data service for **Marvel•ous Reads**. It stores and serves comic data, user account data, shelf/progress information, checkout records, Marvel character information, and supporting character images.
 
-The API manages three content domains:
+The API is consumed by the ASP.NET Core MVC WebServer frontend through typed HTTP client services. The WebServer handles browser-facing pages and user sessions, while the WebApi handles JSON data access and persistence through PostgreSQL.
 
-- **Books** — novels, audiobooks, and other book-format entries
-- **Comics** — Marvel comics, issues, and story arcs
-- **Shelves** — user-owned reading lists with per-item progress tracking
-- **Tags** — shared vocabulary that drives cross-domain recommendations
+The full endpoint-level request/response details are documented separately in:
 
----
-
-## 2. Scope
-
-**Included:**
-- RESTful CRUD endpoints for Books, Comics, Tags, Shelves, and Shelf Items
-- User registration and login with JWT bearer token issuance
-- Tag-based recommendation endpoint
-- Bearer token authentication on all protected routes
-- OpenAPI/Swagger documentation
-- PostgreSQL database running in a Docker container
-- Unit tests for request validation and schema constraints
-- Health check endpoint (`GET /health`)
-
-**Excluded:**
-- Frontend rendering or HTML generation (handled by the Website Backend)
-- Session or cookie management (handled by the Website Backend)
-- Recommendation scoring logic (computed in the Website Backend's `RecommendationService`)
-- Integration with another team's API (future phase)
-- Password reset or multi-factor authentication
+> `docs/api-contracts.md`
 
 ---
 
-## 3. Functional Requirements
+## 2. Current API Responsibilities
 
-1. The API shall provide a registration endpoint that accepts a username, email, and password, validates uniqueness, stores a bcrypt-hashed password, and returns the created user object.
-2. The API shall provide a login endpoint that validates credentials and returns a signed JWT on success, or a 401 error on failure.
-3. All endpoints except `/api/auth/register` and `/api/auth/login` shall require a valid JWT bearer token; requests without a valid token shall receive a 401 response.
-4. The API shall expose CRUD endpoints for Books (`GET /api/books`, `GET /api/books/{id}`, `POST /api/books`) and Comics with equivalent routes.
-5. The API shall expose Tag endpoints (`GET /api/tags`, `POST /api/tags`) for managing the shared recommendation vocabulary.
-6. The API shall expose Shelf endpoints allowing authenticated users to list their shelves, add items, update progress, move items, and remove items.
-7. The API shall expose a `GET /api/recommendations` endpoint that returns a ranked list of items with matched tags for the authenticated user.
-8. All error responses shall follow a consistent JSON shape: `{ "error": string, "details": string[], "statusCode": int }`.
-9. The Swagger UI shall be accessible at `/swagger` and shall include the bearer token authorization dialog.
+The API currently supports the following application domains:
 
----
+- **Authentication** — user signup and login
+- **Comics** — comic browsing, filtering, series lookup, featured/trending/recommended collections
+- **Shelves** — adding comics to user shelves and retrieving shelf contents
+- **Reading Progress** — storing progress percentage and current page by user/comic
+- **Checkouts** — creating checkout records, viewing user checkouts, and returning comics
+- **Marvel Characters** — serving Marvel character profile data
+- **Character Images** — serving character image records
+- **Users** — user lookup by email and profile updates
 
-## 4. Non-Functional Requirements
-
-1. **Performance:** All CRUD endpoints shall respond in under 500ms under normal load. The recommendations endpoint shall respond in under 1 second.
-2. **Security:** Passwords shall be hashed using bcrypt with a minimum cost factor of 10. JWTs shall be signed with HS256 and expire after 24 hours. The JWT secret shall never be committed to source control — it shall be provided via environment variable.
-3. **Reliability:** The API shall start cleanly via `docker compose up` without manual database setup. The health check endpoint shall return `200 OK` when the DB connection is healthy.
-4. **Scalability:** The database schema shall use indexed foreign keys on `user_id`, `shelf_id`, and `item_id` columns to support growth.
-5. **Containerization:** The API shall build and run entirely inside Docker. No local .NET installation shall be required to run the project.
-6. **Testability:** All business logic shall be unit-testable without a running database. Tests shall run in under 30 seconds in CI.
+The API no longer exposes the older planned `Books`, `Tags`, generic `Items`, or generic `ShelfItems` endpoints. Those were part of an earlier design and are out of scope for the current implementation.
 
 ---
 
-## 5. Technology Stack
+## 3. System Architecture
 
-| Concern | Choice |
+```text
+Browser
+   |
+   v
+Project498.WebServer
+ASP.NET Core MVC + Razor Views
+Cookie/session-based frontend experience
+Typed HttpClient services
+   |
+   v
+Project498.WebApi
+ASP.NET Core Web API
+JWT bearer authentication support
+Swagger/OpenAPI documentation
+Entity Framework Core
+   |
+   v
+PostgreSQL Database
+Users, Comics, UserComics, Checkouts,
+MarvelCharacters, CharacterImages
+```
+
+### WebServer-to-API Integration
+
+The WebServer communicates with the WebApi through registered typed HTTP clients:
+
+- `IAuthService` / `AuthApiService`
+- `IComicService` / `ComicApiService`
+- `ICheckoutService` / `CheckoutService`
+- `IMarvelCharacterService` / `MarvelCharacterService`
+- `ICharacterImageService` / `CharacterImageService`
+
+The WebServer also registers a `BearerTokenHandler`, allowing API requests to include bearer tokens when required.
+
+---
+
+## 4. Scope
+
+### Included
+
+- ASP.NET Core Web API controllers
+- Entity Framework Core data access
+- PostgreSQL persistence
+- Swagger/OpenAPI documentation
+- JWT bearer authentication configuration
+- CORS policy for local frontend/backend communication
+- Comic browsing and recommendation-style collections
+- User shelf and reading progress data
+- Checkout and return workflow
+- Marvel character and image data
+- Dockerized API and database startup
+
+### Excluded
+
+- Generic book-management endpoints
+- Generic tag-management endpoints
+- Generic `items`, `books`, `tags`, `item_tags`, `shelves`, and `shelf_items` schema
+- Frontend rendering or Razor Views
+- Browser session/cookie management
+- Password reset flow
+- Admin content-management panel
+- Payment or purchasing workflow
+- File upload or PDF processing APIs
+
+---
+
+## 5. Functional Requirements
+
+1. The API shall allow users to sign up and log in through authentication endpoints.
+2. The API shall expose comic data through browse, detail, genre, featured, trending, recommended, because-you-read, hidden-gem, and series endpoints.
+3. The API shall allow a user's comics to be organized into shelves using username, comic ID, and shelf name.
+4. The API shall store user reading progress using progress percentage and current page.
+5. The API shall support comic checkout records with checkout date, due date, optional return date, and status.
+6. The API shall allow checkout records to be retrieved by checkout ID or by user ID.
+7. The API shall allow checkout records to be marked as returned.
+8. The API shall expose Marvel character data through list and detail endpoints.
+9. The API shall expose character image records through a read-only endpoint.
+10. The API shall allow user profile lookup by email and updates by user ID.
+11. The API shall document its available endpoints through Swagger UI.
+
+---
+
+## 6. Non-Functional Requirements
+
+1. **Reliability:** The API and PostgreSQL database shall start through Docker Compose without requiring manual database creation.
+2. **Maintainability:** API controllers, models, and EF Core database configuration shall remain separated by responsibility.
+3. **Security:** JWT bearer authentication shall be configured in the WebApi, and protected endpoints may require an `Authorization: Bearer <token>` header.
+4. **Data Integrity:** Foreign key relationships shall connect users and comics through `UserComics` and `Checkouts`.
+5. **Usability for Developers:** Swagger UI shall be available in development for testing and documentation.
+6. **Frontend Compatibility:** CORS shall allow the frontend origin used during local development.
+7. **Portability:** The API shall use environment-based connection strings so it can run locally or inside Docker.
+
+---
+
+## 7. Technology Stack
+
+| Concern | Current Choice |
 |---|---|
-| Framework | ASP.NET Core 10 (Minimal + Controllers) |
-| ORM | Entity Framework Core with Npgsql |
-| Database | PostgreSQL 16 (Docker container) |
-| Auth | JWT Bearer tokens (System.IdentityModel.Tokens.Jwt) |
-| API docs | Built-in OpenAPI (`app.MapOpenApi()`) + Swagger UI |
-| Testing | xUnit + in-memory or test-container DB |
+| API Framework | ASP.NET Core Web API |
+| Data Access | Entity Framework Core |
+| Database Provider | Npgsql |
+| Database | PostgreSQL 16 |
+| Authentication | JWT Bearer configuration |
+| API Documentation | Swagger/OpenAPI |
 | Containerization | Docker + Docker Compose |
+| Testing | xUnit project in repository |
 
 ---
 
-## 6. Database Schema
+## 8. Authentication and Authorization
 
-> Full schema with all relationships and seed data: [`docs/database-schema.md`](database-schema.md)
+The WebApi is configured with JWT bearer authentication using:
 
-### `users`
+- Issuer validation
+- Audience validation
+- Lifetime validation
+- Issuer signing key validation
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | `SERIAL PRIMARY KEY` | |
-| `username` | `VARCHAR(100) NOT NULL UNIQUE` | |
-| `email` | `VARCHAR(255) NOT NULL UNIQUE` | |
-| `password_hash` | `TEXT NOT NULL` | bcrypt hash (cost ≥ 10) |
-| `created_at` | `TIMESTAMPTZ DEFAULT NOW()` | |
-| `updated_at` | `TIMESTAMPTZ DEFAULT NOW()` | |
+The API reads JWT settings from configuration:
 
-### `items` (base table)
+- `Jwt:Key`
+- `Jwt:Issuer`
+- `Jwt:Audience`
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | `SERIAL PRIMARY KEY` | |
-| `title` | `VARCHAR(255) NOT NULL` | |
-| `description` | `TEXT` | |
-| `item_type` | `VARCHAR(20) NOT NULL` | `'book'` or `'comic'` |
-| `author_creator` | `VARCHAR(255)` | |
-| `published_date` | `DATE` | |
-| `cover_image_url` | `TEXT` | |
-| `average_rating` | `DECIMAL(3,2)` | |
-| `featured` | `BOOLEAN DEFAULT FALSE` | Home page "Featured Today" flag |
-| `view_count` | `INT DEFAULT 0` | Used for "Trending" sort |
-| `created_at` | `TIMESTAMPTZ DEFAULT NOW()` | |
-| `updated_at` | `TIMESTAMPTZ DEFAULT NOW()` | |
+Swagger includes a bearer authorization dialog so developers can test protected endpoints by supplying a token.
 
-### `books`
-
-| Column | Type | Notes |
-|---|---|---|
-| `item_id` | `INT PRIMARY KEY` → `items.id` | |
-| `isbn` | `VARCHAR(20)` | |
-| `page_count` | `INT` | |
-| `publisher` | `VARCHAR(255)` | |
-| `format` | `VARCHAR(50)` | `'paperback'`, `'hardcover'`, `'ebook'`, `'audiobook'` |
-
-### `comics`
-
-| Column | Type | Notes |
-|---|---|---|
-| `item_id` | `INT PRIMARY KEY` → `items.id` | |
-| `marvel_character` | `VARCHAR(255)` | Primary character |
-| `story_arc` | `VARCHAR(255)` | e.g. `'Civil War'` |
-| `issue_number` | `INT` | |
-| `series_name` | `VARCHAR(255)` | |
-| `universe` | `VARCHAR(50)` | e.g. `'Earth-616'` |
-| `publisher` | `VARCHAR(100) DEFAULT 'Marvel'` | |
-
-### `tags`
-
-| Column | Type | Notes |
-|---|---|---|
-| `id` | `SERIAL PRIMARY KEY` | |
-| `name` | `VARCHAR(100) NOT NULL UNIQUE` | e.g. `'Action'`, `'found family'` |
-| `tag_category` | `VARCHAR(50) NOT NULL DEFAULT 'theme'` | `'genre'` (sidebar filter) or `'theme'` (recommendation scoring) |
-| `description` | `TEXT` | |
-
-### `item_tags`
-
-| Column | Type | Notes |
-|---|---|---|
-| `item_id` | `INT` → `items.id` | Composite PK |
-| `tag_id` | `INT` → `tags.id` | Composite PK |
-
-### `shelves`
-
-| Column | Type | Notes |
-|---|---|---|
-| `id` | `SERIAL PRIMARY KEY` | |
-| `user_id` | `INT` → `users.id` | |
-| `name` | `VARCHAR(100) NOT NULL` | Display label |
-| `shelf_type` | `VARCHAR(50)` | `'reading'`, `'want_to_read'`, `'finished'`, `'favourites'`, `'dropped'`, `'custom'` |
-| `created_at` | `TIMESTAMPTZ DEFAULT NOW()` | |
-
-Default shelves created on registration: `reading`, `want_to_read`, `finished`, `favourites`
-
-### `shelf_items`
-
-| Column | Type | Notes |
-|---|---|---|
-| `id` | `SERIAL PRIMARY KEY` | |
-| `shelf_id` | `INT` → `shelves.id` | |
-| `item_id` | `INT` → `items.id` | |
-| `progress_percent` | `INT DEFAULT 0` | 0–100 |
-| `date_added` | `TIMESTAMPTZ DEFAULT NOW()` | |
-| `date_started` | `TIMESTAMPTZ` | Set on first move to `'reading'` |
-| `date_finished` | `TIMESTAMPTZ` | Set on move to `'finished'` or progress = 100 |
-| `notes` | `TEXT` | Personal reading notes |
-
-Unique constraint: `UNIQUE(shelf_id, item_id)`
+The WebServer uses cookie authentication for the browser-facing experience and forwards API requests through service classes. When required, bearer tokens can be attached through the `BearerTokenHandler`.
 
 ---
 
-## 7. Authentication
+## 9. CORS Configuration
 
-All endpoints except `/api/auth/register` and `/api/auth/login` require a valid JWT in the `Authorization: Bearer <token>` header.
+The API defines a local development CORS policy named `AllowFrontend`.
 
-- Token format: JWT (HS256)
-- Expiry: 24 hours
-- Payload claims: `sub` (userId), `username`, `email`, `iat`, `exp`
+The policy currently allows the frontend origin:
+
+```text
+http://localhost:8082
+```
+
+The policy allows any header and any method for local development.
 
 ---
 
-## 8. REST Endpoints
+## 10. Database Schema Summary
 
-### 5.1 Auth
+The WebApi uses a PostgreSQL database managed through Entity Framework Core.
 
-#### `POST /api/auth/register`
+Current tables:
 
-Register a new user.
+- `Users`
+- `Comics`
+- `UserComics`
+- `Checkouts`
+- `MarvelCharacters`
+- `CharacterImages`
 
-**Request body:**
-```json
-{
-  "username": "kalin",
-  "email": "kalin@example.com",
-  "password": "securePassword123"
-}
-```
+### Users
 
-**Response `201 Created`:**
-```json
-{
-  "id": 1,
-  "username": "kalin",
-  "email": "kalin@example.com",
-  "createdAt": "2026-03-16T00:00:00Z"
-}
-```
+Stores registered user account data.
 
-**Errors:** `400` if email or username already taken; `400` if validation fails.
+Key fields:
 
----
+- `Id`
+- `Username`
+- `Email`
+- `Password`
 
-#### `POST /api/auth/login`
+### Comics
 
-Authenticate and receive a bearer token.
+Stores comic metadata and file paths.
 
-**Request body:**
-```json
-{
-  "email": "kalin@example.com",
-  "password": "securePassword123"
-}
-```
+Key fields:
 
-**Response `200 OK`:**
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "expiresAt": "2026-03-17T00:00:00Z",
-  "user": {
-    "id": 1,
-    "username": "kalin",
-    "email": "kalin@example.com"
-  }
-}
-```
+- `Id`
+- `Title`
+- `Author`
+- `Genre`
+- `SecondaryGenre`
+- `Description`
+- `CoverImagePath`
+- `PdfPath`
+- `IsIReadPick`
+- `SeriesName`
+- `VolumeNumber`
+- `IssueNumber`
 
-**Errors:** `401` if credentials invalid.
+### UserComics
 
----
+Join table connecting users to comics while storing shelf and reading-progress information.
 
-### 5.2 Books
+Key fields:
 
-All endpoints require `Authorization: Bearer <token>`.
+- `Id`
+- `UserId`
+- `ComicId`
+- `Shelf`
+- `ProgressPercent`
+- `CurrentPage`
 
-#### `GET /api/books`
+Relationships:
 
-List all books. Supports optional query params: `?tag=mythology&search=dune`.
+- Many `UserComics` records belong to one `User`
+- Many `UserComics` records belong to one `Comic`
 
-**Response `200 OK`:**
-```json
-[
-  {
-    "id": 1,
-    "title": "Dune",
-    "description": "...",
-    "authorCreator": "Frank Herbert",
-    "publishedDate": "1965-08-01",
-    "coverImageUrl": "https://...",
-    "averageRating": 4.7,
-    "isbn": "978-0-441-17271-9",
-    "pageCount": 412,
-    "publisher": "Chilton Books",
-    "format": "paperback",
-    "tags": ["space opera", "found family"]
-  }
-]
-```
+### Checkouts
 
-#### `GET /api/books/{id}`
+Stores checkout and return workflow data.
 
-Get a single book by ID. Returns `404` if not found.
+Key fields:
 
-#### `POST /api/books`
+- `Id`
+- `UserId`
+- `ComicId`
+- `CheckoutDate`
+- `DueDate`
+- `ReturnDate`
+- `Status`
 
-Create a new book entry.
+Relationships:
 
-**Request body:**
-```json
-{
-  "title": "Dune",
-  "description": "...",
-  "authorCreator": "Frank Herbert",
-  "publishedDate": "1965-08-01",
-  "coverImageUrl": "https://...",
-  "isbn": "978-0-441-17271-9",
-  "pageCount": 412,
-  "publisher": "Chilton Books",
-  "format": "paperback",
-  "tagIds": [1, 3]
-}
-```
+- Many `Checkouts` records belong to one `User`
+- Many `Checkouts` records belong to one `Comic`
 
-**Response `201 Created`** with the created book object.
-**Errors:** `400` if required fields missing or validation fails.
+### MarvelCharacters
 
-#### `PUT /api/books/{id}`
+Stores Marvel character profile data.
 
-Update an existing book. Body same shape as POST. Returns `204 No Content`.
+Key fields:
 
-#### `DELETE /api/books/{id}`
+- `Id`
+- `Name`
+- `Alias`
+- `Description`
+- `ImagePath`
 
-Delete a book. Returns `204 No Content` or `404`.
+### CharacterImages
+
+Stores additional character image records by alias.
+
+Key fields:
+
+- `Id`
+- `Alias`
+- `ImagePath`
+
+For the complete schema and ERD, see:
+
+> `docs/database-schema.md`
 
 ---
 
-### 5.3 Comics
+## 11. API Surface Summary
 
-Same CRUD shape as Books, at `/api/comics`.
+Detailed request and response contracts live in `docs/api-contracts.md`.
 
-#### `GET /api/comics` · `GET /api/comics/{id}` · `POST /api/comics` · `PUT /api/comics/{id}` · `DELETE /api/comics/{id}`
+Current endpoint groups include:
 
-Comic-specific fields in POST/PUT body:
+### Authentication
 
-```json
-{
-  "title": "Amazing Spider-Man #1",
-  "authorCreator": "Stan Lee",
-  "publishedDate": "1963-03-01",
-  "marvelCharacter": "Spider-Man",
-  "storyArc": "The Coming of the Chameleon",
-  "issueNumber": 1,
-  "seriesName": "Amazing Spider-Man",
-  "universe": "Earth-616",
-  "publisher": "Marvel",
-  "tagIds": [2]
-}
-```
+- `POST /api/Auth/login`
+- `POST /api/Auth/signup`
 
----
+### Comics
 
-### 5.4 Tags
+- `GET /api/Comics`
+- `GET /api/Comics/{id}`
+- `GET /api/Comics/genres`
+- `GET /api/Comics/featured`
+- `GET /api/Comics/trending`
+- `GET /api/Comics/recommended`
+- `GET /api/Comics/because-you-read`
+- `GET /api/Comics/hidden-gems`
+- `GET /api/Comics/series/{seriesName}`
 
-#### `GET /api/tags`
+### Shelves
 
-List all tags.
+- `GET /api/Shelves/{username}/{shelf}`
+- `POST /api/Shelves/add`
+- `GET /api/Shelves/progress/{username}/{comicId}`
+- `PATCH /api/Shelves/update-progress`
 
-**Response `200 OK`:**
-```json
-[
-  { "id": 1, "name": "found family", "description": "..." },
-  { "id": 2, "name": "mythology", "description": "..." }
-]
-```
+### Checkouts
 
-#### `GET /api/tags/{id}`
+- `POST /api/Checkouts`
+- `GET /api/Checkouts/{id}`
+- `GET /api/Checkouts/user/{userId}`
+- `PUT /api/Checkouts/{id}/return`
 
-Get a single tag.
+### Marvel Characters
 
-#### `POST /api/tags`
+- `GET /api/marvel-characters`
+- `GET /api/marvel-characters/{id}`
 
-Create a tag.
+### Character Images
 
-```json
-{ "name": "space opera", "description": "Epic science fiction spanning star systems" }
-```
+- `GET /api/character-images`
 
-**Response `201 Created`.**
+### Users
+
+- `GET /api/Users/by-email`
+- `PUT /api/Users/{id}`
 
 ---
 
-### 5.5 Shelves
+## 12. Swagger / OpenAPI
 
-#### `GET /api/shelves`
+Swagger UI is enabled in development mode.
 
-Get all shelves for the authenticated user.
+Default local Swagger URL when running through Docker:
 
-**Response `200 OK`:**
-```json
-[
-  { "id": 1, "name": "To Read", "shelfType": "to_read", "itemCount": 5 },
-  { "id": 2, "name": "Finished", "shelfType": "finished", "itemCount": 12 }
-]
+```text
+http://localhost:8082/swagger
 ```
 
-#### `POST /api/shelves`
+Swagger provides:
 
-Create a new shelf.
+- Endpoint list
+- Request body schemas
+- Response schemas
+- Path/query parameters
+- Bearer token authorization dialog
 
-```json
-{ "name": "Favorites", "shelfType": "custom" }
-```
-
-**Response `201 Created`.**
-
-#### `GET /api/shelves/{shelfId}/items`
-
-Get all items on a shelf.
-
-**Response `200 OK`:**
-```json
-[
-  {
-    "id": 1,
-    "shelfId": 1,
-    "item": { "id": 5, "title": "Dune", "itemType": "book", ... },
-    "dateAdded": "2026-03-01T00:00:00Z",
-    "progressPercent": 45,
-    "notes": "Great read so far"
-  }
-]
-```
-
-#### `POST /api/shelves/{shelfId}/items`
-
-Add an item to a shelf.
-
-```json
-{ "itemId": 5, "progressPercent": 0, "notes": "" }
-```
-
-**Response `201 Created`.**
-**Errors:** `409 Conflict` if the item is already on that shelf.
-
-#### `PATCH /api/shelves/{shelfId}/items/{itemId}`
-
-Update progress or notes for an item on a shelf.
-
-```json
-{ "progressPercent": 75, "notes": "Just got to the good part" }
-```
-
-**Response `200 OK`** with the updated shelf item.
-
-#### `DELETE /api/shelves/{shelfId}/items/{itemId}`
-
-Remove an item from a shelf. Returns `204 No Content`.
+The Swagger output is the source of truth for endpoint-level request/response details.
 
 ---
 
-### 5.6 Recommendations
+## 13. Containerization
 
-#### `GET /api/recommendations`
+The API and database run through Docker Compose.
 
-Return recommended items for the authenticated user based on tag overlap with items on their shelves.
+### Services
 
-**Query params:** `?limit=10` (default 10)
-
-**Response `200 OK`:**
-```json
-[
-  {
-    "item": { "id": 8, "title": "Ender's Game", "itemType": "book", ... },
-    "matchedTags": ["space opera", "found family"],
-    "score": 0.85
-  }
-]
-```
-
----
-
-### 5.7 Health
-
-#### `GET /health`
-
-Returns API health status (no auth required). Used for monitoring and CI readiness checks.
-
-**Response `200 OK`:**
-```json
-{ "status": "healthy", "timestamp": "2026-03-16T00:00:00Z" }
-```
-
----
-
-## 9. Error Response Format
-
-All errors follow a consistent shape:
-
-```json
-{
-  "error": "Validation failed",
-  "details": ["title is required", "isbn must be 10 or 13 characters"],
-  "statusCode": 400
-}
-```
-
----
-
-## 10. Containerization
-
-The API builds and runs inside Docker via the existing `compose.yaml`. Key environment variables:
-
-| Variable | Description |
+| Service | Purpose |
 |---|---|
-| `ConnectionStrings__DefaultConnection` | Postgres connection string |
-| `ASPNETCORE_ENVIRONMENT` | `Development` or `Production` |
-| `Jwt__SecretKey` | Secret for JWT signing |
-| `Jwt__Issuer` | Token issuer string |
-| `Jwt__ExpiryHours` | Token lifetime in hours (default 24) |
+| `project498.webapi` | Builds and runs the ASP.NET Core WebApi |
+| `db` | Runs PostgreSQL 16 |
+
+### WebApi Service
+
+The WebApi container uses:
+
+```text
+ASPNETCORE_ENVIRONMENT=Development
+ASPNETCORE_URLS=http://0.0.0.0:8080
+ConnectionStrings__DefaultConnection=Host=db;Database=project498;Username=postgres;Password=postgres
+```
+
+The container maps:
+
+```text
+localhost:8082 -> container:8080
+```
+
+### Database Service
+
+The PostgreSQL container uses:
+
+```text
+POSTGRES_DB=project498
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+```
+
+The database includes a healthcheck using `pg_isready`.
 
 ---
 
-## 11. Unit Tests
+## 14. Configuration
 
-Unit tests live in `Project498.WebApi.Tests` and run on every PR and merge to `main` via GitHub Actions.
+Important configuration values:
 
-Test coverage targets:
-
-- Request validation (missing required fields, invalid types)
-- Schema constraints (e.g. `progressPercent` must be 0–100)
-- Auth token generation and validation
-- Recommendation scoring logic
-
----
-
-## 12. Swagger
-
-Swagger UI is available at `/swagger` in all environments. The OpenAPI JSON spec is at `/openapi/v1.json`.
+| Setting | Purpose |
+|---|---|
+| `ConnectionStrings:DefaultConnection` | PostgreSQL connection string |
+| `Jwt:Key` | JWT signing key |
+| `Jwt:Issuer` | Expected token issuer |
+| `Jwt:Audience` | Expected token audience |
+| `ASPNETCORE_ENVIRONMENT` | Controls environment-specific behavior |
+| `ASPNETCORE_URLS` | Configures container listening URL |
 
 ---
 
-## 13. Future Phases
+## 15. Testing
 
-- Expose a `GET /api/health/detailed` endpoint with DB ping and dependency checks
-- Add `GET /api/reviews` for integration with another team's API
-- Support `?locale=es` query param for localized genre/tag names
+The repository includes an API test project. Testing should focus on:
+
+- Controller behavior
+- Authentication request behavior
+- Shelf/progress business logic
+- Checkout creation and return behavior
+- Database schema and EF Core mappings
+- Serialization/deserialization of API DTOs
+
+Tests should avoid depending on manually created local databases whenever possible.
+
+---
+
+## 16. Out-of-Scope / Deprecated Design Notes
+
+The current API specification replaces earlier planned architecture that included:
+
+- `Books`
+- `Tags`
+- `Items`
+- `ItemTags`
+- `ShelfItems`
+- A generic `/api/recommendations` endpoint
+- A full tag-overlap recommendation engine inside the API
+- A generic book/comic polymorphic item model
+
+Those concepts were removed or deferred. The current implementation is comic-focused and uses `Comics`, `UserComics`, `Checkouts`, `MarvelCharacters`, and `CharacterImages`.
+
+---
+
+## 17. Future Improvements
+
+Potential future improvements include:
+
+- Add explicit health check endpoint for API/database readiness
+- Add admin endpoints for comic and character management
+- Add stronger DTO separation so password fields are never returned in response examples
+- Add response documentation for non-200 errors
+- Add pagination for large comic and character lists
+- Add richer recommendation logic based on shelf and reading-history data
+- Add automated database migration/seed setup during Docker startup
