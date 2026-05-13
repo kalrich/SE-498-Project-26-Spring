@@ -8,7 +8,8 @@ namespace Project498.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController : ControllerBase
+public class 
+    AuthController : ControllerBase
 {
     private readonly AppDbContext _context;
 
