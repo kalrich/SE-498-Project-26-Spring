@@ -7,6 +7,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<BearerTokenHandler>();
 
 var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5272/";
 var dcApiUrl = builder.Configuration["DcComicsApiUrl"] ?? "http://localhost:5100";
@@ -15,18 +16,18 @@ var dcApiUrl = builder.Configuration["DcComicsApiUrl"] ?? "http://localhost:5100
 builder.Services.AddHttpClient<IAuthService, AuthApiService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
-});
+}).AddHttpMessageHandler<BearerTokenHandler>();
 
 builder.Services.AddHttpClient<IComicService, ComicApiService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
-});
+}).AddHttpMessageHandler<BearerTokenHandler>();
 
 // Register Checkout Service
 builder.Services.AddHttpClient<ICheckoutService, CheckoutService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
-});
+}).AddHttpMessageHandler<BearerTokenHandler>();
 
 // Register DC Character Service
 builder.Services.AddHttpClient<IDcCharacterService, DcCharacterService>(client =>
@@ -37,12 +38,12 @@ builder.Services.AddHttpClient<IDcCharacterService, DcCharacterService>(client =
 builder.Services.AddHttpClient<ICharacterImageService, CharacterImageService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
-});
+}).AddHttpMessageHandler<BearerTokenHandler>();
 
 builder.Services.AddHttpClient<IMarvelCharacterService, MarvelCharacterService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
-});
+}).AddHttpMessageHandler<BearerTokenHandler>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

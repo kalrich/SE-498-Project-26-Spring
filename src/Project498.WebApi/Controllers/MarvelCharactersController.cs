@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Project498.WebApi.Data;
 using Project498.WebApi.Models;
@@ -7,6 +8,7 @@ namespace Project498.WebApi.Controllers;
 
 [ApiController]
 [Route("api/marvel-characters")]
+[Authorize]
 public class MarvelCharactersController : ControllerBase
 {
     private readonly AppDbContext _context;
