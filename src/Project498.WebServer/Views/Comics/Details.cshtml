@@ -4,7 +4,8 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     var activeCheckout = ViewBag.ActiveCheckout as CheckoutDto;
-    var isCheckedOut = activeCheckout != null;
+    var isCheckedOut = ViewBag.IsCheckedOut as bool? ?? activeCheckout != null;
+    var activeCheckoutDueDate = ViewBag.ActiveCheckoutDueDate as DateTime?;
     var isFavorite = ViewBag.IsFavorite as bool? ?? false;
     var reviews = ViewBag.Reviews as List<ComicReviewDto> ?? new List<ComicReviewDto>();
     var userReview = ViewBag.UserReview as ComicReviewDto;
@@ -75,7 +76,9 @@
                 {
                     <div class="comic-meta-row">
                         <span class="comic-meta-label">Due Date</span>
-                        <span class="comic-meta-value">@activeCheckout!.DueDate.ToString("MMM dd, yyyy")</span>
+                        <span class="comic-meta-value">
+                            @((activeCheckoutDueDate ?? activeCheckout?.DueDate)?.ToString("MMM dd, yyyy"))
+                        </span>
                     </div>
                 }
             </div>
