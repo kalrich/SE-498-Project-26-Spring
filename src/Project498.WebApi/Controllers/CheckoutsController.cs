@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Project498.WebApi.Data;
 using Project498.WebApi.Dtos;
@@ -8,6 +9,7 @@ namespace Project498.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CheckoutsController : ControllerBase
 {
     private readonly AppDbContext _context;
