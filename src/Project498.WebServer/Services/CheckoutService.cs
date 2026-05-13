@@ -13,22 +13,40 @@ public class CheckoutService : ICheckoutService
         _logger = logger;
     }
 
-    public async Task<CheckoutResult> InitiateCheckoutAsync(int dcUserId, int comicId, string dcJwt)
+    public async Task<CheckoutResult> InitiateCheckoutAsync(int userId, int comicId)
     {
         try
         {
-            using var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:8080/api/checkouts");
-            request.Headers.Authorization = new("Bearer", dcJwt);
-            request.Content = JsonContent.Create(new { comicId });
+            var response = await _httpClient.PostAsJsonAsync("api/checkouts", new
+            {
+                UserId = userId,
+                ComicId = comicId
+            });
 
-            var response = await _httpClient.SendAsync(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+            {
+                var existingCheckout = await response.Content.ReadFromJsonAsync<CheckoutDto>();
+                if (existingCheckout != null)
+                {
+                    return new CheckoutResult
+                    {
+                        Success = true,
+                        CheckoutId = existingCheckout.CheckoutId,
+                        DueDate = existingCheckout.DueDate
+                    };
+                }
+            }
 
             if (!response.IsSuccessStatusCode)
             {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+
                 return new CheckoutResult
                 {
                     Success = false,
-                    ErrorMessage = "Failed to checkout comic"
+                    ErrorMessage = string.IsNullOrWhiteSpace(errorMessage)
+                        ? "Failed to checkout comic"
+                        : errorMessage
                 };
             }
 
@@ -59,14 +77,11 @@ public class CheckoutService : ICheckoutService
         }
     }
 
-    public async Task<CheckoutDto?> GetCheckoutAsync(int checkoutId, string dcJwt)
+    public async Task<CheckoutDto?> GetCheckoutAsync(int checkoutId)
     {
         try
         {
-            using var request = new HttpRequestMessage(HttpMethod.Get, $"http://localhost:8080/api/checkouts/{checkoutId}");
-            request.Headers.Authorization = new("Bearer", dcJwt);
-
-            var response = await _httpClient.SendAsync(request);
+            var response = await _httpClient.GetAsync($"api/checkouts/{checkoutId}");
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<CheckoutDto>();
@@ -80,14 +95,11 @@ public class CheckoutService : ICheckoutService
         }
     }
 
-    public async Task<List<CheckoutDto>> GetUserCheckoutsAsync(int dcUserId, string dcJwt)
+    public async Task<List<CheckoutDto>> GetUserCheckoutsAsync(int userId)
     {
         try
         {
-            using var request = new HttpRequestMessage(HttpMethod.Get, $"http://localhost:8080/api/checkouts/user/{dcUserId}");
-            request.Headers.Authorization = new("Bearer", dcJwt);
-
-            var response = await _httpClient.SendAsync(request);
+            var response = await _httpClient.GetAsync($"api/checkouts/user/{userId}");
             if (response.IsSuccessStatusCode)
             {
                 var checkouts = await response.Content.ReadFromJsonAsync<List<CheckoutDto>>();
@@ -102,14 +114,11 @@ public class CheckoutService : ICheckoutService
         }
     }
 
-    public async Task<bool> ReturnCheckoutAsync(int checkoutId, string dcJwt)
+    public async Task<bool> ReturnCheckoutAsync(int checkoutId)
     {
         try
         {
-            using var request = new HttpRequestMessage(HttpMethod.Put, $"http://localhost:8080/api/checkouts/{checkoutId}/return");
-            request.Headers.Authorization = new("Bearer", dcJwt);
-
-            var response = await _httpClient.SendAsync(request);
+            var response = await _httpClient.PutAsync($"api/checkouts/{checkoutId}/return", null);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)

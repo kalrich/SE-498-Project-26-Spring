@@ -9,4 +9,5 @@ public class UserComic
     public Comic? Comic { get; set;}
     public string Shelf { get; set; } = "";
     public int ProgressPercent { get; set; }
+    public int CurrentPage { get; set; } = 1;
 }

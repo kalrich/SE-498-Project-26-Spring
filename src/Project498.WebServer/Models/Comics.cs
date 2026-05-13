@@ -24,6 +24,9 @@ public class Comic
     // temporary while setting up database to link with frontend
     [NotMapped]
     public int ProgressPercent { get; set; }
+
+    [NotMapped]
+    public int CurrentPage { get; set; } = 1;
     
     // temporary while setting up database to link with frontend
     [NotMapped]

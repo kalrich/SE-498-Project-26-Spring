@@ -6,10 +6,14 @@ namespace Project498.WebServer.Controllers;
 public class CharactersController : Controller
 {
     private readonly IDcCharacterService _dcCharacterService;
+    private readonly ICharacterImageService _characterImageService;
 
-    public CharactersController(IDcCharacterService dcCharacterService)
+    public CharactersController(
+        IDcCharacterService dcCharacterService,
+        ICharacterImageService characterImageService)
     {
         _dcCharacterService = dcCharacterService;
+        _characterImageService = characterImageService;
     }
 
     public async Task<IActionResult> Index()
@@ -22,6 +26,7 @@ public class CharactersController : Controller
         }
 
         var characters = await _dcCharacterService.GetCharactersAsync();
+        await _characterImageService.EnrichWithImagePathsAsync(characters);
 
         return View(characters);
     }
@@ -41,6 +46,8 @@ public class CharactersController : Controller
         {
             return NotFound();
         }
+
+        character.ImagePath = await _characterImageService.GetImagePathAsync(character.Alias);
 
         return View(character);
     }

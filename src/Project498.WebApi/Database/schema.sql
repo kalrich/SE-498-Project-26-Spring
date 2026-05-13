@@ -1,4 +1,7 @@
+DROP TABLE IF EXISTS "Checkouts";
 DROP TABLE IF EXISTS "UserComics";
+DROP TABLE IF EXISTS "MarvelCharacters";
+DROP TABLE IF EXISTS "CharacterImages";
 DROP TABLE IF EXISTS "Users";
 DROP TABLE IF EXISTS "Comics";
 
@@ -24,13 +27,43 @@ CREATE TABLE "Comics" (
     "IsIReadPick" BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+CREATE TABLE "CharacterImages" (
+    "Id" SERIAL PRIMARY KEY,
+    "Alias" TEXT NOT NULL,
+    "ImagePath" TEXT NOT NULL
+);
+
+CREATE TABLE "MarvelCharacters" (
+    "Id" SERIAL PRIMARY KEY,
+    "Name" TEXT NOT NULL,
+    "Alias" TEXT NOT NULL,
+    "Description" TEXT NOT NULL,
+    "ImagePath" TEXT NOT NULL
+);
+
 CREATE TABLE "UserComics" (
     "Id" SERIAL PRIMARY KEY,
     "UserId" INTEGER NOT NULL,
     "ComicId" INTEGER NOT NULL,
     "Shelf" TEXT NOT NULL,
     "ProgressPercent" INTEGER NOT NULL DEFAULT 0,
+    "CurrentPage" INTEGER NOT NULL DEFAULT 1,
     FOREIGN KEY ("UserId") REFERENCES "Users"("Id") ON DELETE CASCADE,
     FOREIGN KEY ("ComicId") REFERENCES "Comics"("Id") ON DELETE CASCADE,
     UNIQUE("UserId", "ComicId")
 );
+
+CREATE TABLE "Checkouts" (
+    "Id" SERIAL PRIMARY KEY,
+    "UserId" INTEGER NOT NULL,
+    "ComicId" INTEGER NOT NULL,
+    "CheckoutDate" TIMESTAMPTZ NOT NULL,
+    "DueDate" TIMESTAMPTZ NOT NULL,
+    "ReturnDate" TIMESTAMPTZ NULL,
+    "Status" TEXT NOT NULL DEFAULT 'Active',
+    FOREIGN KEY ("UserId") REFERENCES "Users"("Id") ON DELETE CASCADE,
+    FOREIGN KEY ("ComicId") REFERENCES "Comics"("Id") ON DELETE CASCADE
+);
+
+CREATE INDEX "IX_Checkouts_UserId" ON "Checkouts" ("UserId");
+CREATE INDEX "IX_Checkouts_ComicId" ON "Checkouts" ("ComicId");

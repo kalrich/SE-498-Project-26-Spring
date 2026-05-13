@@ -25,27 +25,28 @@ public class ComicsController : Controller
         if (comic == null)
             return NotFound();
 
-        // Phase 1: Check if user has checked out this comic
-        var dcUserIdStr = HttpContext.Session.GetString("DcUserId");
-        var dcJwt = HttpContext.Session.GetString("DcJwt");
+        var userId = HttpContext.Session.GetInt32("UserId");
     
-        if (!string.IsNullOrEmpty(dcUserIdStr) && !string.IsNullOrEmpty(dcJwt) && int.TryParse(dcUserIdStr, out var dcUserId))
+        if (userId != null)
         {
             try
             {
-                var checkouts = await _checkoutService.GetUserCheckoutsAsync(dcUserId, dcJwt);
-                ViewBag.IsCheckedOut = checkouts?.Any(c => c.ComicId == id && !c.ReturnDate.HasValue) ?? false;
+                var checkouts = await _checkoutService.GetUserCheckoutsAsync(userId.Value);
+                var activeCheckout = checkouts.FirstOrDefault(c => c.ComicId == id && !c.ReturnDate.HasValue);
+                ViewBag.ActiveCheckout = activeCheckout;
+                ViewBag.IsCheckedOut = activeCheckout != null;
             }
             catch (Exception ex)
             {
-                // Phase 1: API not available, default to showing checkout button
                 _logger.LogWarning(ex, "Could not check checkout status for comic {id}", id);
                 ViewBag.IsCheckedOut = false;
+                ViewBag.ActiveCheckout = null;
             }
         }
         else
         {
             ViewBag.IsCheckedOut = false;
+            ViewBag.ActiveCheckout = null;
         }
 
         return View(comic);

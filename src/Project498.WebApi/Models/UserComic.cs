@@ -7,6 +7,7 @@ public class UserComic
     public int ComicId { get; set; }
     public string Shelf { get; set; } = "";
     public int ProgressPercent { get; set; }
+    public int CurrentPage { get; set; } = 1;
 
     public User? User { get; set; }
     public Comic? Comic { get; set; }
