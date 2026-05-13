@@ -52,39 +52,4 @@
             
         </div>
     </div>
-
-    <section class="related-section">
-        <div class="section-row">
-            <h2>Related Comics</h2>
-        </div>
-
-        @if (!related.Any())
-        {
-            <div class="empty-state">
-                <h3>No related comics yet</h3>
-                <p>More recommendations will appear here as your library grows.</p>
-            </div>
-        }
-        else
-        {
-            <div class="related-grid">
-                @foreach (var comic in related)
-                {
-                    <a href="/Comics/Details?id=@comic.Id" class="recommendation-card-link">
-                        <article class="recommendation-card">
-                            <div class="recommendation-cover">
-                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
-                            </div>
-
-                            <div class="recommendation-body">
-                                <p class="meta">@comic.Author</p>
-                                <h3>@comic.Title</h3>
-                                <p class="recommendation-desc">@comic.Description</p>
-                            </div>
-                        </article>
-                    </a>
-                }
-            </div>
-        }
-    </section>
 </section>
