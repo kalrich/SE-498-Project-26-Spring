@@ -88,7 +88,7 @@ public class AuthController : Controller
     public IActionResult Logout()
     {
         HttpContext.Session.Clear();
-        return RedirectToAction("Index", "Explore");
+        return RedirectToAction("Index", "Home");
 
     }
 }
