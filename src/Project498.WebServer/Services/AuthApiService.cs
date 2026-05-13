@@ -23,7 +23,12 @@ public class AuthApiService : IAuthService
         if (!response.IsSuccessStatusCode)
             return null;
 
-        return await response.Content.ReadFromJsonAsync<User>();
+        var authResponse = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
+        if (authResponse == null)
+            return null;
+
+        authResponse.User.JwtToken = authResponse.Token;
+        return authResponse.User;
     }
 
     public async Task<bool> SignupAsync(string username, string email, string password)
@@ -57,4 +62,10 @@ public class AuthApiService : IAuthService
 
         return response.IsSuccessStatusCode;
     }
+}
+
+public class AuthResponseDto
+{
+    public User User { get; set; } = new();
+    public string Token { get; set; } = "";
 }

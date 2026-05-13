@@ -38,6 +38,7 @@ public class AuthController : Controller
         HttpContext.Session.SetInt32("UserId", user.Id);
         HttpContext.Session.SetString("Username", user.Username);
         HttpContext.Session.SetString("Email", user.Email);
+        HttpContext.Session.SetString("JwtToken", user.JwtToken);
     
         // Phase 1: Temporary test values for DC Comics API
         // TODO: Replace with real DC authentication in Phase 2
@@ -80,6 +81,7 @@ public class AuthController : Controller
         HttpContext.Session.SetInt32("UserId", user.Id);
         HttpContext.Session.SetString("Username", user.Username);
         HttpContext.Session.SetString("Email", user.Email);
+        HttpContext.Session.SetString("JwtToken", user.JwtToken);
 
         return RedirectToAction("Index", "Explore");
 
