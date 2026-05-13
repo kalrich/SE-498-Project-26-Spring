@@ -19,6 +19,9 @@
     var currentlyReading = ViewBag.CurrentlyReading as List<Comic> ?? new List<Comic>();
     var upNext = ViewBag.UpNext as List<Comic> ?? new List<Comic>();
     var completed = ViewBag.Completed as List<Comic> ?? new List<Comic>();
+    var favorites = ViewBag.Favorites as List<Comic> ?? new List<Comic>();
+    var readingHistory = ViewBag.ReadingHistory as List<Project498.WebServer.Services.ReadingHistoryItem>
+        ?? new List<Project498.WebServer.Services.ReadingHistoryItem>();
 }
 
 <section class="dashboard-shell">
@@ -91,6 +94,60 @@
 
     <aside class="dashboard-right">
         <div class="profile-chip">@initials</div>
+
+        <section class="shelf-block">
+            <div class="section-row small">
+                <h3>Recently Read</h3>
+            </div>
+
+            @foreach (var item in readingHistory.Take(4))
+            {
+                <a href="/Reader/Index?id=@item.ComicId" class="cover-link">
+                    <div class="shelf-card">
+                        <div class="mini-cover">
+                            @if (!string.IsNullOrWhiteSpace(item.CoverImagePath))
+                            {
+                                <img src="@item.CoverImagePath" alt="@item.Title" class="mini-cover-image" />
+                            }
+                        </div>
+
+                        <div class="shelf-body">
+                            <p class="meta">Page @item.CurrentPage</p>
+                            <h4>@item.Title</h4>
+                            <div class="progress-line">
+                                <div class="progress-fill" style="width: @item.ProgressPercent%;"></div>
+                            </div>
+                            <p class="progress-text">@item.ProgressPercent%</p>
+                        </div>
+                    </div>
+                </a>
+            }
+        </section>
+
+        <section class="shelf-block">
+            <div class="section-row small">
+                <h3>Favorites</h3>
+            </div>
+
+            @foreach (var comic in favorites.Take(4))
+            {
+                <a href="/Comics/Details?id=@comic.Id" class="cover-link">
+                    <div class="shelf-card">
+                        <div class="mini-cover">
+                            @if (!string.IsNullOrWhiteSpace(comic.CoverImagePath))
+                            {
+                                <img src="@comic.CoverImagePath" alt="@comic.Title" class="mini-cover-image" />
+                            }
+                        </div>
+
+                        <div class="shelf-body">
+                            <p class="meta">Favorite</p>
+                            <h4>@comic.Title</h4>
+                        </div>
+                    </div>
+                </a>
+            }
+        </section>
 
         <section class="shelf-block">
             <div class="section-row small">

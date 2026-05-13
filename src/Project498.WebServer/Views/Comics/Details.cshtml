@@ -5,6 +5,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var activeCheckout = ViewBag.ActiveCheckout as CheckoutDto;
     var isCheckedOut = activeCheckout != null;
+    var isFavorite = ViewBag.IsFavorite as bool? ?? false;
+    var reviews = ViewBag.Reviews as List<ComicReviewDto> ?? new List<ComicReviewDto>();
+    var userReview = ViewBag.UserReview as ComicReviewDto;
 }
 
 <section class="comic-detail-page">
@@ -27,11 +30,28 @@
                 }
             </div>
 
+            <div class="rating-summary">
+                <span>@(Model.AverageRating > 0 ? Model.AverageRating.ToString("0.0") : "No ratings yet")</span>
+                @if (Model.ReviewCount > 0)
+                {
+                    <span class="rating-stars">★★★★★</span>
+                    <span class="rating-count">@Model.ReviewCount review@(Model.ReviewCount == 1 ? "" : "s")</span>
+                }
+            </div>
+
             <p class="comic-detail-description">
                 @Model.Description
             </p>
 
             <div class="comic-detail-actions">
+                <form method="post" action="/Comics/ToggleFavorite">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <input type="hidden" name="isFavorite" value="@isFavorite.ToString().ToLower()" />
+                    <button type="submit" class="btn btn-light detail-btn">
+                        @(isFavorite ? "Remove Favorite" : "Add Favorite")
+                    </button>
+                </form>
+
                 @if (isCheckedOut)
                 {
                     <a href="/Reader/Index?id=@Model.Id" class="btn btn-dark detail-btn">Read Now</a>
@@ -62,4 +82,56 @@
             
         </div>
     </div>
+
+    <section class="reviews-section">
+        <div class="section-row">
+            <h2>Reviews</h2>
+        </div>
+
+        <form method="post" action="/Comics/SaveReview" class="review-form">
+            <input type="hidden" name="id" value="@Model.Id" />
+
+            <label for="rating">Your rating</label>
+            <select id="rating" name="rating" class="explore-select review-rating">
+                @for (var rating = 5; rating >= 1; rating--)
+                {
+                    <option value="@rating" selected="@(userReview?.Rating == rating)">
+                        @rating star@(rating == 1 ? "" : "s")
+                    </option>
+                }
+            </select>
+
+            <label for="comment">Your review</label>
+            <textarea id="comment" name="comment" class="review-textarea" rows="4">@userReview?.Comment</textarea>
+
+            <button type="submit" class="btn btn-dark detail-btn">Save Review</button>
+        </form>
+
+        @if (!reviews.Any())
+        {
+            <div class="empty-state review-empty">
+                <h3>No reviews yet</h3>
+                <p>Be the first to rate this comic.</p>
+            </div>
+        }
+        else
+        {
+            <div class="review-list">
+                @foreach (var review in reviews)
+                {
+                    <article class="review-card">
+                        <div class="review-header">
+                            <strong>@review.Username</strong>
+                            <span>@review.Rating/5</span>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(review.Comment))
+                        {
+                            <p>@review.Comment</p>
+                        }
+                    </article>
+                }
+            </div>
+        }
+    </section>
+
 </section>

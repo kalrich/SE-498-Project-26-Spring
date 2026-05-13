@@ -79,6 +79,43 @@ namespace Project498.WebApi.Migrations
                     b.ToTable("CharacterImages");
                 });
 
+            modelBuilder.Entity("Project498.WebApi.Models.ComicReview", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ComicId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ComicId");
+
+                    b.HasIndex("UserId", "ComicId")
+                        .IsUnique();
+
+                    b.ToTable("ComicReviews");
+                });
+
             modelBuilder.Entity("Project498.WebApi.Models.Comic", b =>
                 {
                     b.Property<int>("Id")
@@ -133,6 +170,33 @@ namespace Project498.WebApi.Migrations
                     b.ToTable("Comics", (string)null);
                 });
 
+            modelBuilder.Entity("Project498.WebApi.Models.FavoriteComic", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ComicId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ComicId");
+
+                    b.HasIndex("UserId", "ComicId")
+                        .IsUnique();
+
+                    b.ToTable("FavoriteComics");
+                });
+
             modelBuilder.Entity("Project498.WebApi.Models.MarvelCharacter", b =>
                 {
                     b.Property<int>("Id")
@@ -160,6 +224,43 @@ namespace Project498.WebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MarvelCharacters");
+                });
+
+            modelBuilder.Entity("Project498.WebApi.Models.ReadingHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ComicId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CurrentPage")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<DateTime>("LastReadAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ProgressPercent")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ComicId");
+
+                    b.HasIndex("UserId", "ComicId")
+                        .IsUnique();
+
+                    b.ToTable("ReadingHistories");
                 });
 
             modelBuilder.Entity("Project498.WebApi.Models.User", b =>
@@ -223,6 +324,63 @@ namespace Project498.WebApi.Migrations
                 });
 
             modelBuilder.Entity("Project498.WebApi.Models.Checkout", b =>
+                {
+                    b.HasOne("Project498.WebApi.Models.Comic", "Comic")
+                        .WithMany()
+                        .HasForeignKey("ComicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project498.WebApi.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Comic");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Project498.WebApi.Models.ComicReview", b =>
+                {
+                    b.HasOne("Project498.WebApi.Models.Comic", "Comic")
+                        .WithMany()
+                        .HasForeignKey("ComicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project498.WebApi.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Comic");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Project498.WebApi.Models.FavoriteComic", b =>
+                {
+                    b.HasOne("Project498.WebApi.Models.Comic", "Comic")
+                        .WithMany()
+                        .HasForeignKey("ComicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project498.WebApi.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Comic");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Project498.WebApi.Models.ReadingHistory", b =>
                 {
                     b.HasOne("Project498.WebApi.Models.Comic", "Comic")
                         .WithMany()

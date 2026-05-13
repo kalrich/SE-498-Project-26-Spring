@@ -1,4 +1,7 @@
 DROP TABLE IF EXISTS "Checkouts";
+DROP TABLE IF EXISTS "ComicReviews";
+DROP TABLE IF EXISTS "ReadingHistories";
+DROP TABLE IF EXISTS "FavoriteComics";
 DROP TABLE IF EXISTS "UserComics";
 DROP TABLE IF EXISTS "MarvelCharacters";
 DROP TABLE IF EXISTS "CharacterImages";
@@ -65,5 +68,43 @@ CREATE TABLE "Checkouts" (
     FOREIGN KEY ("ComicId") REFERENCES "Comics"("Id") ON DELETE CASCADE
 );
 
+CREATE TABLE "FavoriteComics" (
+    "Id" SERIAL PRIMARY KEY,
+    "UserId" INTEGER NOT NULL,
+    "ComicId" INTEGER NOT NULL,
+    "CreatedAt" TIMESTAMPTZ NOT NULL,
+    FOREIGN KEY ("UserId") REFERENCES "Users"("Id") ON DELETE CASCADE,
+    FOREIGN KEY ("ComicId") REFERENCES "Comics"("Id") ON DELETE CASCADE,
+    UNIQUE("UserId", "ComicId")
+);
+
+CREATE TABLE "ReadingHistories" (
+    "Id" SERIAL PRIMARY KEY,
+    "UserId" INTEGER NOT NULL,
+    "ComicId" INTEGER NOT NULL,
+    "CurrentPage" INTEGER NOT NULL DEFAULT 1,
+    "ProgressPercent" INTEGER NOT NULL DEFAULT 0,
+    "LastReadAt" TIMESTAMPTZ NOT NULL,
+    FOREIGN KEY ("UserId") REFERENCES "Users"("Id") ON DELETE CASCADE,
+    FOREIGN KEY ("ComicId") REFERENCES "Comics"("Id") ON DELETE CASCADE,
+    UNIQUE("UserId", "ComicId")
+);
+
+CREATE TABLE "ComicReviews" (
+    "Id" SERIAL PRIMARY KEY,
+    "UserId" INTEGER NOT NULL,
+    "ComicId" INTEGER NOT NULL,
+    "Rating" INTEGER NOT NULL,
+    "Comment" TEXT NOT NULL,
+    "CreatedAt" TIMESTAMPTZ NOT NULL,
+    "UpdatedAt" TIMESTAMPTZ NOT NULL,
+    FOREIGN KEY ("UserId") REFERENCES "Users"("Id") ON DELETE CASCADE,
+    FOREIGN KEY ("ComicId") REFERENCES "Comics"("Id") ON DELETE CASCADE,
+    UNIQUE("UserId", "ComicId")
+);
+
 CREATE INDEX "IX_Checkouts_UserId" ON "Checkouts" ("UserId");
 CREATE INDEX "IX_Checkouts_ComicId" ON "Checkouts" ("ComicId");
+CREATE INDEX "IX_FavoriteComics_ComicId" ON "FavoriteComics" ("ComicId");
+CREATE INDEX "IX_ReadingHistories_ComicId" ON "ReadingHistories" ("ComicId");
+CREATE INDEX "IX_ComicReviews_ComicId" ON "ComicReviews" ("ComicId");

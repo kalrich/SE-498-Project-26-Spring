@@ -77,9 +77,95 @@
             </div>
 
             <div class="profile-detail-row">
-                <span class="profile-label">Reader Progress</span>
-                <span class="profile-value">Mock Mode</span>
+                <span class="profile-label">Favorites</span>
+                <span class="profile-value">@Model.Favorites.Count</span>
             </div>
+
+            <div class="profile-detail-row">
+                <span class="profile-label">Reviews</span>
+                <span class="profile-value">@Model.Reviews.Count</span>
+            </div>
+        </div>
+
+        <div class="profile-card profile-wide-card">
+            <h3>Favorites</h3>
+
+            @if (!Model.Favorites.Any())
+            {
+                <p class="profile-empty-text">No favorites yet.</p>
+            }
+            else
+            {
+                <div class="profile-comic-list">
+                    @foreach (var comic in Model.Favorites)
+                    {
+                        <a href="/Comics/Details?id=@comic.Id" class="profile-comic-row">
+                            <img src="@comic.CoverImagePath" alt="@comic.Title" class="profile-comic-cover" />
+                            <div>
+                                <strong>@comic.Title</strong>
+                                <span>@comic.Author</span>
+                            </div>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="profile-card profile-wide-card">
+            <h3>Recently Read</h3>
+
+            @if (!Model.ReadingHistory.Any())
+            {
+                <p class="profile-empty-text">No reading history yet.</p>
+            }
+            else
+            {
+                <div class="profile-comic-list">
+                    @foreach (var item in Model.ReadingHistory)
+                    {
+                        <a href="/Reader/Index?id=@item.ComicId" class="profile-comic-row">
+                            <img src="@item.CoverImagePath" alt="@item.Title" class="profile-comic-cover" />
+                            <div>
+                                <strong>@item.Title</strong>
+                                <span>Page @item.CurrentPage · @item.ProgressPercent%</span>
+                            </div>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="profile-card profile-wide-card">
+            <h3>My Reviews</h3>
+
+            @if (!Model.Reviews.Any())
+            {
+                <p class="profile-empty-text">No reviews yet.</p>
+            }
+            else
+            {
+                <div class="profile-review-list">
+                    @foreach (var review in Model.Reviews)
+                    {
+                        <a href="/Comics/Details?id=@review.ComicId" class="profile-review-card">
+                            @if (!string.IsNullOrWhiteSpace(review.CoverImagePath))
+                            {
+                                <img src="@review.CoverImagePath" alt="@review.ComicTitle" class="profile-comic-cover" />
+                            }
+                            <div>
+                                <div class="profile-review-heading">
+                                    <strong>@review.ComicTitle</strong>
+                                    <span>@review.Rating/5</span>
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(review.Comment))
+                                {
+                                    <p>@review.Comment</p>
+                                }
+                            </div>
+                        </a>
+                    }
+                </div>
+            }
         </div>
     </div>
 </section>

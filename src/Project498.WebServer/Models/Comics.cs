@@ -33,6 +33,9 @@ public class Comic
     public string Shelf { get; set; } = "";
 
     public bool IsIReadPick { get; set; }
+    public bool IsFavorite { get; set; }
+    public double AverageRating { get; set; }
+    public int ReviewCount { get; set; }
     
     
 }

@@ -12,12 +12,14 @@ public class ExploreController : Controller
         _comicService = comicService;
     }
 
-    public async Task<IActionResult> Index(string? query, string? genre)
+    public async Task<IActionResult> Index(string? query, string? genre, string? status)
     {
+        var userId = HttpContext.Session.GetInt32("UserId");
         ViewBag.Query = query ?? "";
         ViewBag.SelectedGenre = genre ?? "";
+        ViewBag.SelectedStatus = status ?? "";
         ViewBag.Genres = await _comicService.GetGenresAsync();
-        ViewBag.Comics = await _comicService.SearchAsync(query, genre);
+        ViewBag.Comics = await _comicService.SearchAsync(query, genre, status, userId);
 
         return View();
     }

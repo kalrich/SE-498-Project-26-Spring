@@ -9,4 +9,7 @@ public class CheckoutResponse
     public DateTime DueDate { get; set; }
     public DateTime? ReturnDate { get; set; }
     public string Status { get; set; } = "";
+    public string ComicTitle { get; set; } = "";
+    public string CoverImagePath { get; set; } = "";
+    public bool IsOverdue { get; set; }
 }

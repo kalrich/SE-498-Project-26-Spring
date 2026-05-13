@@ -21,12 +21,11 @@ public class ComicsController : Controller
 
     public async Task<IActionResult> Details(int id)
     {
-        var comic = await _comicService.GetByIdAsync(id);
+        var userId = HttpContext.Session.GetInt32("UserId");
+        var comic = await _comicService.GetByIdAsync(id, userId);
         if (comic == null)
             return NotFound();
 
-        var userId = HttpContext.Session.GetInt32("UserId");
-    
         if (userId != null)
         {
             try
@@ -35,19 +34,27 @@ public class ComicsController : Controller
                 var activeCheckout = checkouts.FirstOrDefault(c => c.ComicId == id && !c.ReturnDate.HasValue);
                 ViewBag.ActiveCheckout = activeCheckout;
                 ViewBag.IsCheckedOut = activeCheckout != null;
+                ViewBag.IsFavorite = await _comicService.GetFavoriteStatusAsync(userId.Value, id);
+                ViewBag.UserReview = await _comicService.GetUserReviewAsync(userId.Value, id);
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Could not check checkout status for comic {id}", id);
                 ViewBag.IsCheckedOut = false;
                 ViewBag.ActiveCheckout = null;
+                ViewBag.IsFavorite = false;
+                ViewBag.UserReview = null;
             }
         }
         else
         {
             ViewBag.IsCheckedOut = false;
             ViewBag.ActiveCheckout = null;
+            ViewBag.IsFavorite = false;
+            ViewBag.UserReview = null;
         }
+
+        ViewBag.Reviews = await _comicService.GetReviewsAsync(id);
 
         return View(comic);
     }
@@ -63,6 +70,34 @@ public class ComicsController : Controller
         }
 
         await _comicService.AddToShelfAsync(username, id, shelf);
+
+        return RedirectToAction("Details", new { id });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ToggleFavorite(int id, bool isFavorite)
+    {
+        var userId = HttpContext.Session.GetInt32("UserId");
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Auth");
+        }
+
+        await _comicService.SetFavoriteAsync(userId.Value, id, !isFavorite);
+
+        return RedirectToAction("Details", new { id });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SaveReview(int id, int rating, string comment)
+    {
+        var userId = HttpContext.Session.GetInt32("UserId");
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Auth");
+        }
+
+        await _comicService.SaveReviewAsync(userId.Value, id, Math.Clamp(rating, 1, 5), comment ?? "");
 
         return RedirectToAction("Details", new { id });
     }

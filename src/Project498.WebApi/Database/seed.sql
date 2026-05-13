@@ -1,4 +1,7 @@
 DELETE FROM "Checkouts";
+DELETE FROM "ComicReviews";
+DELETE FROM "ReadingHistories";
+DELETE FROM "FavoriteComics";
 DELETE FROM "UserComics";
 DELETE FROM "MarvelCharacters";
 DELETE FROM "CharacterImages";
