@@ -36,7 +36,8 @@ public class ShelvesController : ControllerBase
                 PdfPath = uc.Comic.PdfPath,
                 IsIReadPick = uc.Comic.IsIReadPick,
                 Shelf = uc.Shelf,
-                ProgressPercent = uc.ProgressPercent
+                ProgressPercent = uc.ProgressPercent,
+                CurrentPage = uc.CurrentPage
             })
             .ToListAsync();
 
@@ -62,6 +63,7 @@ public class ShelvesController : ControllerBase
                 UserId = user.Id,
                 ComicId = request.ComicId,
                 Shelf = request.Shelf,
+                CurrentPage = 1,
                 ProgressPercent = request.Shelf == "Completed" ? 100 :
                     request.Shelf == "CurrentlyReading" ? 10 : 0
             });
@@ -82,6 +84,36 @@ public class ShelvesController : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("progress/{username}/{comicId:int}")]
+    public async Task<ActionResult<ReadingProgressResponse>> GetProgress(string username, int comicId)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Username == username);
+
+        if (user == null)
+            return NotFound("User not found");
+
+        var userComic = await _context.UserComics
+            .FirstOrDefaultAsync(uc => uc.UserId == user.Id && uc.ComicId == comicId);
+
+        if (userComic == null)
+        {
+            return Ok(new ReadingProgressResponse
+            {
+                ComicId = comicId,
+                ProgressPercent = 0,
+                CurrentPage = 1
+            });
+        }
+
+        return Ok(new ReadingProgressResponse
+        {
+            ComicId = comicId,
+            ProgressPercent = userComic.ProgressPercent,
+            CurrentPage = userComic.CurrentPage
+        });
+    }
+
     [HttpPatch("update-progress")]
     public async Task<IActionResult> UpdateProgress([FromBody] UpdateProgressRequest request)
     {
@@ -95,9 +127,29 @@ public class ShelvesController : ControllerBase
             .FirstOrDefaultAsync(uc => uc.UserId == user.Id && uc.ComicId == request.ComicId);
 
         if (userComic == null)
-            return NotFound();
+        {
+            userComic = new UserComic
+            {
+                UserId = user.Id,
+                ComicId = request.ComicId,
+                Shelf = request.ProgressPercent >= 100 ? "Completed" : "CurrentlyReading",
+                CurrentPage = Math.Max(1, request.CurrentPage ?? 1)
+            };
+
+            _context.UserComics.Add(userComic);
+        }
 
         userComic.ProgressPercent = request.ProgressPercent;
+        if (request.CurrentPage.HasValue)
+        {
+            userComic.CurrentPage = Math.Max(1, request.CurrentPage.Value);
+        }
+
+        if (request.ProgressPercent >= 100)
+            userComic.Shelf = "Completed";
+        else if (userComic.Shelf == "UpNext")
+            userComic.Shelf = "CurrentlyReading";
+
         await _context.SaveChangesAsync();
 
         return NoContent();

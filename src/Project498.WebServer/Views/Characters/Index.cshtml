@@ -2,34 +2,6 @@
 
 @{
     ViewData["Title"] = "DC Characters";
-
-    string GetImage(string alias)
-    {
-        var key = alias.ToLower().Replace(" ", "");
-
-        return key switch
-        {
-            "aquaman" => "/images/dc-characters/aquaman.jpeg",
-            "batman" => "/images/dc-characters/batman.jpeg",
-            "catwoman" => "/images/dc-characters/catwoman.jpeg",
-            "constantine" => "/images/dc-characters/constantine.jpeg",
-            "cyborg" => "/images/dc-characters/cyborg.jpg",
-            "flash" => "/images/dc-characters/flash.jpeg",
-            "theflash" => "/images/dc-characters/flash.jpeg",
-            "flashwallywest" => "/images/dc-characters/flashwallywest.jpeg",
-            "greenarrow" => "/images/dc-characters/greenarrow.jpeg",
-            "greenlantern" => "/images/dc-characters/greenlantern.jpg",
-            "harleyquinn" => "/images/dc-characters/harleyquinn.jpeg",
-            "joker" => "/images/dc-characters/joker.jpeg",
-            "nightwing" => "/images/dc-characters/nightwing.jpeg",
-            "poisonivy" => "/images/dc-characters/poisonivy.jpeg",
-            "shazam" => "/images/dc-characters/shazam.jpeg",
-            "superman" => "/images/dc-characters/superman.jpeg",
-            "wonderwoman" => "/images/dc-characters/wonderwoman.jpg",
-            "zatanna" => "/images/dc-characters/zatanna.jpeg",
-            _ => "/images/dc-characters/batman.jpeg"
-        };
-    }
 }
 
 <section class="dc-hero">
@@ -49,9 +21,12 @@ else
         @foreach (var character in Model)
         {
             <article class="dc-card">
-                <img src="@GetImage(character.Alias)"
-                     alt="@character.Alias"
-                     class="dc-card-img" />
+                @if (!string.IsNullOrWhiteSpace(character.ImagePath))
+                {
+                    <img src="@character.ImagePath"
+                         alt="@character.Alias"
+                         class="dc-card-img" />
+                }
 
                 <div class="dc-card-body">
                     <h2>@character.Alias</h2>

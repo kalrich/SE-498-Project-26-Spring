@@ -28,6 +28,11 @@
                 @Model.Description
             </p>
 
+            @if (TempData["Error"] != null)
+            {
+                <p class="error-text">@TempData["Error"]</p>
+            }
+
             <div class="comic-detail-meta-box">
                 <div class="comic-meta-row">
                     <span class="comic-meta-label">Checkout Period</span>

@@ -23,17 +23,25 @@ builder.Services.AddHttpClient<IComicService, ComicApiService>(client =>
 });
 
 // Register Checkout Service
-builder.Services.AddScoped<ICheckoutService, CheckoutService>();
-
-builder.Services.AddHttpClient<CheckoutService>(client =>
+builder.Services.AddHttpClient<ICheckoutService, CheckoutService>(client =>
 {
-    client.BaseAddress = new Uri(dcApiUrl);
+    client.BaseAddress = new Uri(apiBaseUrl);
 });
 
 // Register DC Character Service
 builder.Services.AddHttpClient<IDcCharacterService, DcCharacterService>(client =>
 {
     client.BaseAddress = new Uri(dcApiUrl);
+});
+
+builder.Services.AddHttpClient<ICharacterImageService, CharacterImageService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
+builder.Services.AddHttpClient<IMarvelCharacterService, MarvelCharacterService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
 });
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

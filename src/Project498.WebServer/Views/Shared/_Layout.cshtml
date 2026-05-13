@@ -15,6 +15,7 @@
     var isRecommendationsActive = currentController == "Recommendations";
     var isCheckoutActive = currentController == "Checkout";
     var isCharactersActive = currentController == "Characters";
+    var isMarvelCharactersActive = currentController == "MarvelCharacters";
     
     var initials = "";
     if (!string.IsNullOrWhiteSpace(username))
@@ -66,6 +67,10 @@
 
             <a class="nav-text-link @(isCharactersActive ? "active-nav" : "")" href="/Characters">
                 DC Characters
+            </a>
+
+            <a class="nav-text-link @(isMarvelCharactersActive ? "active-nav" : "")" href="/MarvelCharacters">
+                Marvel Characters
             </a>
 
             <a class="nav-text-link @(isCheckoutActive ? "active-nav" : "")" href="/Checkout/Active">

@@ -1,0 +1,51 @@
+@model List<Project498.WebServer.Services.MarvelCharacterDto>
+
+@{
+    ViewData["Title"] = "Marvel Characters";
+}
+
+<section class="dc-hero">
+    <h1>Marvel Characters</h1>
+    <p>Explore Golden Age Marvel characters from your collection.</p>
+</section>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="empty-state">
+        No Marvel characters found. Make sure the database has been seeded.
+    </div>
+}
+else
+{
+    <div class="dc-grid">
+        @foreach (var character in Model)
+        {
+            <article class="dc-card">
+                @if (!string.IsNullOrWhiteSpace(character.ImagePath))
+                {
+                    <img src="@character.ImagePath"
+                         alt="@character.Alias"
+                         class="dc-card-img" />
+                }
+
+                <div class="dc-card-body">
+                    <h2>@character.Alias</h2>
+                    <h3>@character.Name</h3>
+
+                    <p>
+                        @(string.IsNullOrWhiteSpace(character.Description)
+                            ? "No description available."
+                            : character.Description)
+                    </p>
+
+                    <a asp-controller="MarvelCharacters"
+                       asp-action="Details"
+                       asp-route-id="@character.Id"
+                       class="dc-btn">
+                        View Details
+                    </a>
+                </div>
+            </article>
+        }
+    </div>
+}

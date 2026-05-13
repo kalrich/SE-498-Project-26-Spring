@@ -35,8 +35,11 @@
         "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
     const url = "@Model.PdfPath";
+    const comicId = @Model.Id;
+    const savedPage = @(ViewBag.CurrentPage ?? 1);
     let pdfDoc = null;
-    let pageNum = 1;
+    let pageNum = Math.max(1, savedPage);
+    let lastSavedPage = pageNum;
     const scale = 1.3;
     const canvas = document.getElementById("pdf-canvas");
     const ctx = canvas.getContext("2d");
@@ -61,14 +64,37 @@
 
             page.render(renderContext);
             document.getElementById("page-num").textContent = num;
+            saveProgress(num);
         }).catch(function(err) {
             showError("Could not render page: " + err.message);
+        });
+    }
+
+    function saveProgress(num) {
+        if (!pdfDoc || num === lastSavedPage) return;
+
+        lastSavedPage = num;
+        const progressPercent = Math.round((num / pdfDoc.numPages) * 100);
+
+        fetch("/Reader/SaveProgress", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                comicId: comicId,
+                currentPage: num,
+                progressPercent: progressPercent
+            })
+        }).catch(function(err) {
+            console.warn("Could not save reading progress", err);
         });
     }
 
     pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
         pdfDoc = pdfDoc_;
         document.getElementById("page-count").textContent = pdfDoc.numPages;
+        pageNum = Math.min(pageNum, pdfDoc.numPages);
         renderPage(pageNum);
     }).catch(function(err) {
         showError("Could not load PDF: " + err.message);
@@ -84,5 +110,9 @@
         if (!pdfDoc || pageNum >= pdfDoc.numPages) return;
         pageNum++;
         renderPage(pageNum);
+    });
+
+    window.addEventListener("beforeunload", function() {
+        saveProgress(pageNum);
     });
 </script>

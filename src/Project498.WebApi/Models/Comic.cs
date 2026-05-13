@@ -23,4 +23,7 @@ public class Comic
 
     [System.ComponentModel.DataAnnotations.Schema.NotMapped]
     public int ProgressPercent { get; set; }
+
+    [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+    public int CurrentPage { get; set; } = 1;
 }

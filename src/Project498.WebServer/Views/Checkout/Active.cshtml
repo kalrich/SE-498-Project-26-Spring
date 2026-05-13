@@ -29,7 +29,7 @@
                     <div class="checkout-info">
                         <div class="checkout-meta">
                             <span class="checkout-id">Checkout #@checkout.CheckoutId</span>
-                            <span class="checkout-status @(checkout.Status.ToLower())">@checkout.Status</span>
+                            <span class="checkout-status @((checkout.Status ?? "").ToLower())">@checkout.Status</span>
                         </div>
 
                         <div class="checkout-dates">

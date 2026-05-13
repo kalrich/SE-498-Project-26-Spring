@@ -52,9 +52,17 @@ public class DcCharacterDto
 {
     public int CharacterId { get; set; }
 
+    public int Id
+    {
+        get => CharacterId;
+        set => CharacterId = value;
+    }
+
     public string Name { get; set; } = string.Empty;
 
     public string Alias { get; set; } = string.Empty;
 
     public string Description { get; set; } = string.Empty;
+
+    public string ImagePath { get; set; } = string.Empty;
 }

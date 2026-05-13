@@ -78,6 +78,36 @@ public class ComicApiService : IComicService
 
         await _http.SendAsync(request);
     }
+
+    public async Task<ReadingProgressDto> GetReadingProgressAsync(string username, int comicId)
+    {
+        return await _http.GetFromJsonAsync<ReadingProgressDto>(
+                   $"api/shelves/progress/{Uri.EscapeDataString(username)}/{comicId}")
+               ?? new ReadingProgressDto
+               {
+                   ComicId = comicId,
+                   ProgressPercent = 0,
+                   CurrentPage = 1
+               };
+    }
+
+    public async Task UpdateReadingProgressAsync(string username, int comicId, int progress, int currentPage)
+    {
+        var body = new
+        {
+            Username = username,
+            ComicId = comicId,
+            ProgressPercent = progress,
+            CurrentPage = currentPage
+        };
+
+        var request = new HttpRequestMessage(HttpMethod.Patch, "api/shelves/update-progress")
+        {
+            Content = JsonContent.Create(body)
+        };
+
+        await _http.SendAsync(request);
+    }
     
     public async Task<List<Comic>> GetFeaturedTodayAsync()
     {
