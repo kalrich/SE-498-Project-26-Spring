@@ -1034,8 +1034,10 @@ html, body {
 }
 
 .active-nav {
+  position: relative;
   color: var(--accent-red);
   font-weight: 700;
+  display: inline-block;
 }
 
 .active-nav::after {
@@ -1233,4 +1235,133 @@ html, body {
   height: auto;
   background: white;
   box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.dc-hero {
+  margin-bottom: 2rem;
+}
+
+.dc-hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.dc-hero p {
+  color: #6b5f57;
+  font-size: 1.05rem;
+}
+
+.dc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.dc-card {
+  background: #fffaf5;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dc-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.dc-card-img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  display: block;
+}
+
+.dc-card-body {
+  padding: 1.25rem;
+}
+
+.dc-card-body h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.dc-card-body h3 {
+  margin: 0.25rem 0 0.8rem;
+  color: #7a6b61;
+  font-size: 0.95rem;
+}
+
+.dc-card-body p {
+  min-height: 70px;
+  line-height: 1.5;
+}
+
+.dc-btn {
+  display: inline-block;
+  margin-top: 0.75rem;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  background: #1f1f1f;
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.dc-btn:hover {
+  background: #4b1d1d;
+}
+
+.dc-detail {
+  display: grid;
+  grid-template-columns: minmax(260px, 420px) 1fr;
+  gap: 2rem;
+  align-items: center;
+  background: #fffaf5;
+  border-radius: 28px;
+  padding: 2rem;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.1);
+}
+
+.dc-detail-img {
+  width: 100%;
+  border-radius: 24px;
+  object-fit: cover;
+  max-height: 520px;
+}
+
+.dc-detail-content h1 {
+  font-size: 3rem;
+  margin-bottom: 0.25rem;
+}
+
+.dc-detail-content h2 {
+  color: #7a6b61;
+  margin-bottom: 1.5rem;
+}
+
+.dc-detail-content p {
+  font-size: 1.15rem;
+  line-height: 1.7;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: #4b1d1d;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.empty-state {
+  padding: 1.5rem;
+  background: #fff3cd;
+  border-radius: 16px;
+}
+
+@media (max-width: 800px) {
+  .dc-detail {
+    grid-template-columns: 1fr;
+  }
 }
