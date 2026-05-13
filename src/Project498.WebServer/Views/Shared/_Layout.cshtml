@@ -2,7 +2,6 @@
 
 @{
     var username = Context.Session.GetString("Username");
-    var currentQuery = Context.Request.Query["query"].ToString();
 
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
 
@@ -44,15 +43,6 @@
 
 <header class="topbar">
     <a class="brand" href="@(string.IsNullOrEmpty(username) ? "/" : "/Explore")">Marvel·ous Reads</a>
-
-    <form class="search-wrap" method="get" action="/Explore">
-        <input
-            class="search-bar"
-            type="text"
-            name="query"
-            value="@currentQuery"
-            placeholder="Search books, characters, comics..." />
-    </form>
 
     <nav class="top-actions">
         @if (!string.IsNullOrEmpty(username))
