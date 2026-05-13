@@ -19,7 +19,11 @@ public class ComicsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Comic>>> GetAll([FromQuery] string? query, [FromQuery] string? genre)
+    public async Task<ActionResult<List<Comic>>> GetAll(
+        [FromQuery] string? query,
+        [FromQuery] string? genre,
+        [FromQuery] string? status,
+        [FromQuery] int? userId)
     {
         var comics = _context.Comics.AsQueryable();
 
@@ -28,7 +32,9 @@ public class ComicsController : ControllerBase
             var q = query.ToLower();
             comics = comics.Where(c =>
                 c.Title.ToLower().Contains(q) ||
-                c.Author.ToLower().Contains(q));
+                c.Author.ToLower().Contains(q) ||
+                c.Description.ToLower().Contains(q) ||
+                c.SeriesName.ToLower().Contains(q));
         }
 
         if (!string.IsNullOrWhiteSpace(genre))
@@ -37,11 +43,30 @@ public class ComicsController : ControllerBase
                 c.Genre == genre || c.SecondaryGenre == genre);
         }
 
-        return Ok(await comics.ToListAsync());
+        if (!string.IsNullOrWhiteSpace(status) && userId.HasValue)
+        {
+            var activeComicIds = _context.Checkouts
+                .Where(c => c.UserId == userId.Value && c.ReturnDate == null)
+                .Select(c => c.ComicId);
+
+            if (status.Equals("checkedout", StringComparison.OrdinalIgnoreCase))
+            {
+                comics = comics.Where(c => activeComicIds.Contains(c.Id));
+            }
+            else if (status.Equals("available", StringComparison.OrdinalIgnoreCase))
+            {
+                comics = comics.Where(c => !activeComicIds.Contains(c.Id));
+            }
+        }
+
+        var results = await comics.ToListAsync();
+        await AddUserState(results, userId);
+
+        return Ok(results);
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Comic>> GetById(int id)
+    public async Task<ActionResult<Comic>> GetById(int id, [FromQuery] int? userId)
     {
         var comic = await _context.Comics.FirstOrDefaultAsync(c => c.Id == id);
 
@@ -49,6 +74,8 @@ public class ComicsController : ControllerBase
         {
             return NotFound();
         }
+
+        await AddUserState(new List<Comic> { comic }, userId);
 
         return Ok(comic);
     }
@@ -110,4 +137,36 @@ public class ComicsController : ControllerBase
         return Ok(comics);
     }
     
+    private async Task AddUserState(List<Comic> comics, int? userId)
+    {
+        if (comics.Count == 0)
+            return;
+
+        var comicIds = comics.Select(c => c.Id).ToList();
+        var ratingSummaries = await _context.ComicReviews
+            .Where(r => comicIds.Contains(r.ComicId))
+            .GroupBy(r => r.ComicId)
+            .Select(g => new
+            {
+                ComicId = g.Key,
+                AverageRating = g.Average(r => r.Rating),
+                ReviewCount = g.Count()
+            })
+            .ToListAsync();
+
+        var favoriteIds = userId.HasValue
+            ? await _context.FavoriteComics
+                .Where(f => f.UserId == userId.Value && comicIds.Contains(f.ComicId))
+                .Select(f => f.ComicId)
+                .ToListAsync()
+            : new List<int>();
+
+        foreach (var comic in comics)
+        {
+            var rating = ratingSummaries.FirstOrDefault(r => r.ComicId == comic.Id);
+            comic.AverageRating = rating == null ? 0 : Math.Round(rating.AverageRating, 1);
+            comic.ReviewCount = rating?.ReviewCount ?? 0;
+            comic.IsFavorite = favoriteIds.Contains(comic.Id);
+        }
+    }
 }

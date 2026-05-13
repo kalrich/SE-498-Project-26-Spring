@@ -19,9 +19,13 @@ public class ComicApiService : IComicService
                ?? new List<Comic>();
     }
 
-    public async Task<Comic?> GetByIdAsync(int id)
+    public async Task<Comic?> GetByIdAsync(int id, int? userId = null)
     {
-        return await _http.GetFromJsonAsync<Comic>($"api/comics/{id}");
+        var url = userId.HasValue
+            ? $"api/comics/{id}?userId={userId.Value}"
+            : $"api/comics/{id}";
+
+        return await _http.GetFromJsonAsync<Comic>(url);
     }
     
     public async Task<List<Comic>> GetAllAsync()
@@ -30,9 +34,14 @@ public class ComicApiService : IComicService
                ?? new List<Comic>();
     }
 
-    public async Task<List<Comic>> SearchAsync(string? query, string? genre)
+    public async Task<List<Comic>> SearchAsync(string? query, string? genre, string? status = null, int? userId = null)
     {
-        var url = $"api/comics?query={Uri.EscapeDataString(query ?? "")}&genre={Uri.EscapeDataString(genre ?? "")}";
+        var url = $"api/comics?query={Uri.EscapeDataString(query ?? "")}&genre={Uri.EscapeDataString(genre ?? "")}&status={Uri.EscapeDataString(status ?? "")}";
+        if (userId.HasValue)
+        {
+            url += $"&userId={userId.Value}";
+        }
+
         return await _http.GetFromJsonAsync<List<Comic>>(url)
                ?? new List<Comic>();
     }
@@ -145,4 +154,75 @@ public class ComicApiService : IComicService
                    $"api/comics/series/{Uri.EscapeDataString(seriesName)}")
                ?? new List<Comic>();
     }
+
+    public async Task<List<Comic>> GetFavoritesAsync(int userId)
+    {
+        return await _http.GetFromJsonAsync<List<Comic>>($"api/favorites/user/{userId}")
+               ?? new List<Comic>();
+    }
+
+    public async Task<bool> GetFavoriteStatusAsync(int userId, int comicId)
+    {
+        var status = await _http.GetFromJsonAsync<FavoriteStatusDto>(
+            $"api/favorites/user/{userId}/comic/{comicId}");
+
+        return status?.IsFavorite ?? false;
+    }
+
+    public async Task SetFavoriteAsync(int userId, int comicId, bool isFavorite)
+    {
+        if (isFavorite)
+        {
+            await _http.PostAsJsonAsync("api/favorites", new
+            {
+                UserId = userId,
+                ComicId = comicId
+            });
+            return;
+        }
+
+        await _http.DeleteAsync($"api/favorites/user/{userId}/comic/{comicId}");
+    }
+
+    public async Task<List<ReadingHistoryItem>> GetReadingHistoryAsync(int userId)
+    {
+        return await _http.GetFromJsonAsync<List<ReadingHistoryItem>>($"api/readinghistory/user/{userId}")
+               ?? new List<ReadingHistoryItem>();
+    }
+
+    public async Task<List<ComicReviewDto>> GetReviewsAsync(int comicId)
+    {
+        return await _http.GetFromJsonAsync<List<ComicReviewDto>>($"api/comicreviews/comic/{comicId}")
+               ?? new List<ComicReviewDto>();
+    }
+
+    public async Task<ComicReviewDto?> GetUserReviewAsync(int userId, int comicId)
+    {
+        return await _http.GetFromJsonAsync<ComicReviewDto?>(
+            $"api/comicreviews/user/{userId}/comic/{comicId}");
+    }
+
+    public async Task<List<ComicReviewDto>> GetUserReviewsAsync(int userId)
+    {
+        return await _http.GetFromJsonAsync<List<ComicReviewDto>>($"api/comicreviews/user/{userId}")
+               ?? new List<ComicReviewDto>();
+    }
+
+    public async Task SaveReviewAsync(int userId, int comicId, int rating, string comment)
+    {
+        await _http.PostAsJsonAsync("api/comicreviews", new
+        {
+            UserId = userId,
+            ComicId = comicId,
+            Rating = rating,
+            Comment = comment
+        });
+    }
+}
+
+public class FavoriteStatusDto
+{
+    public int UserId { get; set; }
+    public int ComicId { get; set; }
+    public bool IsFavorite { get; set; }
 }

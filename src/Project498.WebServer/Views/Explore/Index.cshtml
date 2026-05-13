@@ -7,6 +7,7 @@
     var genres = ViewBag.Genres as List<string> ?? new List<string>();
     var query = ViewBag.Query as string ?? "";
     var selectedGenre = ViewBag.SelectedGenre as string ?? "";
+    var selectedStatus = ViewBag.SelectedStatus as string ?? "";
 }
 
 <section class="explore-page">
@@ -25,6 +26,24 @@
                 value="@query"
                 placeholder="Search by title, author, or description..."
                 class="explore-search-input" />
+        </div>
+
+        <div class="explore-genre-wrap">
+            <select name="genre" class="explore-select">
+                <option value="">All genres</option>
+                @foreach (var genre in genres)
+                {
+                    <option value="@genre" selected="@(selectedGenre == genre)">@genre</option>
+                }
+            </select>
+        </div>
+
+        <div class="explore-genre-wrap">
+            <select name="status" class="explore-select">
+                <option value="">All statuses</option>
+                <option value="available" selected="@(selectedStatus == "available")">Available</option>
+                <option value="checkedout" selected="@(selectedStatus == "checkedout")">Checked out by me</option>
+            </select>
         </div>
 
         <button type="submit" class="btn btn-dark explore-btn">Search</button>
@@ -54,6 +73,17 @@
                             <p class="meta">@comic.Author</p>
                             <h3>@comic.Title</h3>
                             <p class="explore-card-desc">@comic.Description</p>
+
+                            <div class="explore-card-stats">
+                                @if (comic.IsFavorite)
+                                {
+                                    <span>Favorite</span>
+                                }
+                                @if (comic.ReviewCount > 0)
+                                {
+                                    <span>@comic.AverageRating.ToString("0.0")/5</span>
+                                }
+                            </div>
 
                             <div class="pill-row">
                                 <span class="pill">@comic.Genre</span>

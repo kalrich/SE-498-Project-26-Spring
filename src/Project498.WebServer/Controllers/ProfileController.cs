@@ -34,13 +34,26 @@ public class ProfileController : Controller
         }
 
         var completed = await _comicService.GetShelfAsync(username, "Completed");
+        var userId = HttpContext.Session.GetInt32("UserId");
+        var favorites = userId.HasValue
+            ? await _comicService.GetFavoritesAsync(userId.Value)
+            : new List<Comic>();
+        var readingHistory = userId.HasValue
+            ? await _comicService.GetReadingHistoryAsync(userId.Value)
+            : new List<ReadingHistoryItem>();
+        var reviews = userId.HasValue
+            ? await _comicService.GetUserReviewsAsync(userId.Value)
+            : new List<ComicReviewDto>();
 
         var model = new ProfileViewModel
         {
             Username = user.Username,
             Email = user.Email,
             Password = "",
-            TotalBooksRead = completed.Count
+            TotalBooksRead = completed.Count,
+            Favorites = favorites,
+            ReadingHistory = readingHistory,
+            Reviews = reviews
         };
 
         ViewBag.Success = TempData["Success"];
@@ -62,6 +75,13 @@ public class ProfileController : Controller
 
         var completed = await _comicService.GetShelfAsync(username, "Completed");
         model.TotalBooksRead = completed.Count;
+        var userId = HttpContext.Session.GetInt32("UserId");
+        if (userId.HasValue)
+        {
+            model.Favorites = await _comicService.GetFavoritesAsync(userId.Value);
+            model.ReadingHistory = await _comicService.GetReadingHistoryAsync(userId.Value);
+            model.Reviews = await _comicService.GetUserReviewsAsync(userId.Value);
+        }
 
         if (!ModelState.IsValid)
         {

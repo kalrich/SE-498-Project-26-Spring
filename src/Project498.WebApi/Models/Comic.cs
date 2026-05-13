@@ -26,4 +26,13 @@ public class Comic
 
     [System.ComponentModel.DataAnnotations.Schema.NotMapped]
     public int CurrentPage { get; set; } = 1;
+
+    [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+    public bool IsFavorite { get; set; }
+
+    [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+    public double AverageRating { get; set; }
+
+    [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+    public int ReviewCount { get; set; }
 }

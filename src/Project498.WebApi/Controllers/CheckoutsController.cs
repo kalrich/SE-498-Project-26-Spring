@@ -12,6 +12,7 @@ namespace Project498.WebApi.Controllers;
 [Authorize]
 public class CheckoutsController : ControllerBase
 {
+    private const int MaxActiveCheckouts = 3;
     private readonly AppDbContext _context;
 
     public CheckoutsController(AppDbContext context)
@@ -45,6 +46,14 @@ public class CheckoutsController : ControllerBase
             return Conflict(ToResponse(existingActiveCheckout));
         }
 
+        var activeCheckoutCount = await _context.Checkouts
+            .CountAsync(c => c.UserId == request.UserId && c.ReturnDate == null);
+
+        if (activeCheckoutCount >= MaxActiveCheckouts)
+        {
+            return BadRequest($"Checkout limit reached. You can have up to {MaxActiveCheckouts} active checkouts at once.");
+        }
+
         var checkoutDate = DateTime.UtcNow;
         var checkout = new Checkout
         {
@@ -64,7 +73,9 @@ public class CheckoutsController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<CheckoutResponse>> GetById(int id)
     {
-        var checkout = await _context.Checkouts.FirstOrDefaultAsync(c => c.Id == id);
+        var checkout = await _context.Checkouts
+            .Include(c => c.Comic)
+            .FirstOrDefaultAsync(c => c.Id == id);
 
         if (checkout == null)
         {
@@ -85,12 +96,12 @@ public class CheckoutsController : ControllerBase
             checkouts = checkouts.Where(c => c.ReturnDate == null);
         }
 
-        var response = await checkouts
+        var checkoutList = await checkouts
+            .Include(c => c.Comic)
             .OrderByDescending(c => c.CheckoutDate)
-            .Select(c => ToResponse(c))
             .ToListAsync();
 
-        return Ok(response);
+        return Ok(checkoutList.Select(ToResponse).ToList());
     }
 
     [HttpPut("{id:int}/return")]
@@ -115,6 +126,8 @@ public class CheckoutsController : ControllerBase
 
     private static CheckoutResponse ToResponse(Checkout checkout)
     {
+        var isOverdue = checkout.ReturnDate == null && checkout.DueDate < DateTime.UtcNow;
+
         return new CheckoutResponse
         {
             CheckoutId = checkout.Id,
@@ -123,7 +136,10 @@ public class CheckoutsController : ControllerBase
             CheckoutDate = checkout.CheckoutDate,
             DueDate = checkout.DueDate,
             ReturnDate = checkout.ReturnDate,
-            Status = checkout.Status
+            Status = isOverdue ? "Overdue" : checkout.Status,
+            ComicTitle = checkout.Comic?.Title ?? "",
+            CoverImagePath = checkout.Comic?.CoverImagePath ?? "",
+            IsOverdue = isOverdue
         };
     }
 }

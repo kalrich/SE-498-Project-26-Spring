@@ -152,6 +152,24 @@ public class ShelvesController : ControllerBase
         else if (userComic.Shelf == "UpNext")
             userComic.Shelf = "CurrentlyReading";
 
+        var history = await _context.ReadingHistories
+            .FirstOrDefaultAsync(h => h.UserId == user.Id && h.ComicId == request.ComicId);
+
+        if (history == null)
+        {
+            history = new ReadingHistory
+            {
+                UserId = user.Id,
+                ComicId = request.ComicId
+            };
+
+            _context.ReadingHistories.Add(history);
+        }
+
+        history.ProgressPercent = userComic.ProgressPercent;
+        history.CurrentPage = userComic.CurrentPage;
+        history.LastReadAt = DateTime.UtcNow;
+
         await _context.SaveChangesAsync();
 
         return NoContent();

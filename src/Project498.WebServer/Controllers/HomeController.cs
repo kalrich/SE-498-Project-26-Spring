@@ -26,6 +26,12 @@ public class HomeController : Controller
             ViewBag.CurrentlyReading = await _comicService.GetShelfAsync(username, "CurrentlyReading");
             ViewBag.UpNext = await _comicService.GetShelfAsync(username, "UpNext");
             ViewBag.Completed = await _comicService.GetShelfAsync(username, "Completed");
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId.HasValue)
+            {
+                ViewBag.Favorites = await _comicService.GetFavoritesAsync(userId.Value);
+                ViewBag.ReadingHistory = await _comicService.GetReadingHistoryAsync(userId.Value);
+            }
 
             return View("Dashboard");
         }

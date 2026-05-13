@@ -9,7 +9,7 @@
 <section class="my-checkouts-page">
     <div class="checkouts-header">
         <h1>My Checkouts</h1>
-        <p>Comics you currently have checked out</p>
+        <p>Comics you currently have checked out. You can have up to 3 active checkouts.</p>
     </div>
 
     @if (!Model.Any())
@@ -26,6 +26,13 @@
             @foreach (var checkout in Model)
             {
                 <div class="checkout-card">
+                    @if (!string.IsNullOrWhiteSpace(checkout.CoverImagePath))
+                    {
+                        <a href="/Comics/Details?id=@checkout.ComicId" class="checkout-cover-link">
+                            <img src="@checkout.CoverImagePath" alt="@checkout.ComicTitle" class="checkout-cover" />
+                        </a>
+                    }
+
                     <div class="checkout-info">
                         <div class="checkout-meta">
                             <span class="checkout-id">Checkout #@checkout.CheckoutId</span>
@@ -53,7 +60,7 @@
                         </div>
 
                         <div class="checkout-comic">
-                            <span class="comic-label">Comic Confirmed</span>
+                            <span class="comic-label">@(!string.IsNullOrWhiteSpace(checkout.ComicTitle) ? checkout.ComicTitle : "Comic Confirmed")</span>
                         </div>
                     </div>
 
@@ -131,6 +138,25 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    gap: 1rem;
+}
+
+.checkout-info {
+    flex: 1;
+}
+
+.checkout-cover-link {
+    display: block;
+    width: 84px;
+    flex: 0 0 84px;
+}
+
+.checkout-cover {
+    width: 84px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #ddd;
 }
 
 .checkout-meta {
@@ -152,7 +178,8 @@
     font-weight: 600;
 }
 
-.checkout-status.checked_out {
+.checkout-status.checked_out,
+.checkout-status.active {
     background: #fff3cd;
     color: #856404;
 }
@@ -160,6 +187,11 @@
 .checkout-status.returned {
     background: #d4edda;
     color: #155724;
+}
+
+.checkout-status.overdue {
+    background: #f8d7da;
+    color: #842029;
 }
 
 .checkout-dates {
@@ -244,6 +276,12 @@
 @@media (max-width: 768px) {
     .checkout-card {
         flex-direction: column;
+    }
+
+    .checkout-cover-link,
+    .checkout-cover {
+        width: 100%;
+        height: 220px;
     }
 
     .checkout-actions {
