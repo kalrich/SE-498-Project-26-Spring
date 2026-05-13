@@ -4,7 +4,15 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <DefaultItemExcludes>$(DefaultItemExcludes);bin\**;bin\**\*;obj\**;obj\**\*;**/BuildHost-net472/**;**/BuildHost-netcore/**</DefaultItemExcludes>
     </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Remove="bin\**;bin\**\*;obj\**;obj\**\*;**/BuildHost-net472/**;**/BuildHost-netcore/**" />
+        <Content Remove="bin\**;bin\**\*;obj\**;obj\**\*;**/BuildHost-net472/**;**/BuildHost-netcore/**" />
+        <EmbeddedResource Remove="bin\**;bin\**\*;obj\**;obj\**\*;**/BuildHost-net472/**;**/BuildHost-netcore/**" />
+        <None Remove="bin\**;bin\**\*;obj\**;obj\**\*;**/BuildHost-net472/**;**/BuildHost-netcore/**" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
