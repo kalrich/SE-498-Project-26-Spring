@@ -14,6 +14,12 @@ public class ExploreController : Controller
 
     public async Task<IActionResult> Index(string? query, string? genre, string? status)
     {
+        var username = HttpContext.Session.GetString("Username");
+        if (string.IsNullOrEmpty(username))
+        {
+            return RedirectToAction("Login", "Auth");
+        }
+
         var userId = HttpContext.Session.GetInt32("UserId");
         ViewBag.Query = query ?? "";
         ViewBag.SelectedGenre = genre ?? "";
