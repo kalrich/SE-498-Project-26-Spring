@@ -1,284 +1,252 @@
 # Marvel•ous Reads — API Contracts
 
-**Project:** SE-498 Capstone · Spring  
+**Project:** SE-498 Capstone · Spring 2026  
 **System:** `Project498.WebApi`  
-**Version:** v1  
 **Base Path:** `/api`  
 **Content Type:** `application/json`  
-**Source of Truth:** Swagger/OpenAPI at `/swagger`
+**Last Updated:** 2026-05-13
 
 ---
 
 ## 1. Purpose
 
-This document defines the current REST API contracts for **Marvel•ous Reads**. It describes the endpoint routes, HTTP methods, request shapes, response shapes, and business rules used by the Website Backend when communicating with `Project498.WebApi`.
+This document defines the current endpoint-level API contracts for Marvel•ous Reads. It is based on the current controllers, DTOs, and Swagger output for `Project498.WebApi`.
 
-The current API supports:
-
-- user authentication
-- comic browsing and filtering
-- curated comic sections such as featured, trending, recommended, because-you-read, and hidden-gems
-- user shelves and reading progress
-- comic checkout and return workflows
-- Marvel character data
-- character image data
-- user lookup and profile update
-
-This contract replaces earlier planned API documentation that referenced generic Books, Tags, or generalized Shelf Item endpoints that are not currently exposed in Swagger.
+For architecture-level API details, see `api-spec.md`.
 
 ---
 
-## 2. Global API Rules
+## 2. Global Rules
 
-### 2.1 Authentication
-
-The API is configured with JWT Bearer authentication and Swagger includes a Bearer token authorization option. Authenticated requests should include the following header when required by the backend implementation:
-
-```http
-Authorization: Bearer <token>
-```
-
-The Website Backend stores/forwards the token through its server-side authentication flow. Tokens should not be exposed directly to frontend JavaScript.
-
-### 2.2 Response Format
-
-- Request and response bodies use JSON.
-- JSON properties use `camelCase`.
+- JSON uses camelCase when serialized by ASP.NET Core.
 - IDs are integers.
-- Dates use ISO 8601 date/time strings.
-- Most successful operations currently return `200 OK` according to Swagger.
-- Swagger currently displays several responses with `text/plain` as the media type, but the example schemas represent JSON-shaped data.
+- Dates are ISO 8601 date/time strings.
+- Most successful operations return `200 OK` unless otherwise noted.
+- Protected endpoints require `Authorization: Bearer <token>`.
+- Swagger is available at `/swagger` in development.
 
-### 2.3 Common Status Codes
+### Common Status Codes
 
 | Code | Meaning |
 |---|---|
 | `200 OK` | Request succeeded |
-| `400 Bad Request` | Request body or parameters were invalid |
-| `401 Unauthorized` | Missing or invalid credentials/token |
-| `404 Not Found` | Requested resource does not exist |
-| `409 Conflict` | Duplicate record or violated business rule |
-| `500 Internal Server Error` | Server-side error |
+| `204 No Content` | Request succeeded with no response body |
+| `400 Bad Request` | Invalid request body or business validation failure |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | Requested user/comic/resource was not found |
+| `500 Internal Server Error` | Server-side failure |
 
 ---
 
-## 3. Data Models and DTOs
+## 3. Shared Models
 
-### 3.1 `LoginRequest`
-
-Used by `POST /api/Auth/login`.
+### User
 
 ```json
 {
-  "email": "string",
-  "password": "string"
+  "id": 1,
+  "username": "josh",
+  "email": "josh@example.com"
 }
 ```
 
-### 3.2 `SignupRequest`
+> Current internal `User` model contains a `password` field. API responses should avoid exposing it where possible.
 
-Used by `POST /api/Auth/signup`.
+### Comic
 
 ```json
 {
-  "username": "string",
-  "email": "string",
-  "password": "string"
+  "id": 1,
+  "title": "Human Torch Vol. 1 Issue 2",
+  "author": "Marvel",
+  "genre": "Action",
+  "secondaryGenre": "Adventure",
+  "description": "Comic description",
+  "coverImagePath": "/images/covers/human-torch-2.jpg",
+  "pdfPath": "/comics/human-torch-2.pdf",
+  "isIReadPick": true,
+  "seriesName": "Human Torch",
+  "volumeNumber": 1,
+  "issueNumber": 2,
+  "shelf": "Reading",
+  "progressPercent": 35,
+  "currentPage": 7,
+  "isFavorite": true,
+  "averageRating": 4.5,
+  "reviewCount": 2,
+  "isCheckedOut": true,
+  "activeCheckoutDueDate": "2026-05-20T18:00:00Z"
 }
 ```
 
-### 3.3 `AuthResponse`
+### AddToShelfRequest
 
-Returned by signup/login-style authentication responses.
+```json
+{
+  "username": "josh",
+  "comicId": 1,
+  "shelf": "Reading"
+}
+```
+
+### UpdateProgressRequest
+
+```json
+{
+  "username": "josh",
+  "comicId": 1,
+  "progressPercent": 50,
+  "currentPage": 12
+}
+```
+
+### ReadingProgressResponse
+
+```json
+{
+  "comicId": 1,
+  "progressPercent": 50,
+  "currentPage": 12
+}
+```
+
+### CreateCheckoutRequest
+
+```json
+{
+  "userId": 1,
+  "comicId": 1
+}
+```
+
+### CheckoutResponse
+
+```json
+{
+  "checkoutId": 1,
+  "userId": 1,
+  "comicId": 1,
+  "checkoutDate": "2026-05-13T18:00:00Z",
+  "dueDate": "2026-05-20T18:00:00Z",
+  "returnDate": null,
+  "status": "Active",
+  "comicTitle": "Human Torch Vol. 1 Issue 2",
+  "coverImagePath": "/images/covers/human-torch-2.jpg",
+  "isOverdue": false
+}
+```
+
+### FavoriteRequest
+
+```json
+{
+  "userId": 1,
+  "comicId": 1
+}
+```
+
+### FavoriteStatusResponse
+
+```json
+{
+  "userId": 1,
+  "comicId": 1,
+  "isFavorite": true
+}
+```
+
+### ComicReviewRequest
+
+```json
+{
+  "userId": 1,
+  "comicId": 1,
+  "rating": 5,
+  "comment": "Great issue."
+}
+```
+
+### ComicReviewResponse
+
+```json
+{
+  "id": 1,
+  "userId": 1,
+  "comicId": 1,
+  "username": "josh",
+  "comicTitle": "Human Torch Vol. 1 Issue 2",
+  "coverImagePath": "/images/covers/human-torch-2.jpg",
+  "rating": 5,
+  "comment": "Great issue.",
+  "createdAt": "2026-05-13T18:00:00Z",
+  "updatedAt": "2026-05-13T18:00:00Z"
+}
+```
+
+### ReadingHistoryResponse
+
+```json
+{
+  "comicId": 1,
+  "title": "Human Torch Vol. 1 Issue 2",
+  "coverImagePath": "/images/covers/human-torch-2.jpg",
+  "currentPage": 12,
+  "progressPercent": 50,
+  "lastReadAt": "2026-05-13T18:00:00Z"
+}
+```
+
+### MarvelCharacter
+
+```json
+{
+  "id": 1,
+  "name": "Peter Parker",
+  "alias": "Spider-Man",
+  "description": "Character description",
+  "imagePath": "/images/characters/spider-man.jpg"
+}
+```
+
+### CharacterImage
+
+```json
+{
+  "id": 1,
+  "alias": "Spider-Man",
+  "imagePath": "/images/characters/spider-man-alt.jpg"
+}
+```
+
+---
+
+## 4. Authentication
+
+### `POST /api/Auth/login`
+
+Authenticates a user.
+
+**Request**
+
+```json
+{
+  "email": "josh@example.com",
+  "password": "password123"
+}
+```
+
+**Success Response — `200 OK`**
 
 ```json
 {
   "user": {
-    "id": 0,
-    "username": "string",
-    "email": "string"
+    "id": 1,
+    "username": "josh",
+    "email": "josh@example.com"
   },
-  "token": "string"
+  "token": "jwt-token"
 }
 ```
-
-> Note: Swagger may expose `password` on the generated `User` schema because the backend model contains that property. For documentation purposes, API responses should avoid exposing passwords.
-
-### 3.4 `User`
-
-Represents a user account.
-
-```json
-{
-  "id": 0,
-  "username": "string",
-  "email": "string"
-}
-```
-
-### 3.5 `UpdateProfileRequest`
-
-Used by `PUT /api/Users/{id}`.
-
-```json
-{
-  "username": "string",
-  "email": "string",
-  "password": "string"
-}
-```
-
-### 3.6 `Comic`
-
-Represents a comic returned by browsing, detail, shelf, and recommendation endpoints.
-
-```json
-{
-  "id": 0,
-  "title": "string",
-  "author": "string",
-  "genre": "string",
-  "secondaryGenre": "string",
-  "description": "string",
-  "coverImagePath": "string",
-  "pdfPath": "string",
-  "isIReadPick": true,
-  "seriesName": "string",
-  "volumeNumber": 0,
-  "issueNumber": 0,
-  "shelf": "string",
-  "progressPercent": 0,
-  "currentPage": 0
-}
-```
-
-### 3.7 `AddToShelfRequest`
-
-Used by `POST /api/Shelves/add`.
-
-```json
-{
-  "username": "string",
-  "comicId": 0,
-  "shelf": "string"
-}
-```
-
-### 3.8 `ReadingProgressResponse`
-
-Returned by `GET /api/Shelves/progress/{username}/{comicId}`.
-
-```json
-{
-  "comicId": 0,
-  "progressPercent": 0,
-  "currentPage": 0
-}
-```
-
-### 3.9 `UpdateProgressRequest`
-
-Used by `PATCH /api/Shelves/update-progress`.
-
-```json
-{
-  "username": "string",
-  "comicId": 0,
-  "progressPercent": 0,
-  "currentPage": 0
-}
-```
-
-### 3.10 `CreateCheckoutRequest`
-
-Used by `POST /api/Checkouts`.
-
-```json
-{
-  "userId": 0,
-  "comicId": 0
-}
-```
-
-### 3.11 `CheckoutResponse`
-
-Returned by checkout endpoints.
-
-```json
-{
-  "checkoutId": 0,
-  "userId": 0,
-  "comicId": 0,
-  "checkoutDate": "2026-05-13T18:07:20.178Z",
-  "dueDate": "2026-05-13T18:07:20.178Z",
-  "returnDate": "2026-05-13T18:07:20.178Z",
-  "status": "string"
-}
-```
-
-### 3.12 `MarvelCharacter`
-
-Returned by Marvel character endpoints.
-
-```json
-{
-  "id": 0,
-  "name": "string",
-  "alias": "string",
-  "description": "string",
-  "imagePath": "string"
-}
-```
-
-### 3.13 `CharacterImage`
-
-Returned by character image endpoints.
-
-```json
-{
-  "id": 0,
-  "alias": "string",
-  "imagePath": "string"
-}
-```
-
----
-
-## 4. Endpoint Contracts
-
----
-
-## 4.1 Authentication
-
-### `POST /api/Auth/login`
-
-Authenticates an existing user.
-
-**Request Body**
-
-| Field | Type | Required | Description |
-|---|---|---:|---|
-| `email` | string | yes | User email |
-| `password` | string | yes | User password |
-
-**Example Request**
-
-```json
-{
-  "email": "string",
-  "password": "string"
-}
-```
-
-**Success Response**
-
-| Status | Body |
-|---|---|
-| `200 OK` | Login result, token, or authentication status depending on controller implementation |
-
-**Notes**
-
-Swagger currently documents this endpoint with a `text/plain` response media type. The login request body is fully documented, but the exact response body should be verified against the controller if a stricter contract is required.
 
 ---
 
@@ -286,212 +254,139 @@ Swagger currently documents this endpoint with a `text/plain` response media typ
 
 Creates a new user account.
 
-**Request Body**
-
-| Field | Type | Required | Description |
-|---|---|---:|---|
-| `username` | string | yes | New username |
-| `email` | string | yes | New user email |
-| `password` | string | yes | New user password |
-
-**Example Request**
+**Request**
 
 ```json
 {
-  "username": "string",
-  "email": "string",
-  "password": "string"
+  "username": "josh",
+  "email": "josh@example.com",
+  "password": "password123"
 }
 ```
 
-**Success Response**
-
-**Status:** `200 OK`
+**Success Response — `200 OK`**
 
 ```json
 {
   "user": {
-    "id": 0,
-    "username": "string",
-    "email": "string"
+    "id": 1,
+    "username": "josh",
+    "email": "josh@example.com"
   },
-  "token": "string"
+  "token": "jwt-token"
 }
 ```
 
 ---
 
-## 4.2 Comics
+## 5. Comics
 
 ### `GET /api/Comics`
 
-Returns all comics, optionally filtered by search query and/or genre.
+Returns comics with optional filters.
 
 **Query Parameters**
 
 | Parameter | Type | Required | Description |
 |---|---|---:|---|
-| `query` | string | no | Search text for comic browsing |
-| `genre` | string | no | Genre filter |
+| `query` | string | no | Search title, author, description, or series name |
+| `genre` | string | no | Match primary or secondary genre |
+| `status` | string | no | `checkedout` or `available`; requires `userId` |
+| `userId` | int | no | Adds user-specific favorite/checkout state |
 
-**Success Response**
+**Success Response — `200 OK`**
 
-**Status:** `200 OK`
-
-```json
-[
-  {
-    "id": 0,
-    "title": "string",
-    "author": "string",
-    "genre": "string",
-    "secondaryGenre": "string",
-    "description": "string",
-    "coverImagePath": "string",
-    "pdfPath": "string",
-    "isIReadPick": true,
-    "seriesName": "string",
-    "volumeNumber": 0,
-    "issueNumber": 0,
-    "shelf": "string",
-    "progressPercent": 0,
-    "currentPage": 0
-  }
-]
-```
+Array of `Comic` objects.
 
 ---
 
 ### `GET /api/Comics/{id}`
 
-Returns a single comic by ID.
+Returns one comic by ID.
 
 **Path Parameters**
 
+| Parameter | Type | Required |
+|---|---|---:|
+| `id` | int | yes |
+
+**Query Parameters**
+
 | Parameter | Type | Required | Description |
 |---|---|---:|---|
-| `id` | int | yes | Comic ID |
+| `userId` | int | no | Adds user-specific favorite/checkout state |
 
-**Success Response**
+**Success Response — `200 OK`**
 
-**Status:** `200 OK`
+Single `Comic` object.
 
-Response body matches the `Comic` model.
+**Errors**
+
+- `404 Not Found` if comic does not exist
 
 ---
 
 ### `GET /api/Comics/genres`
 
-Returns the list of available comic genres.
+Returns distinct comic genres from primary and secondary genre fields.
 
-**Success Response**
-
-**Status:** `200 OK`
+**Success Response — `200 OK`**
 
 ```json
 [
-  "string"
+  "Action",
+  "Adventure"
 ]
 ```
 
 ---
 
-### `GET /api/Comics/featured`
+### Comic Collection Endpoints
 
-Returns comics marked as featured or “I Read Pick” items.
+Each returns an array of `Comic` objects.
 
-**Success Response**
-
-**Status:** `200 OK`
-
-Response body is an array of `Comic` objects.
-
----
-
-### `GET /api/Comics/trending`
-
-Returns comics displayed in the trending section of the application.
-
-**Success Response**
-
-**Status:** `200 OK`
-
-Response body is an array of `Comic` objects.
-
----
-
-### `GET /api/Comics/recommended`
-
-Returns comics displayed in the recommended section of the application.
-
-**Success Response**
-
-**Status:** `200 OK`
-
-Response body is an array of `Comic` objects.
-
----
-
-### `GET /api/Comics/because-you-read`
-
-Returns comics displayed in the “Because You Read” section.
-
-**Success Response**
-
-**Status:** `200 OK`
-
-Response body is an array of `Comic` objects.
-
----
-
-### `GET /api/Comics/hidden-gems`
-
-Returns comics displayed in the hidden gems section.
-
-**Success Response**
-
-**Status:** `200 OK`
-
-Response body is an array of `Comic` objects.
+| Method | Route | Description |
+|---|---|---|
+| `GET` | `/api/Comics/featured` | Comics marked as I Read Picks |
+| `GET` | `/api/Comics/trending` | Trending-style comic collection |
+| `GET` | `/api/Comics/recommended` | Recommended-style comic collection |
+| `GET` | `/api/Comics/because-you-read` | Because-you-read-style comic collection |
+| `GET` | `/api/Comics/hidden-gems` | Hidden-gems-style comic collection |
 
 ---
 
 ### `GET /api/Comics/series/{seriesName}`
 
-Returns comics belonging to a specific comic series.
+Returns comics in a specific series ordered by volume and issue number.
 
 **Path Parameters**
 
-| Parameter | Type | Required | Description |
-|---|---|---:|---|
-| `seriesName` | string | yes | Series name |
+| Parameter | Type | Required |
+|---|---|---:|
+| `seriesName` | string | yes |
 
-**Success Response**
+**Success Response — `200 OK`**
 
-**Status:** `200 OK`
-
-Response body is an array of `Comic` objects.
+Array of `Comic` objects.
 
 ---
 
-## 4.3 Shelves and Reading Progress
+## 6. Shelves and Reading Progress
 
 ### `GET /api/Shelves/{username}/{shelf}`
 
-Returns comics from a specific shelf for a specific user.
+Returns comics from a user's shelf.
 
 **Path Parameters**
 
-| Parameter | Type | Required | Description |
-|---|---|---:|---|
-| `username` | string | yes | Username |
-| `shelf` | string | yes | Shelf name/category |
+| Parameter | Type | Required |
+|---|---|---:|
+| `username` | string | yes |
+| `shelf` | string | yes |
 
-**Success Response**
+**Success Response — `200 OK`**
 
-**Status:** `200 OK`
-
-Response body is an array of `Comic` objects.
+Array of `Comic` objects.
 
 ---
 
@@ -499,50 +394,31 @@ Response body is an array of `Comic` objects.
 
 Adds a comic to a user's shelf.
 
-**Request Body**
-
-| Field | Type | Required | Description |
-|---|---|---:|---|
-| `username` | string | yes | Username |
-| `comicId` | int | yes | Comic ID |
-| `shelf` | string | yes | Target shelf/category |
-
-**Example Request**
+**Request**
 
 ```json
 {
-  "username": "string",
-  "comicId": 0,
-  "shelf": "string"
+  "username": "josh",
+  "comicId": 1,
+  "shelf": "Reading"
 }
 ```
 
-**Success Response**
-
-**Status:** `200 OK`
+**Success Response — `200 OK`**
 
 ---
 
 ### `GET /api/Shelves/progress/{username}/{comicId}`
 
-Returns the user's reading progress for a comic.
+Returns a user's progress for one comic.
 
-**Path Parameters**
-
-| Parameter | Type | Required | Description |
-|---|---|---:|---|
-| `username` | string | yes | Username |
-| `comicId` | int | yes | Comic ID |
-
-**Success Response**
-
-**Status:** `200 OK`
+**Success Response — `200 OK`**
 
 ```json
 {
-  "comicId": 0,
-  "progressPercent": 0,
-  "currentPage": 0
+  "comicId": 1,
+  "progressPercent": 50,
+  "currentPage": 12
 }
 ```
 
@@ -550,89 +426,47 @@ Returns the user's reading progress for a comic.
 
 ### `PATCH /api/Shelves/update-progress`
 
-Updates reading progress and current page for a comic.
+Updates reading progress and current page.
 
-**Request Body**
-
-| Field | Type | Required | Description |
-|---|---|---:|---|
-| `username` | string | yes | Username |
-| `comicId` | int | yes | Comic ID |
-| `progressPercent` | int | yes | Reading completion percentage |
-| `currentPage` | int | yes | Current page number |
-
-**Example Request**
+**Request**
 
 ```json
 {
-  "username": "string",
-  "comicId": 0,
-  "progressPercent": 0,
-  "currentPage": 0
+  "username": "josh",
+  "comicId": 1,
+  "progressPercent": 50,
+  "currentPage": 12
 }
 ```
 
-**Success Response**
-
-**Status:** `200 OK`
+**Success Response — `200 OK`**
 
 ---
 
-## 4.4 Checkouts
+## 7. Checkouts
 
 ### `POST /api/Checkouts`
 
-Creates a checkout record for a user and comic.
+Creates a checkout record.
 
-**Request Body**
-
-| Field | Type | Required | Description |
-|---|---|---:|---|
-| `userId` | int | yes | User ID |
-| `comicId` | int | yes | Comic ID |
-
-**Example Request**
+**Request**
 
 ```json
 {
-  "userId": 0,
-  "comicId": 0
+  "userId": 1,
+  "comicId": 1
 }
 ```
 
-**Success Response**
+**Success Response — `200 OK`**
 
-**Status:** `200 OK`
-
-```json
-{
-  "checkoutId": 0,
-  "userId": 0,
-  "comicId": 0,
-  "checkoutDate": "2026-05-13T18:07:20.178Z",
-  "dueDate": "2026-05-13T18:07:20.178Z",
-  "returnDate": "2026-05-13T18:07:20.178Z",
-  "status": "string"
-}
-```
+`CheckoutResponse`
 
 ---
 
 ### `GET /api/Checkouts/{id}`
 
-Returns a checkout record by ID.
-
-**Path Parameters**
-
-| Parameter | Type | Required | Description |
-|---|---|---:|---|
-| `id` | int | yes | Checkout ID |
-
-**Success Response**
-
-**Status:** `200 OK`
-
-Response body matches the `CheckoutResponse` model.
+Returns checkout by checkout ID.
 
 ---
 
@@ -640,35 +474,11 @@ Response body matches the `CheckoutResponse` model.
 
 Returns checkout records for a user.
 
-**Path Parameters**
-
-| Parameter | Type | Required | Description |
-|---|---|---:|---|
-| `userId` | int | yes | User ID |
-
 **Query Parameters**
 
-| Parameter | Type | Required | Default | Description |
-|---|---|---:|---|---|
-| `activeOnly` | boolean | no | `true` | Whether to only return active checkouts |
-
-**Success Response**
-
-**Status:** `200 OK`
-
-```json
-[
-  {
-    "checkoutId": 0,
-    "userId": 0,
-    "comicId": 0,
-    "checkoutDate": "2026-05-13T18:07:20.180Z",
-    "dueDate": "2026-05-13T18:07:20.180Z",
-    "returnDate": "2026-05-13T18:07:20.180Z",
-    "status": "string"
-  }
-]
-```
+| Parameter | Type | Required | Default |
+|---|---|---:|---|
+| `activeOnly` | boolean | no | `true` |
 
 ---
 
@@ -676,210 +486,198 @@ Returns checkout records for a user.
 
 Marks a checkout as returned.
 
-**Path Parameters**
-
-| Parameter | Type | Required | Description |
-|---|---|---:|---|
-| `id` | int | yes | Checkout ID |
-
-**Success Response**
-
-**Status:** `200 OK`
+**Success Response — `200 OK`**
 
 ---
 
-## 4.5 Marvel Characters
+## 8. Favorites
 
-### `GET /api/marvel-characters`
+### `GET /api/Favorites/user/{userId}`
 
-Returns all Marvel character records.
+Returns favorite comics for a user.
 
-**Success Response**
+**Success Response — `200 OK`**
 
-**Status:** `200 OK`
-
-```json
-[
-  {
-    "id": 0,
-    "name": "string",
-    "alias": "string",
-    "description": "string",
-    "imagePath": "string"
-  }
-]
-```
+Array of `Comic` objects with `isFavorite` set to `true`.
 
 ---
 
-### `GET /api/marvel-characters/{id}`
+### `GET /api/Favorites/user/{userId}/comic/{comicId}`
 
-Returns a Marvel character by ID.
+Returns favorite status for one user/comic pair.
 
-**Path Parameters**
-
-| Parameter | Type | Required | Description |
-|---|---|---:|---|
-| `id` | int | yes | Marvel character ID |
-
-**Success Response**
-
-**Status:** `200 OK`
-
-Response body matches the `MarvelCharacter` model.
-
----
-
-## 4.6 Character Images
-
-### `GET /api/character-images`
-
-Returns character image records.
-
-**Success Response**
-
-**Status:** `200 OK`
-
-```json
-[
-  {
-    "id": 0,
-    "alias": "string",
-    "imagePath": "string"
-  }
-]
-```
-
----
-
-## 4.7 Users
-
-### `GET /api/Users/by-email`
-
-Returns a user record by email.
-
-**Query Parameters**
-
-| Parameter | Type | Required | Description |
-|---|---|---:|---|
-| `email` | string | no | User email address |
-
-**Success Response**
-
-**Status:** `200 OK`
+**Success Response — `200 OK`**
 
 ```json
 {
-  "id": 0,
-  "username": "string",
-  "email": "string"
+  "userId": 1,
+  "comicId": 1,
+  "isFavorite": true
 }
 ```
+
+---
+
+### `POST /api/Favorites`
+
+Adds a comic to favorites.
+
+**Request**
+
+```json
+{
+  "userId": 1,
+  "comicId": 1
+}
+```
+
+**Success Response — `200 OK`**
+
+`FavoriteStatusResponse` with `isFavorite: true`.
+
+---
+
+### `DELETE /api/Favorites/user/{userId}/comic/{comicId}`
+
+Removes a comic from favorites.
+
+**Success Response — `200 OK`**
+
+`FavoriteStatusResponse` with `isFavorite: false`.
+
+---
+
+## 9. Comic Reviews
+
+### `GET /api/ComicReviews/comic/{comicId}`
+
+Returns all reviews for a comic.
+
+**Success Response — `200 OK`**
+
+Array of `ComicReviewResponse` objects.
+
+---
+
+### `GET /api/ComicReviews/user/{userId}/comic/{comicId}`
+
+Returns the user's review for a comic, or `null` if no review exists.
+
+---
+
+### `GET /api/ComicReviews/user/{userId}`
+
+Returns all reviews written by a user.
+
+---
+
+### `POST /api/ComicReviews`
+
+Creates or updates a user's review for a comic.
+
+**Request**
+
+```json
+{
+  "userId": 1,
+  "comicId": 1,
+  "rating": 5,
+  "comment": "Great issue."
+}
+```
+
+**Success Response — `200 OK`**
+
+`ComicReviewResponse`
+
+**Validation**
+
+- `rating` must be between `1` and `5`
+- one review is stored per user/comic pair
+
+---
+
+### `DELETE /api/ComicReviews/user/{userId}/comic/{comicId}`
+
+Deletes the user's review for a comic.
+
+**Success Response — `204 No Content`**
+
+---
+
+## 10. Reading History
+
+### `GET /api/ReadingHistory/user/{userId}`
+
+Returns recently read comics for a user ordered by most recent reading activity.
+
+**Success Response — `200 OK`**
+
+Array of `ReadingHistoryResponse` objects.
+
+---
+
+## 11. Marvel Characters
+
+### `GET /api/marvel-characters`
+
+Returns all Marvel characters.
+
+### `GET /api/marvel-characters/{id}`
+
+Returns one Marvel character by ID.
+
+---
+
+## 12. Character Images
+
+### `GET /api/character-images`
+
+Returns all character image records.
+
+---
+
+## 13. Users
+
+### `GET /api/Users/by-email`
+
+Returns a user by email.
+
+**Query Parameters**
+
+| Parameter | Type | Required |
+|---|---|---:|
+| `email` | string | no |
 
 ---
 
 ### `PUT /api/Users/{id}`
 
-Updates a user's profile information.
+Updates profile information for a user.
 
-**Path Parameters**
-
-| Parameter | Type | Required | Description |
-|---|---|---:|---|
-| `id` | int | yes | User ID |
-
-**Request Body**
-
-| Field | Type | Required | Description |
-|---|---|---:|---|
-| `username` | string | yes | Updated username |
-| `email` | string | yes | Updated email |
-| `password` | string | yes | Updated password |
-
-**Example Request**
+**Request**
 
 ```json
 {
-  "username": "string",
-  "email": "string",
-  "password": "string"
+  "username": "josh",
+  "email": "josh@example.com",
+  "password": "newPasswordOrNull"
 }
 ```
 
-**Success Response**
-
-**Status:** `200 OK`
+**Success Response — `200 OK`**
 
 ---
 
-## 5. Business Rules Captured by the Contract
+## 14. Business Rules Captured by the Contract
 
-- Users can sign up and log in through the Auth endpoints.
-- The API issues/uses bearer tokens through the implemented authentication flow.
-- Comics can be browsed, searched, filtered by genre, viewed by ID, grouped by series, and displayed in curated recommendation sections.
-- The comic response model includes static comic metadata plus user-specific shelf/progress fields when applicable.
-- Users can add comics to shelves using `username`, `comicId`, and `shelf`.
-- Reading progress is tracked by `username` and `comicId`.
-- Reading progress stores both `progressPercent` and `currentPage`.
-- Checkouts connect users to comics and track checkout date, due date, return date, and status.
-- Checkout records can be filtered by user and active status.
-- Marvel character data and character image data are currently read-only API resources.
-- User profile data can be retrieved by email and updated by user ID.
-
----
-
-## 6. Current Endpoint Set
-
-### Authentication
-
-- `POST /api/Auth/login`
-- `POST /api/Auth/signup`
-
-### Comics
-
-- `GET /api/Comics`
-- `GET /api/Comics/{id}`
-- `GET /api/Comics/genres`
-- `GET /api/Comics/featured`
-- `GET /api/Comics/trending`
-- `GET /api/Comics/recommended`
-- `GET /api/Comics/because-you-read`
-- `GET /api/Comics/hidden-gems`
-- `GET /api/Comics/series/{seriesName}`
-
-### Shelves and Reading Progress
-
-- `GET /api/Shelves/{username}/{shelf}`
-- `POST /api/Shelves/add`
-- `GET /api/Shelves/progress/{username}/{comicId}`
-- `PATCH /api/Shelves/update-progress`
-
-### Checkouts
-
-- `POST /api/Checkouts`
-- `GET /api/Checkouts/{id}`
-- `GET /api/Checkouts/user/{userId}`
-- `PUT /api/Checkouts/{id}/return`
-
-### Marvel Characters
-
-- `GET /api/marvel-characters`
-- `GET /api/marvel-characters/{id}`
-
-### Character Images
-
-- `GET /api/character-images`
-
-### Users
-
-- `GET /api/Users/by-email`
-- `PUT /api/Users/{id}`
-
----
-
-## 7. Notes
-
-- This contract is based on the current Swagger/OpenAPI output for `Project498.WebApi`.
-- This contract intentionally removes earlier planned endpoints that are not currently exposed, including generic `Books`, `Tags`, and generic shelf item routes.
-- Swagger remains the source of truth for generated schema names and available routes.
-- If controllers, DTOs, or route names change, this file should be updated to match the generated Swagger documentation.
+- Comics can be searched by title, author, description, or series.
+- Comics can be filtered by genre and user checkout status.
+- Comic series are ordered by volume and issue number.
+- Shelf/progress state is user-specific.
+- Favorites are unique per user/comic.
+- Reading history is unique per user/comic and ordered by `LastReadAt`.
+- Reviews are unique per user/comic.
+- Review ratings must be between 1 and 5.
+- Checkout records can be active or returned.
+- Active checkouts can be filtered by user.

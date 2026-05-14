@@ -2,191 +2,123 @@
 
 **Project:** SE-498 Capstone · Spring  
 **System:** `Project498.WebApi`  
-**Stack:** ASP.NET Core · Entity Framework Core · PostgreSQL · Docker · Swagger/OpenAPI  
+**Stack:** ASP.NET Core Web API · Entity Framework Core · PostgreSQL · Docker · Swagger/OpenAPI  
 **Last Updated:** 2026-05-13
 
 ---
 
 ## 1. Overview
 
-`Project498.WebApi` is the REST API and primary data service for **Marvel•ous Reads**. It stores and serves comic data, user account data, shelf/progress information, checkout records, Marvel character information, and supporting character images.
+`Project498.WebApi` is the REST API and persistent data layer for Marvel•ous Reads. It exposes endpoints for authentication, comic browsing, shelves/progress, checkout workflows, Marvel characters, character images, and user profile management.
 
-The API is consumed by the ASP.NET Core MVC WebServer frontend through typed HTTP client services. The WebServer handles browser-facing pages and user sessions, while the WebApi handles JSON data access and persistence through PostgreSQL.
-
-The full endpoint-level request/response details are documented separately in:
-
-> `docs/api-contracts.md`
+The current API is documented through Swagger UI and backed by PostgreSQL through Entity Framework Core.
 
 ---
 
-## 2. Current API Responsibilities
+## 2. Current API Domains
 
-The API currently supports the following application domains:
-
-- **Authentication** — user signup and login
-- **Comics** — comic browsing, filtering, series lookup, featured/trending/recommended collections
-- **Shelves** — adding comics to user shelves and retrieving shelf contents
-- **Reading Progress** — storing progress percentage and current page by user/comic
-- **Checkouts** — creating checkout records, viewing user checkouts, and returning comics
-- **Marvel Characters** — serving Marvel character profile data
-- **Character Images** — serving character image records
-- **Users** — user lookup by email and profile updates
-
-The API no longer exposes the older planned `Books`, `Tags`, generic `Items`, or generic `ShelfItems` endpoints. Those were part of an earlier design and are out of scope for the current implementation.
+- **Auth** — login and signup
+- **Comics** — comic catalog, search, genres, featured/trending/recommended lists, series lookup
+- **Shelves** — add comics to shelves and track reading progress
+- **Checkouts** — create, retrieve, filter, and return comic checkouts
+- **Marvel Characters** — API-backed Marvel character data
+- **Character Images** — character image records
+- **Users** — lookup/update user profile data
 
 ---
 
-## 3. System Architecture
-
-```text
-Browser
-   |
-   v
-Project498.WebServer
-ASP.NET Core MVC + Razor Views
-Cookie/session-based frontend experience
-Typed HttpClient services
-   |
-   v
-Project498.WebApi
-ASP.NET Core Web API
-JWT bearer authentication support
-Swagger/OpenAPI documentation
-Entity Framework Core
-   |
-   v
-PostgreSQL Database
-Users, Comics, UserComics, Checkouts,
-MarvelCharacters, CharacterImages
-```
-
-### WebServer-to-API Integration
-
-The WebServer communicates with the WebApi through registered typed HTTP clients:
-
-- `IAuthService` / `AuthApiService`
-- `IComicService` / `ComicApiService`
-- `ICheckoutService` / `CheckoutService`
-- `IMarvelCharacterService` / `MarvelCharacterService`
-- `ICharacterImageService` / `CharacterImageService`
-
-The WebServer also registers a `BearerTokenHandler`, allowing API requests to include bearer tokens when required.
-
----
-
-## 4. Scope
+## 3. Scope
 
 ### Included
 
-- ASP.NET Core Web API controllers
-- Entity Framework Core data access
-- PostgreSQL persistence
+- ASP.NET Core controller-based REST API
 - Swagger/OpenAPI documentation
 - JWT bearer authentication configuration
-- CORS policy for local frontend/backend communication
-- Comic browsing and recommendation-style collections
-- User shelf and reading progress data
-- Checkout and return workflow
-- Marvel character and image data
-- Dockerized API and database startup
+- PostgreSQL database using EF Core/Npgsql
+- Docker Compose support for API + database
+- CORS configuration for the frontend origin
+- API endpoints matching current Swagger output
 
-### Excluded
+### Excluded / Not Current
 
-- Generic book-management endpoints
-- Generic tag-management endpoints
-- Generic `items`, `books`, `tags`, `item_tags`, `shelves`, and `shelf_items` schema
-- Frontend rendering or Razor Views
-- Browser session/cookie management
-- Password reset flow
-- Admin content-management panel
-- Payment or purchasing workflow
-- File upload or PDF processing APIs
+- Books endpoints
+- Tags endpoints
+- Generic item base table
+- Generic shelf item endpoints using shelf IDs
+- Health endpoint in current Swagger
+- Public admin/content management API
+- Full CRUD for comics through exposed API endpoints
 
 ---
 
-## 5. Functional Requirements
+## 4. Functional Requirements
 
-1. The API shall allow users to sign up and log in through authentication endpoints.
-2. The API shall expose comic data through browse, detail, genre, featured, trending, recommended, because-you-read, hidden-gem, and series endpoints.
-3. The API shall allow a user's comics to be organized into shelves using username, comic ID, and shelf name.
-4. The API shall store user reading progress using progress percentage and current page.
-5. The API shall support comic checkout records with checkout date, due date, optional return date, and status.
-6. The API shall allow checkout records to be retrieved by checkout ID or by user ID.
-7. The API shall allow checkout records to be marked as returned.
-8. The API shall expose Marvel character data through list and detail endpoints.
-9. The API shall expose character image records through a read-only endpoint.
-10. The API shall allow user profile lookup by email and updates by user ID.
-11. The API shall document its available endpoints through Swagger UI.
-
----
-
-## 6. Non-Functional Requirements
-
-1. **Reliability:** The API and PostgreSQL database shall start through Docker Compose without requiring manual database creation.
-2. **Maintainability:** API controllers, models, and EF Core database configuration shall remain separated by responsibility.
-3. **Security:** JWT bearer authentication shall be configured in the WebApi, and protected endpoints may require an `Authorization: Bearer <token>` header.
-4. **Data Integrity:** Foreign key relationships shall connect users and comics through `UserComics` and `Checkouts`.
-5. **Usability for Developers:** Swagger UI shall be available in development for testing and documentation.
-6. **Frontend Compatibility:** CORS shall allow the frontend origin used during local development.
-7. **Portability:** The API shall use environment-based connection strings so it can run locally or inside Docker.
+1. The API shall allow users to sign up with username, email, and password.
+2. The API shall allow users to log in with email and password.
+3. The API shall expose Swagger documentation.
+4. The API shall expose comic catalog endpoints with optional search and genre filtering.
+5. The API shall expose comic detail lookup by ID.
+6. The API shall expose genre, featured, trending, recommended, because-you-read, hidden-gems, and series comic endpoints.
+7. The API shall expose shelf endpoints for retrieving a user's shelf, adding a comic to a shelf, retrieving progress, and updating progress.
+8. The API shall expose checkout endpoints for creating, retrieving, filtering, and returning checkouts.
+9. The API shall expose Marvel character and character image endpoints.
+10. The API shall expose user lookup by email and profile update by user ID.
+11. The API shall persist data in PostgreSQL through Entity Framework Core.
 
 ---
 
-## 7. Technology Stack
+## 5. Non-Functional Requirements
+
+1. **Security:** JWT bearer authentication is configured in the API and Swagger includes a Bearer authorization dialog.
+2. **Reliability:** The API and database should start through Docker Compose with Postgres health checks.
+3. **Maintainability:** Data access should be centralized through `AppDbContext`.
+4. **Interoperability:** The API should return JSON request/response bodies using camelCase-compatible model shapes.
+5. **Developer Experience:** Swagger should be available in development for endpoint inspection and testing.
+6. **Configurability:** Database and JWT settings should come from application configuration/environment variables.
+
+---
+
+## 6. Technology Stack
 
 | Concern | Current Choice |
 |---|---|
-| API Framework | ASP.NET Core Web API |
-| Data Access | Entity Framework Core |
-| Database Provider | Npgsql |
+| Framework | ASP.NET Core Web API |
+| ORM | Entity Framework Core |
+| Database provider | Npgsql |
 | Database | PostgreSQL 16 |
-| Authentication | JWT Bearer configuration |
-| API Documentation | Swagger/OpenAPI |
-| Containerization | Docker + Docker Compose |
-| Testing | xUnit project in repository |
+| API docs | Swagger/OpenAPI |
+| Auth | JWT Bearer configuration |
+| Containerization | Docker Compose |
+| Tests | xUnit where applicable |
 
 ---
 
-## 8. Authentication and Authorization
+## 7. API Program Configuration
 
-The WebApi is configured with JWT bearer authentication using:
+The API currently configures:
 
-- Issuer validation
-- Audience validation
-- Lifetime validation
-- Issuer signing key validation
+- Controllers
+- Endpoint API explorer
+- Swagger generation
+- Swagger Bearer security definition
+- JWT bearer authentication
+- CORS policy named `AllowFrontend`
+- EF Core `AppDbContext` with Npgsql
+- Controller route mapping
 
-The API reads JWT settings from configuration:
+### CORS
 
-- `Jwt:Key`
-- `Jwt:Issuer`
-- `Jwt:Audience`
-
-Swagger includes a bearer authorization dialog so developers can test protected endpoints by supplying a token.
-
-The WebServer uses cookie authentication for the browser-facing experience and forwards API requests through service classes. When required, bearer tokens can be attached through the `BearerTokenHandler`.
-
----
-
-## 9. CORS Configuration
-
-The API defines a local development CORS policy named `AllowFrontend`.
-
-The policy currently allows the frontend origin:
+The API allows the frontend origin:
 
 ```text
 http://localhost:8082
 ```
 
-The policy allows any header and any method for local development.
-
 ---
 
-## 10. Database Schema Summary
+## 8. Database Schema
 
-The WebApi uses a PostgreSQL database managed through Entity Framework Core.
-
-Current tables:
+The API database includes the following tables:
 
 - `Users`
 - `Comics`
@@ -195,272 +127,166 @@ Current tables:
 - `MarvelCharacters`
 - `CharacterImages`
 
-### Users
+### Key Relationships
 
-Stores registered user account data.
+```text
+Users 1 --- many UserComics
+Comics 1 --- many UserComics
 
-Key fields:
+Users 1 --- many Checkouts
+Comics 1 --- many Checkouts
+```
 
-- `Id`
-- `Username`
-- `Email`
-- `Password`
-
-### Comics
-
-Stores comic metadata and file paths.
-
-Key fields:
-
-- `Id`
-- `Title`
-- `Author`
-- `Genre`
-- `SecondaryGenre`
-- `Description`
-- `CoverImagePath`
-- `PdfPath`
-- `IsIReadPick`
-- `SeriesName`
-- `VolumeNumber`
-- `IssueNumber`
-
-### UserComics
-
-Join table connecting users to comics while storing shelf and reading-progress information.
-
-Key fields:
-
-- `Id`
-- `UserId`
-- `ComicId`
-- `Shelf`
-- `ProgressPercent`
-- `CurrentPage`
-
-Relationships:
-
-- Many `UserComics` records belong to one `User`
-- Many `UserComics` records belong to one `Comic`
-
-### Checkouts
-
-Stores checkout and return workflow data.
-
-Key fields:
-
-- `Id`
-- `UserId`
-- `ComicId`
-- `CheckoutDate`
-- `DueDate`
-- `ReturnDate`
-- `Status`
-
-Relationships:
-
-- Many `Checkouts` records belong to one `User`
-- Many `Checkouts` records belong to one `Comic`
-
-### MarvelCharacters
-
-Stores Marvel character profile data.
-
-Key fields:
-
-- `Id`
-- `Name`
-- `Alias`
-- `Description`
-- `ImagePath`
-
-### CharacterImages
-
-Stores additional character image records by alias.
-
-Key fields:
-
-- `Id`
-- `Alias`
-- `ImagePath`
-
-For the complete schema and ERD, see:
-
-> `docs/database-schema.md`
+`MarvelCharacters` and `CharacterImages` are currently standalone content tables.
 
 ---
 
-## 11. API Surface Summary
+## 9. Current REST Endpoints
 
-Detailed request and response contracts live in `docs/api-contracts.md`.
+### Auth
 
-Current endpoint groups include:
-
-### Authentication
-
-- `POST /api/Auth/login`
-- `POST /api/Auth/signup`
-
-### Comics
-
-- `GET /api/Comics`
-- `GET /api/Comics/{id}`
-- `GET /api/Comics/genres`
-- `GET /api/Comics/featured`
-- `GET /api/Comics/trending`
-- `GET /api/Comics/recommended`
-- `GET /api/Comics/because-you-read`
-- `GET /api/Comics/hidden-gems`
-- `GET /api/Comics/series/{seriesName}`
-
-### Shelves
-
-- `GET /api/Shelves/{username}/{shelf}`
-- `POST /api/Shelves/add`
-- `GET /api/Shelves/progress/{username}/{comicId}`
-- `PATCH /api/Shelves/update-progress`
-
-### Checkouts
-
-- `POST /api/Checkouts`
-- `GET /api/Checkouts/{id}`
-- `GET /api/Checkouts/user/{userId}`
-- `PUT /api/Checkouts/{id}/return`
-
-### Marvel Characters
-
-- `GET /api/marvel-characters`
-- `GET /api/marvel-characters/{id}`
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/api/Auth/login` | Authenticates a user |
+| `POST` | `/api/Auth/signup` | Creates a new user account |
 
 ### Character Images
 
-- `GET /api/character-images`
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/api/character-images` | Returns character image records |
+
+### Checkouts
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/api/Checkouts` | Creates a checkout for a user and comic |
+| `GET` | `/api/Checkouts/{id}` | Returns one checkout by ID |
+| `GET` | `/api/Checkouts/user/{userId}` | Returns checkout records for a user |
+| `PUT` | `/api/Checkouts/{id}/return` | Marks a checkout as returned |
+
+### Comics
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/api/Comics` | Returns comics, optionally filtered by query and genre |
+| `GET` | `/api/Comics/{id}` | Returns one comic by ID |
+| `GET` | `/api/Comics/genres` | Returns available comic genres |
+| `GET` | `/api/Comics/featured` | Returns featured comics |
+| `GET` | `/api/Comics/trending` | Returns trending comics |
+| `GET` | `/api/Comics/recommended` | Returns recommended comics |
+| `GET` | `/api/Comics/because-you-read` | Returns comics based on previous reading activity |
+| `GET` | `/api/Comics/hidden-gems` | Returns hidden gem comics |
+| `GET` | `/api/Comics/series/{seriesName}` | Returns comics from a series |
+
+### Marvel Characters
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/api/marvel-characters` | Returns all Marvel characters |
+| `GET` | `/api/marvel-characters/{id}` | Returns one Marvel character by ID |
+
+### Shelves
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/api/Shelves/{username}/{shelf}` | Returns comics in a user's shelf |
+| `POST` | `/api/Shelves/add` | Adds a comic to a user's shelf |
+| `GET` | `/api/Shelves/progress/{username}/{comicId}` | Returns reading progress for a comic |
+| `PATCH` | `/api/Shelves/update-progress` | Updates reading progress |
 
 ### Users
 
-- `GET /api/Users/by-email`
-- `PUT /api/Users/{id}`
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/api/Users/by-email` | Returns a user by email |
+| `PUT` | `/api/Users/{id}` | Updates a user's profile |
 
 ---
 
-## 12. Swagger / OpenAPI
+## 10. Request/Response Models
 
-Swagger UI is enabled in development mode.
+Current Swagger schemas include:
 
-Default local Swagger URL when running through Docker:
-
-```text
-http://localhost:8082/swagger
-```
-
-Swagger provides:
-
-- Endpoint list
-- Request body schemas
-- Response schemas
-- Path/query parameters
-- Bearer token authorization dialog
-
-The Swagger output is the source of truth for endpoint-level request/response details.
+- `AddToShelfRequest`
+- `AuthResponse`
+- `CharacterImage`
+- `CheckoutResponse`
+- `Comic`
+- `CreateCheckoutRequest`
+- `LoginRequest`
+- `MarvelCharacter`
+- `ReadingProgressResponse`
+- `SignupRequest`
+- `UpdateProfileRequest`
+- `UpdateProgressRequest`
+- `User`
 
 ---
 
-## 13. Containerization
+## 11. Authentication
 
-The API and database run through Docker Compose.
+The API configures JWT bearer authentication with:
 
-### Services
+- Issuer validation
+- Audience validation
+- Lifetime validation
+- Signing key validation
+- Swagger Bearer token support
+
+Swagger includes the `Authorize` button. Individual endpoint authorization behavior should be verified against controller attributes.
+
+---
+
+## 12. Containerization
+
+The current Docker Compose setup runs:
 
 | Service | Purpose |
 |---|---|
-| `project498.webapi` | Builds and runs the ASP.NET Core WebApi |
-| `db` | Runs PostgreSQL 16 |
+| `project498.webapi` | ASP.NET Core Web API |
+| `db` | PostgreSQL 16 database |
 
-### WebApi Service
-
-The WebApi container uses:
+### Web API Environment
 
 ```text
+ConnectionStrings__DefaultConnection=Host=db;Database=project498;Username=postgres;Password=postgres
 ASPNETCORE_ENVIRONMENT=Development
 ASPNETCORE_URLS=http://0.0.0.0:8080
-ConnectionStrings__DefaultConnection=Host=db;Database=project498;Username=postgres;Password=postgres
 ```
 
-The container maps:
+### Ports
+
+| Service | Host Port | Container Port |
+|---|---:|---:|
+| Web API | `8082` | `8080` |
+| PostgreSQL | `5432` | `5432` |
+
+Postgres uses a named Docker volume:
 
 ```text
-localhost:8082 -> container:8080
+postgres-data
 ```
 
-### Database Service
+---
 
-The PostgreSQL container uses:
+## 13. Swagger
+
+Swagger UI is available in development at:
 
 ```text
-POSTGRES_DB=project498
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
+/swagger
 ```
 
-The database includes a healthcheck using `pg_isready`.
+The Swagger UI is used as the source of truth for current endpoint names, HTTP methods, request bodies, and response models.
 
 ---
 
-## 14. Configuration
+## 14. Future Improvements
 
-Important configuration values:
-
-| Setting | Purpose |
-|---|---|
-| `ConnectionStrings:DefaultConnection` | PostgreSQL connection string |
-| `Jwt:Key` | JWT signing key |
-| `Jwt:Issuer` | Expected token issuer |
-| `Jwt:Audience` | Expected token audience |
-| `ASPNETCORE_ENVIRONMENT` | Controls environment-specific behavior |
-| `ASPNETCORE_URLS` | Configures container listening URL |
-
----
-
-## 15. Testing
-
-The repository includes an API test project. Testing should focus on:
-
-- Controller behavior
-- Authentication request behavior
-- Shelf/progress business logic
-- Checkout creation and return behavior
-- Database schema and EF Core mappings
-- Serialization/deserialization of API DTOs
-
-Tests should avoid depending on manually created local databases whenever possible.
-
----
-
-## 16. Out-of-Scope / Deprecated Design Notes
-
-The current API specification replaces earlier planned architecture that included:
-
-- `Books`
-- `Tags`
-- `Items`
-- `ItemTags`
-- `ShelfItems`
-- A generic `/api/recommendations` endpoint
-- A full tag-overlap recommendation engine inside the API
-- A generic book/comic polymorphic item model
-
-Those concepts were removed or deferred. The current implementation is comic-focused and uses `Comics`, `UserComics`, `Checkouts`, `MarvelCharacters`, and `CharacterImages`.
-
----
-
-## 17. Future Improvements
-
-Potential future improvements include:
-
-- Add explicit health check endpoint for API/database readiness
-- Add admin endpoints for comic and character management
-- Add stronger DTO separation so password fields are never returned in response examples
-- Add response documentation for non-200 errors
-- Add pagination for large comic and character lists
-- Add richer recommendation logic based on shelf and reading-history data
-- Add automated database migration/seed setup during Docker startup
+- Add a formal health endpoint if needed for deployment checks
+- Add explicit `[Authorize]` attributes where required
+- Add clearer response status codes beyond `200 OK`
+- Remove password fields from response DTOs where possible
+- Add integration tests against Postgres/Testcontainers
+- Add admin-only comic management endpoints if content editing becomes required

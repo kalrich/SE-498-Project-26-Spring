@@ -230,6 +230,8 @@ Raw exception output should not be displayed to users.
 
 ## 14. Future Improvements
 
+- Add stronger route-level `[Authorize]` usage for protected pages
 - Improve token lifetime handling
+- Add automated integration tests for WebServer-to-WebApi flows
 - Add clearer service-level error objects
 - Add dedicated health checks for API connectivity

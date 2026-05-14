@@ -36,6 +36,7 @@ The current implementation focuses on comic discovery, recommendations, checkout
 
 ### Excluded / Not Currently Implemented
 
+- Dedicated book browsing pages
 - Tags management pages
 - Admin content management panel
 - OAuth/SSO login
@@ -312,6 +313,8 @@ The visual design uses a Marvel-inspired theme:
 
 ## 11. Future Improvements
 
+- Improve DC API reliability and display real DC character cards when available
+- Add richer profile stats, such as completed comics and checkout history
 - Add checkout due-date warnings
 - Add role-based admin tools for managing comic data
 - Add password reset support
