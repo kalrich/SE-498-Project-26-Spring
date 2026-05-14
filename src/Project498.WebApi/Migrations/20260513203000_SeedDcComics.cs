@@ -1,0 +1,58 @@
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace Project498.WebApi.Migrations
+{
+    /// <inheritdoc />
+    public partial class SeedDcComics : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.InsertData(
+                table: "Comics",
+                columns: new[]
+                {
+                    "Id", "SeriesName", "VolumeNumber", "IssueNumber", "Title", "Author",
+                    "Genre", "SecondaryGenre", "Description", "CoverImagePath", "PdfPath", "IsIReadPick"
+                },
+                values: new object[,]
+                {
+                    { 2001, "Batman", 1, 1, "Batman Vol. 1 Issue 1", "DC Comics", "Action", "Classic", "A classic DC Comics issue from the Batman series.", "/images/covers/dc/batman_vol1_issue_1_COVER.jpg", "/comic-archives/batman-1-100/Batman 001 (DC) (1940-Spring) (c2c) (A.S.S.).cbz", false },
+                    { 2002, "Batman", 1, 2, "Batman Vol. 1 Issue 2", "DC Comics", "Action", "Classic", "A classic DC Comics issue from the Batman series.", "/images/covers/dc/batman_vol1_issue_2_COVER.jpg", "/comic-archives/batman-1-100/Batman 002 (DC 1940-Summer 68p c2c - Snardermann).cbz", false },
+                    { 2003, "Batman", 1, 3, "Batman Vol. 1 Issue 3", "DC Comics", "Action", "Classic", "A classic DC Comics issue from the Batman series.", "/images/covers/dc/batman_vol1_issue_3_COVER.jpg", "/comic-archives/batman-1-100/Batman 003 (DC) (1940-Fall) (68p c2c paper now) (Flattermann+NickR fills).cbz", false },
+                    { 2006, "Batman", 1, 6, "Batman Vol. 1 Issue 6", "DC Comics", "Action", "Classic", "A classic DC Comics issue from the Batman series.", "/images/covers/dc/batman_vol1_issue_6_COVER.jpg", "/comic-archives/batman-1-100/Batman 006 (DC 1941-Aug-Sep) paper 68p c2c (Flattermann).cbz", false },
+                    { 2007, "Batman", 1, 7, "Batman Vol. 1 Issue 7", "DC Comics", "Action", "Classic", "A classic DC Comics issue from the Batman series.", "/images/covers/dc/batman_vol1_issue_7_COVER.jpg", "/comic-archives/batman-1-100/Batman 007 [DC] (Oct-Nov 1941) (Snardermann) c2c.cbz", false },
+                    { 2008, "Batman", 1, 8, "Batman Vol. 1 Issue 8", "DC Comics", "Action", "Classic", "A classic DC Comics issue from the Batman series.", "/images/covers/dc/batman_vol1_issue_8_COVER.jpg", "/comic-archives/batman-1-100/Batman 008 (DC) (Dec 1941-Jan 1942) (c2c) (Superscan).cbz", false },
+                    { 2010, "Batman", 1, 10, "Batman Vol. 1 Issue 10", "DC Comics", "Action", "Classic", "A classic DC Comics issue from the Batman series.", "/images/covers/dc/batman_vol1_issue_10_COVER.jpg", "/comic-archives/batman-1-100/Batman 010 (DC) (Apr-May 1942) (c2c) (Superscan).cbz", false },
+                    { 2012, "Batman", 1, 12, "Batman Vol. 1 Issue 12", "DC Comics", "Action", "Classic", "A classic DC Comics issue from the Batman series.", "/images/covers/dc/batman_vol1_issue_12_COVER.jpg", "/comic-archives/batman-1-100/Batman 012 (DC) (Aug-Sep 1942) (c2c) (Superscan).cbz", false },
+                    { 2022, "Batman", 1, 22, "Batman Vol. 1 Issue 22", "DC Comics", "Action", "Classic", "A classic DC Comics issue from the Batman series.", "/images/covers/dc/batman_vol1_issue_22_COVER.jpg", "/comic-archives/batman-1-100/Batman 022 (DC) (Apr-May 1944) (c2c) (Superscan).cbz", false },
+                    { 2025, "Batman", 1, 25, "Batman Vol. 1 Issue 25", "DC Comics", "Action", "Classic", "A classic DC Comics issue from the Batman series.", "/images/covers/dc/batman_vol1_issue_25_COVER.jpg", "/comic-archives/batman-1-100/Batman 025 DC 1944-Oct-Nov 52p c2c.cbz", false },
+                    { 2031, "Batman", 1, 31, "Batman Vol. 1 Issue 31", "DC Comics", "Action", "Classic", "A classic DC Comics issue from the Batman series.", "/images/covers/dc/batman_vol1_issue_31_COVER.jpg", "/comic-archives/batman-1-100/Batman 031 (DC) (1945.10-11)-c2c  -BMinor+Yoc-BrainDeath fills.cbz", false },
+                    { 2033, "Batman", 1, 33, "Batman Vol. 1 Issue 33", "DC Comics", "Action", "Classic", "A classic DC Comics issue from the Batman series.", "/images/covers/dc/batman_vol1_issue_33_COVER.jpg", "/comic-archives/batman-1-100/Batman 033 (DC) (Feb-Mar 1946) (c2c) (Superscan).cbz", false },
+                    { 2034, "Batman", 1, 34, "Batman Vol. 1 Issue 34", "DC Comics", "Action", "Classic", "A classic DC Comics issue from the Batman series.", "/images/covers/dc/batman_vol1_issue_34_COVER.jpg", "/comic-archives/batman-1-100/Batman 034 (DC 1946-Apr) 52p c2c.cbz", false },
+                    { 3002, "Men of War", 1, 2, "Men of War Vol. 1 Issue 2", "DC Comics", "War", "Military", "A vintage DC war comic from the Men of War series.", "/images/covers/dc/men_of_war_vol1_issue_2_COVER.jpg", "/comic-archives/men-of-war-part-1/Men of War 002.cbz", false },
+                    { 3005, "Men of War", 1, 5, "Men of War Vol. 1 Issue 5", "DC Comics", "War", "Military", "A vintage DC war comic from the Men of War series.", "/images/covers/dc/men_of_war_vol1_issue_5_COVER.jpg", "/comic-archives/men-of-war-part-1/Men of War 005.cbz", false },
+                    { 3006, "Men of War", 1, 6, "Men of War Vol. 1 Issue 6", "DC Comics", "War", "Military", "A vintage DC war comic from the Men of War series.", "/images/covers/dc/men_of_war_vol1_issue_6_COVER.jpg", "/comic-archives/men-of-war-part-1/Men of War 006.cbz", false },
+                    { 3007, "Men of War", 1, 7, "Men of War Vol. 1 Issue 7", "DC Comics", "War", "Military", "A vintage DC war comic from the Men of War series.", "/images/covers/dc/men_of_war_vol1_issue_7_COVER.jpg", "/comic-archives/men-of-war-part-1/Men of War 007.cbz", false },
+                    { 3008, "Men of War", 1, 8, "Men of War Vol. 1 Issue 8", "DC Comics", "War", "Military", "A vintage DC war comic from the Men of War series.", "/images/covers/dc/men_of_war_vol1_issue_8_COVER.jpg", "/comic-archives/men-of-war-part-1/Men of War 008.cbz", false },
+                    { 3011, "Men of War", 1, 11, "Men of War Vol. 1 Issue 11", "DC Comics", "War", "Military", "A vintage DC war comic from the Men of War series.", "/images/covers/dc/men_of_war_vol1_issue_11_COVER.jpg", "/comic-archives/men-of-war-part-1/Men of War 011.cbz", false },
+                    { 3012, "Men of War", 1, 12, "Men of War Vol. 1 Issue 12", "DC Comics", "War", "Military", "A vintage DC war comic from the Men of War series.", "/images/covers/dc/men_of_war_vol1_issue_12_COVER.jpg", "/comic-archives/men-of-war-part-1/Men of War 012.cbz", false }
+                });
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DeleteData(
+                table: "Comics",
+                keyColumn: "Id",
+                keyValues: new object[]
+                {
+                    2001, 2002, 2003, 2006, 2007, 2008, 2010, 2012, 2022, 2025,
+                    2031, 2033, 2034, 3002, 3005, 3006, 3007, 3008, 3011, 3012
+                });
+        }
+    }
+}

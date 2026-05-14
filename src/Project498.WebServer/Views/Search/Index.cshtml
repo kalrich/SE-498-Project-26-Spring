@@ -1,0 +1,119 @@
+@model Project498.WebServer.Models.SearchViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var totalResults = Model.Comics.Count + Model.DcCharacters.Count + Model.MarvelCharacters.Count;
+}
+
+<section class="search-page">
+    <div class="explore-header">
+        <h1>Search Results</h1>
+        <p>@totalResults result@(totalResults == 1 ? "" : "s") for "@Model.Query"</p>
+    </div>
+
+    @if (totalResults == 0)
+    {
+        <div class="empty-state">
+            <h3>No results found</h3>
+            <p>Try searching by comic title, character name, alias, or description.</p>
+        </div>
+    }
+    else
+    {
+        @if (Model.Comics.Any())
+        {
+            <section class="search-section">
+                <div class="section-row">
+                    <h2>Comics</h2>
+                </div>
+
+                <div class="explore-grid">
+                    @foreach (var comic in Model.Comics)
+                    {
+                        <a href="/Comics/Details?id=@comic.Id" class="explore-card-link">
+                            <article class="explore-card">
+                                <div class="explore-card-cover">
+                                    <img src="@comic.CoverImagePath" alt="@comic.Title" class="cover-image" />
+                                </div>
+
+                                <div class="explore-card-body">
+                                    <p class="meta">@comic.Author</p>
+                                    <h3>@comic.Title</h3>
+                                    <p class="explore-card-desc">@comic.Description</p>
+                                </div>
+                            </article>
+                        </a>
+                    }
+                </div>
+            </section>
+        }
+
+        @if (Model.DcCharacters.Any())
+        {
+            <section class="search-section">
+                <div class="section-row">
+                    <h2>DC Characters</h2>
+                </div>
+
+                <div class="dc-grid">
+                    @foreach (var character in Model.DcCharacters)
+                    {
+                        <article class="dc-card">
+                            @if (!string.IsNullOrWhiteSpace(character.ImagePath))
+                            {
+                                <img src="@character.ImagePath" alt="@character.Alias" class="dc-card-img" />
+                            }
+
+                            <div class="dc-card-body">
+                                <h2>@character.Alias</h2>
+                                <h3>@character.Name</h3>
+                                <p>@character.Description</p>
+
+                                <a asp-controller="Characters"
+                                   asp-action="Details"
+                                   asp-route-id="@character.CharacterId"
+                                   class="dc-btn">
+                                    View Details
+                                </a>
+                            </div>
+                        </article>
+                    }
+                </div>
+            </section>
+        }
+
+        @if (Model.MarvelCharacters.Any())
+        {
+            <section class="search-section">
+                <div class="section-row">
+                    <h2>Marvel Characters</h2>
+                </div>
+
+                <div class="dc-grid">
+                    @foreach (var character in Model.MarvelCharacters)
+                    {
+                        <article class="dc-card">
+                            @if (!string.IsNullOrWhiteSpace(character.ImagePath))
+                            {
+                                <img src="@character.ImagePath" alt="@character.Alias" class="dc-card-img" />
+                            }
+
+                            <div class="dc-card-body">
+                                <h2>@character.Alias</h2>
+                                <h3>@character.Name</h3>
+                                <p>@character.Description</p>
+
+                                <a asp-controller="MarvelCharacters"
+                                   asp-action="Details"
+                                   asp-route-id="@character.Id"
+                                   class="dc-btn">
+                                    View Details
+                                </a>
+                            </div>
+                        </article>
+                    }
+                </div>
+            </section>
+        }
+    }
+</section>

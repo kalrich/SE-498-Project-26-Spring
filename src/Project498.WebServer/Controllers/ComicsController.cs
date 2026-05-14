@@ -33,15 +33,17 @@ public class ComicsController : Controller
                 var checkouts = await _checkoutService.GetUserCheckoutsAsync(userId.Value);
                 var activeCheckout = checkouts.FirstOrDefault(c => c.ComicId == id && !c.ReturnDate.HasValue);
                 ViewBag.ActiveCheckout = activeCheckout;
-                ViewBag.IsCheckedOut = activeCheckout != null;
+                ViewBag.IsCheckedOut = activeCheckout != null || comic.IsCheckedOut;
+                ViewBag.ActiveCheckoutDueDate = activeCheckout?.DueDate ?? comic.ActiveCheckoutDueDate;
                 ViewBag.IsFavorite = await _comicService.GetFavoriteStatusAsync(userId.Value, id);
                 ViewBag.UserReview = await _comicService.GetUserReviewAsync(userId.Value, id);
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Could not check checkout status for comic {id}", id);
-                ViewBag.IsCheckedOut = false;
+                ViewBag.IsCheckedOut = comic.IsCheckedOut;
                 ViewBag.ActiveCheckout = null;
+                ViewBag.ActiveCheckoutDueDate = comic.ActiveCheckoutDueDate;
                 ViewBag.IsFavorite = false;
                 ViewBag.UserReview = null;
             }
@@ -50,6 +52,7 @@ public class ComicsController : Controller
         {
             ViewBag.IsCheckedOut = false;
             ViewBag.ActiveCheckout = null;
+            ViewBag.ActiveCheckoutDueDate = null;
             ViewBag.IsFavorite = false;
             ViewBag.UserReview = null;
         }

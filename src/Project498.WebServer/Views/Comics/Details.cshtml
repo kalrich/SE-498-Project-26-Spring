@@ -4,7 +4,8 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     var activeCheckout = ViewBag.ActiveCheckout as CheckoutDto;
-    var isCheckedOut = activeCheckout != null;
+    var isCheckedOut = ViewBag.IsCheckedOut as bool? ?? activeCheckout != null;
+    var activeCheckoutDueDate = ViewBag.ActiveCheckoutDueDate as DateTime?;
     var isFavorite = ViewBag.IsFavorite as bool? ?? false;
     var reviews = ViewBag.Reviews as List<ComicReviewDto> ?? new List<ComicReviewDto>();
     var userReview = ViewBag.UserReview as ComicReviewDto;
@@ -52,31 +53,18 @@
                     </button>
                 </form>
 
-                @if (isCheckedOut)
+                @if (isCheckedOut && !string.IsNullOrEmpty(Model.PdfPath))
                 {
                     <a href="/Reader/Index?id=@Model.Id" class="btn btn-dark detail-btn">Read Now</a>
+                }
+                else if (isCheckedOut && string.IsNullOrEmpty(Model.PdfPath))
+                {
+                    <button class="btn btn-dark detail-btn" disabled>Read Now (Coming Soon)</button>
                 }
                 else
                 {
                     <a href="@Url.Action("Initiate", "Checkout", new { comicId = Model.Id })"
                        class="btn btn-dark detail-btn">Checkout Comic</a>
-                }
-                <a href="/Checkout/Active" class="btn btn-light detail-btn">My Checkouts</a>
-            </div>
-
-            <div class="comic-detail-meta-box">
-                <div class="comic-meta-row">
-                    <span class="comic-meta-label">Status</span>
-                    <span class="comic-meta-value">
-                        @(isCheckedOut ? "Checked Out" : "Available to Checkout")
-                    </span>
-                </div>
-                @if (isCheckedOut)
-                {
-                    <div class="comic-meta-row">
-                        <span class="comic-meta-label">Due Date</span>
-                        <span class="comic-meta-value">@activeCheckout!.DueDate.ToString("MMM dd, yyyy")</span>
-                    </div>
                 }
             </div>
             

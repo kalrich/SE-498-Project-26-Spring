@@ -36,6 +36,8 @@ public class Comic
     public bool IsFavorite { get; set; }
     public double AverageRating { get; set; }
     public int ReviewCount { get; set; }
+    public bool IsCheckedOut { get; set; }
+    public DateTime? ActiveCheckoutDueDate { get; set; }
     
     
 }

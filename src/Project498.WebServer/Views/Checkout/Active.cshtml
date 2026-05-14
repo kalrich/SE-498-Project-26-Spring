@@ -67,7 +67,17 @@
                     @if (!checkout.ReturnDate.HasValue)
                     {
                         <div class="checkout-actions">
-                            <a href="/Reader/Index?id=@checkout.ComicId" class="btn btn-dark">Read Now</a>
+                            @{
+                                var comic = await ComicService.GetByIdAsync(checkout.ComicId);
+                            }
+                            @if (comic != null && !string.IsNullOrEmpty(comic.PdfPath))
+                            {
+                                <a href="/Reader/Index?id=@checkout.ComicId" class="btn btn-dark">Read Now</a>
+                            }
+                            else
+                            {
+                                <button class="btn btn-dark" disabled>Read Now (Coming Soon)</button>
+                            }
                             <form method="post" action="/Checkout/Return" style="display: inline;">
                                 <input type="hidden" name="checkoutId" value="@checkout.CheckoutId" />
                                 <button type="submit" class="btn btn-light">Return Comic</button>

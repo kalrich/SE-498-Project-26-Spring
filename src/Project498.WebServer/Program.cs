@@ -1,5 +1,6 @@
 using Project498.WebServer.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.StaticFiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,7 +65,13 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+var staticFileProvider = new FileExtensionContentTypeProvider();
+staticFileProvider.Mappings[".cbz"] = "application/zip";
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = staticFileProvider
+});
 
 app.UseRouting();
 

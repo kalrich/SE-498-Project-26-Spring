@@ -6,6 +6,13 @@
 # dotenv files
 .env
 
+Project498.WebServer/wwwroot/comic-archives/**/*.cbz
+!Project498.WebServer/wwwroot/comic-archives/
+!Project498.WebServer/wwwroot/comic-archives/batman-1-100/
+!Project498.WebServer/wwwroot/comic-archives/men-of-war-part-1/
+!Project498.WebServer/wwwroot/comic-archives/**/.gitkeep
+Project498.WebServer/wwwroot/comic-archives/generated-cbz/
+
 # User-specific files
 *.rsuser
 *.suo

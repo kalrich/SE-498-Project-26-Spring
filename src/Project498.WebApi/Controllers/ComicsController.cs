@@ -161,12 +161,36 @@ public class ComicsController : ControllerBase
                 .ToListAsync()
             : new List<int>();
 
+        var activeCheckoutDueDates = new Dictionary<int, DateTime>();
+
+        if (userId.HasValue)
+        {
+            var activeCheckoutRows = await _context.Checkouts
+                .Where(c =>
+                    c.UserId == userId.Value &&
+                    comicIds.Contains(c.ComicId) &&
+                    c.ReturnDate == null)
+                .OrderByDescending(c => c.CheckoutDate)
+                .Select(c => new
+                {
+                    c.ComicId,
+                    c.DueDate
+                })
+                .ToListAsync();
+
+            activeCheckoutDueDates = activeCheckoutRows
+                .GroupBy(c => c.ComicId)
+                .ToDictionary(g => g.Key, g => g.First().DueDate);
+        }
+
         foreach (var comic in comics)
         {
             var rating = ratingSummaries.FirstOrDefault(r => r.ComicId == comic.Id);
             comic.AverageRating = rating == null ? 0 : Math.Round(rating.AverageRating, 1);
             comic.ReviewCount = rating?.ReviewCount ?? 0;
             comic.IsFavorite = favoriteIds.Contains(comic.Id);
+            comic.IsCheckedOut = activeCheckoutDueDates.TryGetValue(comic.Id, out var dueDate);
+            comic.ActiveCheckoutDueDate = comic.IsCheckedOut ? dueDate : null;
         }
     }
 }

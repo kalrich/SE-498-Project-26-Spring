@@ -35,4 +35,10 @@ public class Comic
 
     [System.ComponentModel.DataAnnotations.Schema.NotMapped]
     public int ReviewCount { get; set; }
+
+    [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+    public bool IsCheckedOut { get; set; }
+
+    [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+    public DateTime? ActiveCheckoutDueDate { get; set; }
 }

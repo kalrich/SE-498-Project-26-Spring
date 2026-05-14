@@ -24,25 +24,30 @@
 
     <div class="pdfjs-viewer-wrap">
         <canvas id="pdf-canvas"></canvas>
+        <img id="archive-page" alt="@Model.Title page" class="archive-page-image" style="display:none;" />
     </div>
 
     <p id="pdf-error" class="error-text" style="display:none;"></p>
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc =
         "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-    const url = "@Model.PdfPath";
+    const url = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.PdfPath));
     const comicId = @Model.Id;
     const savedPage = @(ViewBag.CurrentPage ?? 1);
+    const isArchive = url.toLowerCase().endsWith(".cbz");
     let pdfDoc = null;
+    let archivePages = [];
     let pageNum = Math.max(1, savedPage);
     let lastSavedPage = pageNum;
     const scale = 1.3;
     const canvas = document.getElementById("pdf-canvas");
     const ctx = canvas.getContext("2d");
+    const archiveImage = document.getElementById("archive-page");
     const errorEl = document.getElementById("pdf-error");
 
     function showError(message) {
@@ -52,6 +57,11 @@
     }
 
     function renderPage(num) {
+        if (isArchive) {
+            renderArchivePage(num);
+            return;
+        }
+
         pdfDoc.getPage(num).then(function(page) {
             const viewport = page.getViewport({ scale: scale });
             canvas.height = viewport.height;
@@ -71,10 +81,11 @@
     }
 
     function saveProgress(num) {
-        if (!pdfDoc || num === lastSavedPage) return;
+        const pageCount = isArchive ? archivePages.length : pdfDoc?.numPages;
+        if (!pageCount || num === lastSavedPage) return;
 
         lastSavedPage = num;
-        const progressPercent = Math.round((num / pdfDoc.numPages) * 100);
+        const progressPercent = Math.round((num / pageCount) * 100);
 
         fetch("/Reader/SaveProgress", {
             method: "POST",
@@ -91,23 +102,81 @@
         });
     }
 
-    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
-        pdfDoc = pdfDoc_;
-        document.getElementById("page-count").textContent = pdfDoc.numPages;
-        pageNum = Math.min(pageNum, pdfDoc.numPages);
-        renderPage(pageNum);
-    }).catch(function(err) {
-        showError("Could not load PDF: " + err.message);
-    });
+    function renderArchivePage(num) {
+        if (!archivePages.length) return;
+
+        pageNum = Math.max(1, Math.min(num, archivePages.length));
+        canvas.style.display = "none";
+        archiveImage.style.display = "block";
+        archiveImage.src = archivePages[pageNum - 1].url;
+        document.getElementById("page-num").textContent = pageNum;
+        saveProgress(pageNum);
+    }
+
+    function loadArchive() {
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP " + response.status);
+                }
+
+                return response.arrayBuffer();
+            })
+            .then(buffer => JSZip.loadAsync(buffer))
+            .then(zip => {
+                const imageEntries = Object.values(zip.files)
+                    .filter(file => !file.dir && /\.(jpg|jpeg|png|webp)$/i.test(file.name))
+                    .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+
+                return Promise.all(imageEntries.map(file =>
+                    file.async("blob").then(blob => ({
+                        name: file.name,
+                        url: URL.createObjectURL(blob)
+                    }))
+                ));
+            })
+            .then(pages => {
+                archivePages = pages;
+                if (!archivePages.length) {
+                    showError("No readable images were found in this comic archive.");
+                    return;
+                }
+
+                document.getElementById("page-count").textContent = archivePages.length;
+                pageNum = Math.min(pageNum, archivePages.length);
+                renderArchivePage(pageNum);
+            })
+            .catch(function(err) {
+                showError("Could not load comic archive: " + err.message);
+            });
+    }
+
+    function loadPdf() {
+        pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+            pdfDoc = pdfDoc_;
+            document.getElementById("page-count").textContent = pdfDoc.numPages;
+            pageNum = Math.min(pageNum, pdfDoc.numPages);
+            renderPage(pageNum);
+        }).catch(function(err) {
+            showError("Could not load PDF: " + err.message);
+        });
+    }
+
+    if (isArchive) {
+        loadArchive();
+    } else {
+        loadPdf();
+    }
 
     document.getElementById("prev-page").addEventListener("click", function() {
-        if (!pdfDoc || pageNum <= 1) return;
+        if ((!pdfDoc && !archivePages.length) || pageNum <= 1) return;
         pageNum--;
         renderPage(pageNum);
     });
 
     document.getElementById("next-page").addEventListener("click", function() {
-        if (!pdfDoc || pageNum >= pdfDoc.numPages) return;
+        const pageCount = isArchive ? archivePages.length : pdfDoc?.numPages;
+        if (!pageCount || pageNum >= pageCount) return;
         pageNum++;
         renderPage(pageNum);
     });
