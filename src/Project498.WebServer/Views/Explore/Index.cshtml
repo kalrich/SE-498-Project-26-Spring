@@ -28,24 +28,6 @@
                 class="explore-search-input" />
         </div>
 
-        <div class="explore-genre-wrap">
-            <select name="genre" class="explore-select">
-                <option value="">All genres</option>
-                @foreach (var genre in genres)
-                {
-                    <option value="@genre" selected="@(selectedGenre == genre)">@genre</option>
-                }
-            </select>
-        </div>
-
-        <div class="explore-genre-wrap">
-            <select name="status" class="explore-select">
-                <option value="">All statuses</option>
-                <option value="available" selected="@(selectedStatus == "available")">Available</option>
-                <option value="checkedout" selected="@(selectedStatus == "checkedout")">Checked out by me</option>
-            </select>
-        </div>
-
         <button type="submit" class="btn btn-dark explore-btn">Search</button>
 
         <a href="/Explore" class="btn btn-light explore-btn">Clear</a>
